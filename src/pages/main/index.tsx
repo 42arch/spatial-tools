@@ -1,4 +1,5 @@
-import BaseMap from '@/components/map'
+import DrawControl from '@/components/mapbox/draw-control'
+import BaseMap from '@/components/mapbox/map'
 import { TopMenu } from '@/components/topmenu'
 
 function MainPage() {
@@ -6,7 +7,9 @@ function MainPage() {
     <div className='w-full h-full'>
       <TopMenu />
       <div className='border-t h-[calc(100%-36px)]'>
-        <BaseMap />
+        <BaseMap>
+          <DrawControl />
+        </BaseMap>
       </div>
     </div>
   )
