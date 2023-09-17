@@ -26,6 +26,18 @@ const DrawControl = ({ mode, onDrawCreate, onDrawUpdate }: Porps) => {
     }
     if (mapRef.current) {
       mapRef.current.addControl(drawRef.current)
+    }
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      mapRef.current?.removeControl(drawRef.current)
+      // mapRef.current?.off('draw.create')
+    }
+  }, [mapRef])
+
+  useEffect(() => {
+    if (mapRef.current && drawRef.current) {
+      drawRef.current.changeMode(mode)
       mapRef.current.on('draw.create', (e: DrawCreateEvent) => {
         onDrawCreate && onDrawCreate(e)
       })
@@ -33,18 +45,7 @@ const DrawControl = ({ mode, onDrawCreate, onDrawUpdate }: Porps) => {
         onDrawUpdate && onDrawUpdate(e)
       })
     }
-
-    return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      mapRef.current?.removeControl(drawRef.current)
-    }
-  }, [mapRef, onDrawCreate, onDrawUpdate])
-
-  useEffect(() => {
-    if (drawRef.current) {
-      drawRef.current.changeMode(mode)
-    }
-  }, [mapRef, mode])
+  }, [mapRef, mode, onDrawCreate, onDrawUpdate])
 
   return <></>
 }
