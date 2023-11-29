@@ -1,24 +1,32 @@
 import { DrawToolbar } from '@/components/draw-toolbar'
+import FeatureLayer from '@/components/feature-layer'
 import DrawControl from '@/components/mapbox/draw-control'
 import BaseMap from '@/components/mapbox/map'
-import TestMap from '@/components/mapbox/test-map'
 import { TopMenu } from '@/components/topmenu'
-import { DrawMode } from '@/types'
-import MapboxDraw, { MapboxDrawOptions } from '@mapbox/mapbox-gl-draw'
+import { useBoundStore } from '@/store'
+import MapboxDraw, {
+  DrawCreateEvent,
+  MapboxDrawOptions
+} from '@mapbox/mapbox-gl-draw'
 import { useState } from 'react'
 
 function MainPage() {
-  const [currentFeatures, setCurrentFeatures] = useState(null)
+  const { updateFeatures } = useBoundStore((state) => state)
   const [drawOptions, setDrawOptions] = useState<MapboxDrawOptions>({
     displayControlsDefault: false
   })
 
-  const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('draw_polygon')
+  const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
+
+  const onUpdateFeatures = (e: DrawCreateEvent) => {
+    updateFeatures(e.features)
+    setDrawMode('simple_select')
+  }
 
   return (
     <div className='w-full h-full'>
       <TopMenu />
-      <div className='border-t h-[calc(100%-36px)]'>
+      <div className='border-t h-[calc(100%-36px)] relative'>
         <div className=''>
           <DrawToolbar
             currentMode={drawMode}
@@ -27,19 +35,14 @@ function MainPage() {
             }}
           />
         </div>
-
-        {/* <TestMap /> */}
-
+        <FeatureLayer />
         <BaseMap>
           <DrawControl
             mode={drawMode}
-            features={currentFeatures}
             options={drawOptions}
-            onDrawCreate={(e) => {
-              console.log('oncreate', e.features)
-            }}
+            onDrawCreate={onUpdateFeatures}
             onDrawUpdate={(e) => {
-              console.log('onupdate', e.features)
+              console.log('onupdate', e.features[0])
             }}
           />
         </BaseMap>
