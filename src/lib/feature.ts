@@ -1,4 +1,4 @@
-import { FeatureNode } from '@/types'
+import { FeatureNode, FeatureType } from '@/types'
 
 export const toggleNodeVisible = (
   nodes: FeatureNode[],
@@ -16,6 +16,38 @@ export const toggleNodeVisible = (
       return node
     }
   })
+}
+
+export const featureTreeToNodes = (nodeTree: FeatureNode[]) => {
+  const featureNodes: FeatureNode[] = []
+  const findFeature = (nodes: FeatureNode[]) =>
+    nodes.forEach((node) => {
+      if (!node.isGroup) {
+        featureNodes.push(node)
+      } else {
+        if (node.children && node.children.length > 0) {
+          findFeature(node.children)
+        }
+      }
+    })
+  findFeature(nodeTree)
+  return featureNodes
+}
+
+export const featureNodesToFeatures = (nodes: FeatureNode[]): FeatureType[] => {
+  const features: FeatureType[] = []
+  const findFeature = (nodes: FeatureNode[]) =>
+    nodes.forEach((node) => {
+      if (!node.isGroup && node.visible) {
+        features.push(node.data)
+      } else {
+        if (node.children && node.children.length > 0) {
+          findFeature(node.children)
+        }
+      }
+    })
+  findFeature(nodes)
+  return features
 }
 
 export const updateFeatureNodes = (

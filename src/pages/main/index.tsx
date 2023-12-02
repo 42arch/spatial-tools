@@ -3,23 +3,32 @@ import FeatureLayer from '@/components/feature-layer'
 import DrawControl from '@/components/mapbox/draw-control'
 import BaseMap from '@/components/mapbox/map'
 import { TopMenu } from '@/components/topmenu'
-import { useBoundStore } from '@/store'
+import { featureTreeToNodes } from '@/lib/feature'
+import { useFeatureStore } from '@/store'
 import MapboxDraw, {
   DrawCreateEvent,
   MapboxDrawOptions
 } from '@mapbox/mapbox-gl-draw'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 function MainPage() {
-  const { updateFeatures } = useBoundStore((state) => state)
+  const { featureNodes, updateFeatureNodes } = useFeatureStore((state) => state)
   const [drawOptions, setDrawOptions] = useState<MapboxDrawOptions>({
     displayControlsDefault: false
   })
 
+  const nodes = useMemo(() => {
+    console.log(99877, featureTreeToNodes(featureNodes))
+    return featureTreeToNodes(featureNodes)
+  }, [featureNodes])
+
+  // const hiddenFeatures = useMemo(() => {}, [featureNodes])
+  // const displayFeatures = useMemo(() => {}, [featureNodes])
+
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
   const onUpdateFeatures = (e: DrawCreateEvent) => {
-    updateFeatures(e.features)
+    updateFeatureNodes(e.features)
     setDrawMode('simple_select')
   }
 
@@ -38,6 +47,8 @@ function MainPage() {
         <FeatureLayer />
         <BaseMap>
           <DrawControl
+            // features={features}
+            featureNodes={nodes}
             mode={drawMode}
             options={drawOptions}
             onDrawCreate={onUpdateFeatures}

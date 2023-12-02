@@ -8,9 +8,11 @@ export type DrawMode =
 
 export type FeatureType = Feature<Geometry, GeoJsonProperties>
 
-export interface FeatureNode extends FeatureType {
-  isFolder?: boolean
+export interface FeatureNode {
+  id: string
+  isGroup?: boolean
   visible?: boolean
   selected?: boolean
+  data: FeatureType
   children?: FeatureNode[]
 }
