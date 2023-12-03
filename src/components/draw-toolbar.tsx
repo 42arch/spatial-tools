@@ -8,8 +8,6 @@ interface Props {
 }
 
 export function DrawToolbar({ currentMode, onModeChange }: Props) {
-  console.log(99999, currentMode)
-
   return (
     <div className='flex h-10 items-center gap-4'>
       <Toggle

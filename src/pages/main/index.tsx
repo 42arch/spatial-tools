@@ -7,29 +7,41 @@ import { featureTreeToNodes } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
 import MapboxDraw, {
   DrawCreateEvent,
+  DrawSelectionChangeEvent,
+  DrawUpdateEvent,
   MapboxDrawOptions
 } from '@mapbox/mapbox-gl-draw'
 import { useMemo, useState } from 'react'
 
 function MainPage() {
-  const { featureNodes, updateFeatureNodes } = useFeatureStore((state) => state)
+  const {
+    featureNodes,
+    selectedNodeIds,
+    updateFeatureNodes,
+    updateSelectedNodeIds
+  } = useFeatureStore((state) => state)
   const [drawOptions, setDrawOptions] = useState<MapboxDrawOptions>({
     displayControlsDefault: false
   })
 
   const nodes = useMemo(() => {
-    console.log(99877, featureTreeToNodes(featureNodes))
     return featureTreeToNodes(featureNodes)
   }, [featureNodes])
 
-  // const hiddenFeatures = useMemo(() => {}, [featureNodes])
-  // const displayFeatures = useMemo(() => {}, [featureNodes])
-
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
-  const onUpdateFeatures = (e: DrawCreateEvent) => {
+  const onDrawFeatures = (e: DrawCreateEvent) => {
     updateFeatureNodes(e.features)
     setDrawMode('simple_select')
+  }
+
+  const onUpdateFeatures = (e: DrawUpdateEvent) => {
+    updateFeatureNodes(e.features)
+  }
+
+  const onSelectionChange = (e: DrawSelectionChangeEvent) => {
+    const ids = e.features.map((feature) => String(feature.id))
+    updateSelectedNodeIds(ids)
   }
 
   return (
@@ -47,14 +59,13 @@ function MainPage() {
         <FeatureLayer />
         <BaseMap>
           <DrawControl
-            // features={features}
             featureNodes={nodes}
+            selectedIds={selectedNodeIds}
             mode={drawMode}
             options={drawOptions}
-            onDrawCreate={onUpdateFeatures}
-            onDrawUpdate={(e) => {
-              console.log('onupdate', e.features[0])
-            }}
+            onDrawCreate={onDrawFeatures}
+            onDrawUpdate={onUpdateFeatures}
+            onDrawSelectionChange={onSelectionChange}
           />
         </BaseMap>
       </div>
