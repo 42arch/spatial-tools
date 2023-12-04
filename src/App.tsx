@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import './App.css'
 import MainPage from './pages/main'
+import './App.css'
+import 'allotment/dist/style.css'
 
 function App() {
   return (

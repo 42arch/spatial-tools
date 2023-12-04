@@ -6,7 +6,6 @@ mapboxgl.accessToken =
   'pk.eyJ1IjoiaW5nZW40MiIsImEiOiJjazlsMnliMXoyMWoxM2tudm1hajRmaHZ6In0.rWx_wAz2cAeMIzxQQfPDPA'
 
 interface Props {
-  // draw: () => void
   children: ReactNode
 }
 
@@ -14,6 +13,21 @@ export default function BaseMap({ children }: Props) {
   const mapContainerRef = useRef<any>()
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
+
+  const onMapLoaded = () => {
+    setLoaded(true)
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach(() => {
+        let resizeTimer = null as any
+        const delay = 500
+        clearTimeout(resizeTimer)
+        resizeTimer = setTimeout(() => {
+          mapRef.current?.resize()
+        }, delay)
+      })
+    })
+    resizeObserver.observe(mapContainerRef.current)
+  }
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -23,11 +37,13 @@ export default function BaseMap({ children }: Props) {
       zoom: 2
     })
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
-    mapRef.current.on('load', () => {
-      setLoaded(true)
-    })
+    mapRef.current.on('load', onMapLoaded)
 
-    return () => mapRef.current?.remove()
+    return () => {
+      mapRef.current?.off('load', onMapLoaded)
+      window.removeEventListener('resize', () => mapRef.current?.resize())
+      mapRef.current?.remove()
+    }
   }, [])
 
   return (

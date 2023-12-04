@@ -29,7 +29,7 @@ const FeatureLayer = () => {
   }
 
   return (
-    <div className='flex flex-col gap-1 h-[calc(100%-40px)] w-48 absolute left-0 top-10 bg-black z-10'>
+    <div className='flex flex-col gap-1 h-full w-full absolute left-0 bg-black z-10'>
       {featureNodes.map((node, idx) => (
         <FeatureNodeMenu key={node.id}>
           <div

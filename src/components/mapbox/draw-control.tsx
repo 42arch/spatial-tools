@@ -82,9 +82,10 @@ const DrawControl = ({
   useEffect(() => {
     if (mapRef.current && drawRef.current) {
       if (selectedIds && selectedIds?.length > 0) {
-        drawRef.current.changeMode(mode, {
-          featureIds: selectedIds
-        })
+        // should do nothing
+        // drawRef.current.changeMode(mode, {
+        //   featureIds: selectedIds
+        // })
       } else {
         drawRef.current.changeMode(mode)
       }
