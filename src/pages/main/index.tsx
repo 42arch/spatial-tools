@@ -60,7 +60,7 @@ function MainPage() {
           />
         </div>
         <div className='w-full h-[calc(100%-40px)]'>
-          <Allotment defaultSizes={[150, 900, 150]}>
+          <Allotment defaultSizes={[150, 900, 400]}>
             <Allotment.Pane preferredSize='15%' minSize={150} maxSize={400}>
               <FeatureLayer />
             </Allotment.Pane>

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
 import { Icon } from '@iconify/react'
 import { FeatureType } from '@/types'
 import { Input } from '../../../../components/ui/input'
+import { FeatureOperateContext } from '.'
 
 interface ValueInputProps {
   keyName: string
@@ -19,12 +20,12 @@ interface ValueInputProps {
 }
 
 function ValueInput({ keyName, value }: ValueInputProps) {
-  console.log(3333, keyName, value)
+  // console.log(3333, keyName, value)
 
   return (
     <Input
       className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
-      defaultValue={value}
+      value={value}
       title={value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => {
         // onKeyValueUpdate(row.id, e.target.value, row.value)
@@ -33,24 +34,25 @@ function ValueInput({ keyName, value }: ValueInputProps) {
   )
 }
 
-interface FeatureTableProps {
-  feature?: FeatureType
-  onPropertiesUpdate?: () => void
-}
+function FeatureTable() {
+  const { feature } = useContext(FeatureOperateContext)
 
-function FeatureTable({ feature }: FeatureTableProps) {
   const [propertyList, setPropertyList] = useState<
-    { id: number; key: string; value: any }[]
+    { id: number | string; key: string; value: any }[]
   >([])
 
   useEffect(() => {
+    console.log('feature update', feature)
+
     const property = feature?.properties
       ? Object.entries(feature.properties).map(([key, value], idx) => ({
-          id: idx,
+          id: key,
           key,
           value
         }))
       : []
+
+    console.log(11112222, property)
     setPropertyList(property)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [feature])
@@ -65,7 +67,7 @@ function FeatureTable({ feature }: FeatureTableProps) {
     ])
   }
 
-  const onKeyValueUpdate = (id: number, key: string, value: any) => {
+  const onKeyValueUpdate = (id: number | string, key: string, value: any) => {
     setPropertyList((prevList) =>
       prevList.map((row) => (row.id === id ? { ...row, key, value } : row))
     )
