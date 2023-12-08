@@ -39,8 +39,8 @@ const FeatureLayer = () => {
               onFeatureNodeClick(node.id, e.shiftKey)
             }
             className={clsx(
-              'h-8 flex items-center justify-between px-4 cursor-pointer hover:bg-[#a0a0a0]',
-              selectedNodeIds.includes(node.id) ? ' bg-[#1f618d]' : ''
+              'h-8 flex items-center justify-between px-4 cursor-pointer hover:bg-muted',
+              selectedNodeIds.includes(node.id) ? 'bg-secondary' : ''
             )}
           >
             <span>{node.data.geometry.type}</span>
