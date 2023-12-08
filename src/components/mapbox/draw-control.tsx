@@ -12,21 +12,21 @@ import { FeatureNode, FeatureType } from '@/types'
 // feature styles
 const styles: object[] = [
   // default theme
-  {
-    id: 'gl-draw-polygon-fill-inactive',
-    type: 'fill',
-    filter: [
-      'all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static']
-    ],
-    paint: {
-      'fill-color': '#3bb2d0',
-      'fill-outline-color': '#3bb2d0',
-      'fill-opacity': 0.1
-    }
-  },
+  // {
+  //   id: 'gl-draw-polygon-fill-inactive',
+  //   type: 'fill',
+  //   filter: [
+  //     'all',
+  //     ['==', 'active', 'false'],
+  //     ['==', '$type', 'Polygon'],
+  //     ['!=', 'mode', 'static']
+  //   ],
+  //   paint: {
+  //     'fill-color': '#3bb2d0',
+  //     'fill-outline-color': '#3bb2d0',
+  //     'fill-opacity': 0.1
+  //   }
+  // },
   {
     id: 'gl-draw-polygon-fill-active',
     type: 'fill',
@@ -46,36 +46,44 @@ const styles: object[] = [
       'circle-color': '#fbb03b'
     }
   },
+  // {
+  //   id: 'gl-draw-polygon-stroke-inactive',
+  //   type: 'line',
+  //   filter: [
+  //     'all',
+  //     ['==', 'active', 'false'],
+  //     ['==', '$type', 'Polygon'],
+  //     ['!=', 'mode', 'static']
+  //   ],
+  //   layout: {
+  //     'line-cap': 'round',
+  //     'line-join': 'round'
+  //   },
+  //   paint: {
+  //     'line-color': '#3bb2d0',
+  //     'line-width': 2
+  //   }
+  // },
   {
-    id: 'gl-draw-polygon-stroke-inactive',
+    id: 'gl-draw-polygon-stroke-active',
     type: 'line',
     filter: [
       'all',
-      ['==', 'active', 'false'],
+      ['==', 'active', 'true'],
       ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static']
+      ['has', 'user_stroke'],
+      ['has', 'user_stroke-width']
     ],
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
     },
     paint: {
-      'line-color': '#3bb2d0',
-      'line-width': 2
-    }
-  },
-  {
-    id: 'gl-draw-polygon-stroke-active',
-    type: 'line',
-    filter: ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    paint: {
-      'line-color': '#fbb03b',
-      'line-dasharray': [0.2, 2],
-      'line-width': 2
+      // 'line-color': '#fbb03b',
+      'line-opacity': 0.3,
+      'line-color': ['get', 'user_stroke'],
+      'line-width': ['get', 'user_stroke-width'],
+      'line-dasharray': [0.2, 2]
     }
   },
   {
@@ -250,14 +258,33 @@ const styles: object[] = [
       'all',
       ['==', '$type', 'Polygon'],
       ['has', 'user_fill'],
-      // ['has', 'user_stroke'],
+      ['has', 'user_stroke'],
       ['has', 'user_fill-opacity']
     ],
     paint: {
       'fill-color': ['get', 'user_fill'],
-      // 'fill-outline-color': ['get', 'user_stroke'],
-      'fill-outline-color': 'yellow',
+      'fill-outline-color': ['get', 'user_stroke'],
       'fill-opacity': ['get', 'user_fill-opacity']
+    }
+  },
+  {
+    id: 'gl-draw-polygon-stroke-inactive',
+    type: 'line',
+    filter: [
+      'all',
+      ['==', 'active', 'false'],
+      ['==', '$type', 'Polygon'],
+      ['!=', 'mode', 'static'],
+      ['has', 'user_stroke'],
+      ['has', 'user_stroke-width']
+    ],
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
+    paint: {
+      'line-color': ['get', 'user_stroke'],
+      'line-width': ['get', 'user_stroke-width']
     }
   },
   {
@@ -310,7 +337,16 @@ function setStyleProperties(
           'fill',
           properties?.fill ? properties.fill : '#ff0040'
         )
-        // drawRef.current.setFeatureProperty(featureNode.id, 'stroke', '#ff0040')
+        drawRef.current.setFeatureProperty(
+          featureNode.id,
+          'stroke',
+          properties?.stroke ? properties.stroke : '#ff0040'
+        )
+        drawRef.current.setFeatureProperty(
+          featureNode.id,
+          'stroke-width',
+          properties['stroke-width'] ? Number(properties['stroke-width']) : 2
+        )
         drawRef.current.setFeatureProperty(
           featureNode.id,
           'fill-opacity',
