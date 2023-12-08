@@ -78,9 +78,9 @@ function PropertiesTable() {
               <TableCell className='p-1.5 h-6 border-r'>
                 <Input
                   className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
-                  defaultValue={row.value}
+                  value={row.value}
                   title={row.value}
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     onKeyValueUpdate(row.id, row.keyName, e.target.value)
                   }}
                 />
