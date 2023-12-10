@@ -2,13 +2,20 @@
 
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { useSelectedFeatures } from '@/hooks/use-selected-features'
 import { FeatureType } from '@/types'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { HexAlphaColorPicker } from 'react-colorful'
+import { useDebounce } from 'react-use'
 
 const generateStyleList = (
   feature: FeatureType
-): Array<{ keyName: string; value: any }> => {
+): Array<{ checked: boolean; keyName: string; value: any }> => {
   const properties = { ...feature.properties }
 
   switch (feature.geometry.type) {
@@ -16,14 +23,17 @@ const generateStyleList = (
     case 'MultiPoint':
       return [
         {
+          checked: !!properties.stroke,
           keyName: 'stroke',
-          value: 'rgba(175, 23, 144, 1)'
+          value: '#af1790'
         },
         {
+          checked: !!properties['stroke-width'],
           keyName: 'stroke-width',
           value: 1
         },
         {
+          checked: !!properties['stroke-opacity'],
           keyName: 'stroke-opacity',
           value: 0.7
         }
@@ -32,14 +42,17 @@ const generateStyleList = (
     case 'MultiLineString':
       return [
         {
+          checked: !!properties['stroke'],
           keyName: 'stroke',
-          value: 'rgba(175, 23, 144, 1)'
+          value: '#af1790'
         },
         {
+          checked: !!properties['stroke-width'],
           keyName: 'stroke-width',
           value: 1
         },
         {
+          checked: !!properties['stroke-opacity'],
           keyName: 'stroke-opacity',
           value: 0.7
         }
@@ -48,24 +61,29 @@ const generateStyleList = (
     case 'MultiPolygon':
       return [
         {
+          checked: !!properties['fill'],
           keyName: 'fill',
-          value: 'rgba(175, 23, 144, 1)'
+          value: '#af1790'
         },
         {
+          checked: !!properties['fill-opacity'],
           keyName: 'fill-opacity',
-          value: properties['fill-opacity'] || 0.2
+          value: properties['fill-opacity'] || 0.8
         },
         {
+          checked: !!properties['stroke'],
           keyName: 'stroke',
-          value: 'rgba(175, 23, 144, 1)'
+          value: '#af1790'
         },
         {
+          checked: !!properties['stroke-width'],
           keyName: 'stroke-width',
           value: 1
         },
         {
+          checked: !!properties['stroke-opacity'],
           keyName: 'stroke-opacity',
-          value: 0.7
+          value: 0.9
         }
       ]
     default:
@@ -73,42 +91,92 @@ const generateStyleList = (
   }
 }
 
+function ColorValue({
+  value,
+  onChange
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const [color, setColor] = useState(value)
+  useDebounce(() => onChange(color), 200, [color])
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <span>{value}</span>
+      </PopoverTrigger>
+      <PopoverContent className='w-60'>
+        <HexAlphaColorPicker color={color} onChange={setColor} />
+        <Input
+          className='mt-4 h-8'
+          value={color}
+          onChange={(e) => {
+            setColor(e.target.value)
+          }}
+        />
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function NumberValue({}) {
+  return <div></div>
+}
+
 function StyleSetting() {
-  const { topFeature, topFeaturePropertyList, updateTopFeature } =
-    useSelectedFeatures()
+  const { topFeature, updateTopFeature } = useSelectedFeatures()
 
-  console.log(topFeature, 222333)
+  const [styleList, setStyleList] = useState<
+    Array<{ checked: boolean; keyName: string; value: any }>
+  >([])
 
-  const styleList = useMemo(() => {
-    if (!topFeature) return []
-    return generateStyleList(topFeature)
-  }, [topFeature])
+  useEffect(() => {
+    if (!topFeature) return
+    const styles = generateStyleList(topFeature)
+    setStyleList(styles)
+  }, [])
+
+  useEffect(() => {
+    if (topFeature && topFeature.properties) {
+      const properties = { ...topFeature.properties }
+      styleList.forEach((style) => {
+        if (style.checked) {
+          properties[style.keyName] = style.value
+        } else {
+          delete properties[style.keyName]
+        }
+      })
+      updateTopFeature(properties)
+    }
+  }, [styleList])
 
   const handleStyleCheckedChange = (
     checked: boolean,
     keyName: string,
     value: any
   ) => {
-    console.log('style checked', keyName, value)
+    console.log('style checked', checked, keyName, value)
 
-    if (topFeature && topFeature.properties) {
-      const properties = { ...topFeature.properties }
-      if (checked) {
-        const newObj = { ...properties, [keyName]: value }
-        updateTopFeature(newObj)
-      } else {
-        delete properties[keyName]
-        updateTopFeature(properties)
+    const updatedStyleList = styleList.map((style) => {
+      if (style.keyName === keyName) {
+        return { ...style, checked: checked, value: value }
       }
-    }
+      return style
+    })
+
+    setStyleList(updatedStyleList)
   }
 
   const handleStyleChange = (keyName: string, value: any) => {
-    if (topFeature && topFeature.properties) {
-      const properties = { ...topFeature.properties }
-      const newObj = { ...properties, [keyName]: value }
-      updateTopFeature(newObj)
-    }
+    const updatedStyleList = styleList.map((style) => {
+      if (style.keyName === keyName) {
+        return { ...style, value: value }
+      }
+      return style
+    })
+
+    setStyleList(updatedStyleList)
   }
 
   return (
@@ -121,11 +189,7 @@ function StyleSetting() {
           <div className='w-1/2 flex flex-row items-center gap-2 border-r'>
             <Checkbox
               id={style.keyName}
-              checked={
-                !!topFeaturePropertyList.find(
-                  (prop) => prop.keyName === style.keyName
-                )
-              }
+              checked={style.checked}
               onCheckedChange={(checked) =>
                 handleStyleCheckedChange(
                   Boolean(checked),
@@ -139,10 +203,10 @@ function StyleSetting() {
             </label>
           </div>
           <div className='text-sm w-1/2 p-0.5 flex flex-row items-center'>
-            <Input
-              className='rounded-none h-6 p-0 border-0 w-full'
+            <ColorValue
               value={style.value}
-              onChange={(e) => handleStyleChange(style.keyName, e.target.value)}
+              onChange={(e) => handleStyleChange(style.keyName, e)}
+              // onChange={(e) => handleStyleChange(style.keyName, e)}
             />
           </div>
         </div>

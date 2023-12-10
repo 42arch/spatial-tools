@@ -11,7 +11,7 @@ function OperatePanel({ className }: OperatePanelProps) {
   return (
     <div className={cn(className, 'h-full px-1')}>
       <Tabs defaultValue='feature' className='w-full h-full'>
-        <TabsList className='w-full justify-evenly'>
+        <TabsList className='h-8 w-full justify-evenly'>
           <TabsTrigger value='feature' className='w-full'>
             Feature
           </TabsTrigger>
@@ -19,10 +19,10 @@ function OperatePanel({ className }: OperatePanelProps) {
             Table
           </TabsTrigger>
         </TabsList>
-        <TabsContent value='feature'>
+        <TabsContent value='feature' className='h-[calc(100%-32px)]'>
           <FeatureOperate />
         </TabsContent>
-        <TabsContent value='datatable'>
+        <TabsContent value='datatable' className='h-full'>
           <TableOperate />
         </TabsContent>
       </Tabs>
