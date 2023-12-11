@@ -10,6 +10,7 @@ import { useSelectedFeatures } from '@/hooks/use-selected-features'
 import { useFeatureStore } from '@/store'
 import PropertiesTable from './properties-table'
 import StyleSetting from './style-setting'
+import GeojsonEditor from './geojson-editor'
 
 function FeatureOperate() {
   const { selectedFeatures } = useSelectedFeatures()
@@ -36,7 +37,9 @@ function FeatureOperate() {
               </AccordionItem>
               <AccordionItem value='geojson'>
                 <AccordionTrigger className='text-sm'>Geojson</AccordionTrigger>
-                <AccordionContent>Geojson</AccordionContent>
+                <AccordionContent>
+                  <GeojsonEditor />
+                </AccordionContent>
               </AccordionItem>
               <AccordionItem value='export'>
                 <AccordionTrigger className='text-sm'>Export</AccordionTrigger>
