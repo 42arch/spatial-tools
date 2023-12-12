@@ -42,12 +42,22 @@ export const useSelectedFeatures = () => {
     }
   }
 
+  const updateSelectedFeature = (feature: FeatureType) => {
+    if (topFeature) {
+      const newFeature: FeatureType = {
+        ...feature
+      }
+      updateFeatureNodes([newFeature])
+    }
+  }
+
   return {
     selectedFeatureNodes,
     selectedFeatures,
     topFeature,
     topFeaturePropertyList,
     updateTopFeature,
+    updateSelectedFeature,
     getFeatureById
   }
 }

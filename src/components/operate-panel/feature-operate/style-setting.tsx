@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/popover'
 import { useSelectedFeatures } from '@/hooks/use-selected-features'
 import { FeatureType } from '@/types'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HexAlphaColorPicker } from 'react-colorful'
 import { useDebounce } from 'react-use'
 
