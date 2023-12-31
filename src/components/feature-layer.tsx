@@ -8,7 +8,8 @@ import { FeatureNodeMenu } from './feature-node-menu'
 
 const FeatureLayer = () => {
   const {
-    featureNodes,
+    featureGroups,
+    // featureNodes,
     selectedNodeIds,
     updateSelectedNodeIds,
     toggleFeatureNodeVisible
@@ -32,7 +33,16 @@ const FeatureLayer = () => {
 
   return (
     <div className='flex flex-col gap-1 h-full w-[200px]'>
-      {featureNodes.map((node, idx) => (
+      {featureGroups.map((group) => (
+        <div key={group.label}>
+          {group.data.map((node) => (
+            <div key={node.id} className=''>
+              <span>{node.data.geometry.type}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+      {/* {featureNodes.map((node, idx) => (
         <FeatureNodeMenu key={node.id}>
           <div
             onClick={(e: MouseEvent<HTMLDivElement>) =>
@@ -59,7 +69,7 @@ const FeatureLayer = () => {
             )}
           </div>
         </FeatureNodeMenu>
-      ))}
+      ))} */}
     </div>
   )
 }

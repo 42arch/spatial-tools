@@ -16,11 +16,17 @@ export type GeometryType =
 
 export type FeatureType = Feature<Geometry, GeoJsonProperties>
 
+export type FeatureGroup = {
+  // id: string
+  label: string
+  selected?: boolean
+  visible?: boolean
+  data: Array<FeatureNode>
+}
 export interface FeatureNode {
   id: string
   isGroup?: boolean
   visible?: boolean
   selected?: boolean
   data: FeatureType
-  children?: FeatureNode[]
 }

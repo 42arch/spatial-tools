@@ -6,7 +6,7 @@ import DrawControl from '@/components/map/draw-control'
 import BaseMap from '@/components/map/map'
 import OperatePanel from '@/components/operate-panel'
 import { TopMenu } from '@/components/top-menu'
-import { featureTreeToNodes } from '@/lib/feature'
+import { featureTreeToNodes, flattenFeatureGroupsToNodes } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
 import {
   DrawCreateEvent,
@@ -26,25 +26,27 @@ const DynamicDraw = dynamic(() => import('@/components/map/draw-control'), {
 
 export default function Home() {
   const {
-    featureNodes,
+    // featureNodes,
+    featureGroups,
+    updateFeatureGroups,
     selectedNodeIds,
-    updateFeatureNodes,
+    // updateFeatureNodes,
     updateSelectedNodeIds
   } = useFeatureStore((state) => state)
 
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
   const nodes = useMemo(() => {
-    return featureTreeToNodes(featureNodes)
-  }, [featureNodes])
+    return flattenFeatureGroupsToNodes(featureGroups)
+  }, [featureGroups])
 
   const onDrawFeatures = (e: DrawCreateEvent) => {
-    updateFeatureNodes(e.features)
+    updateFeatureGroups('default', e.features)
     // setDrawMode('simple_select')
   }
 
   const onUpdateFeatures = (e: DrawUpdateEvent) => {
-    updateFeatureNodes(e.features)
+    updateFeatureGroups(e.features)
   }
 
   const onSelectionChange = (e: DrawSelectionChangeEvent) => {

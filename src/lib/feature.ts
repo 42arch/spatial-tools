@@ -1,4 +1,4 @@
-import { FeatureNode, FeatureType } from '@/types'
+import { FeatureGroup, FeatureNode, FeatureType } from '@/types'
 
 export const toggleNodeVisible = (
   nodes: FeatureNode[],
@@ -31,6 +31,18 @@ export const featureTreeToNodes = (nodeTree: FeatureNode[]) => {
       }
     })
   findFeature(nodeTree)
+  return featureNodes
+}
+
+export const flattenFeatureGroupsToNodes = (
+  featureGroups: Array<FeatureGroup>
+) => {
+  const featureNodes: Array<FeatureNode> = []
+  featureGroups.forEach((group) => {
+    group.data.map((node) => {
+      featureNodes.push(node)
+    })
+  })
   return featureNodes
 }
 
