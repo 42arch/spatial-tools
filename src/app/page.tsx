@@ -50,7 +50,7 @@ export default function Home() {
   }
 
   return (
-    <main className='w-full h-full'>
+    <main className='h-full w-full'>
       <TopMenu className='h-10' />
       <div className='h-[calc(100%-40px)]'>
         <DrawToolbar
@@ -59,7 +59,7 @@ export default function Home() {
             setDrawMode(mode)
           }}
         />
-        <div className='relative h-[calc(100%-40px)] flex flex-row justify-between'>
+        <div className='relative flex h-[calc(100%-40px)] flex-row justify-between'>
           <FeaturesControlPanel />
           <div className='h-full w-[calc(100%-200px-360px)]'>
             <DynamicMap>
