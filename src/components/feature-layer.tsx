@@ -5,15 +5,14 @@ import clsx from 'clsx'
 import { Icon } from '@iconify/react'
 import { useFeatureStore } from '@/store'
 import { FeatureNodeMenu } from './feature-node-menu'
+import { useFeatures } from '@/hooks/use-features'
 
 const FeatureLayer = () => {
-  const {
-    featureGroups,
-    // featureNodes,
-    selectedNodeIds,
-    updateSelectedNodeIds,
-    toggleFeatureNodeVisible
-  } = useFeatureStore((state) => state)
+  const { selectedNodeIds, updateSelectedNodeIds } = useFeatureStore(
+    (state) => state
+  )
+
+  const { featureGroupList } = useFeatures()
 
   const onFeatureNodeClick = (nodeId: string, shiftKey: boolean) => {
     const isSelected = selectedNodeIds.includes(nodeId)
@@ -33,7 +32,7 @@ const FeatureLayer = () => {
 
   return (
     <div className='flex flex-col gap-1 h-full w-[200px]'>
-      {featureGroups.map((group) => (
+      {featureGroupList.map((group) => (
         <div key={group.label}>
           {group.data.map((node) => (
             <div key={node.id} className=''>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSelectedFeatures } from '@/hooks/use-selected-features'
+import { useFeatures } from '@/hooks/use-features'
 import { useEffect, useRef, useState } from 'react'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import { useDebounce } from 'react-use'
@@ -14,7 +14,7 @@ function GeojsonEditor() {
   const editorRef = useRef<any>()
   const wrapperRef = useRef<any>()
 
-  const { topFeature, updateSelectedFeature } = useSelectedFeatures()
+  const { topFeature, updateSelectedFeature } = useFeatures()
 
   const [code, setCode] = useState('')
 

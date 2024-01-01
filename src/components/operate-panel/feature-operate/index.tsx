@@ -5,13 +5,13 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useSelectedFeatures } from '@/hooks/use-selected-features'
+import { useFeatures } from '@/hooks/use-features'
 import PropertiesTable from './properties-table'
 import StyleSetting from './style-setting'
 import GeojsonEditor from './geojson-editor'
 
 function FeatureOperate() {
-  const { selectedFeatures } = useSelectedFeatures()
+  const { selectedFeatures } = useFeatures()
 
   return (
     <div className='h-full px-2'>

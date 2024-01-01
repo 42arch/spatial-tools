@@ -1,10 +1,18 @@
+import {
+  featureGroupMapToList,
+  flattenFeatureGroupsToNodes
+} from '@/lib/feature'
 import { useFeatureStore } from '@/store'
 import { FeatureType } from '@/types'
 import { useMemo } from 'react'
 
-export const useSelectedFeatures = () => {
-  const { selectedNodeIds, featureNodes, updateFeatureNodes } =
+export const useFeatures = () => {
+  const { selectedNodeIds, featureGroups, updateFeatureGroups } =
     useFeatureStore()
+
+  const featureGroupList = featureGroupMapToList(featureGroups)
+
+  const featureNodes = flattenFeatureGroupsToNodes(featureGroupList)
 
   const selectedFeatureNodes = useMemo(() => {
     return featureNodes.filter((node) => selectedNodeIds.includes(node.id))
@@ -38,7 +46,7 @@ export const useSelectedFeatures = () => {
         ...topFeature,
         properties
       }
-      updateFeatureNodes([newFeature])
+      updateFeatureGroups([newFeature])
     }
   }
 
@@ -47,7 +55,7 @@ export const useSelectedFeatures = () => {
       const newFeature: FeatureType = {
         ...feature
       }
-      updateFeatureNodes([newFeature])
+      updateFeatureGroups([newFeature])
     }
   }
 
@@ -55,6 +63,8 @@ export const useSelectedFeatures = () => {
     selectedFeatureNodes,
     selectedFeatures,
     topFeature,
+    featureGroupList,
+    featureNodes,
     topFeaturePropertyList,
     updateTopFeature,
     updateSelectedFeature,

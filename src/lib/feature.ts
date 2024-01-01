@@ -1,37 +1,57 @@
-import { FeatureGroup, FeatureNode, FeatureType } from '@/types'
+import {
+  FeatureGroup,
+  FeatureGroupMap,
+  FeatureNode,
+  FeatureType
+} from '@/types'
 
-export const toggleNodeVisible = (
-  nodes: FeatureNode[],
-  ids: string[]
-): FeatureNode[] => {
-  return nodes.map((node) => {
-    if (ids.includes(String(node.id))) {
-      return { ...node, visible: !node.visible }
-    } else if (node.children && node.children.length > 0) {
-      return {
-        ...node,
-        children: toggleNodeVisible(node.children, ids)
-      }
-    } else {
-      return node
+export const mergeFeatureNodes = (
+  oldNodes: Array<FeatureNode>,
+  newNodes: Array<FeatureNode>
+) => {
+  const updatedNodes = oldNodes.map((oldNode) => {
+    const newNode = newNodes.find((node) => node.id === oldNode.id)
+    if (newNode) {
+      return { ...oldNode, ...newNode }
     }
+    return oldNode
   })
+  const addedNodes = newNodes.filter(
+    (newNode) => !oldNodes.some((oldNode) => oldNode.id === newNode.id)
+  )
+
+  return [...updatedNodes, ...addedNodes]
 }
 
-export const featureTreeToNodes = (nodeTree: FeatureNode[]) => {
-  const featureNodes: FeatureNode[] = []
-  const findFeature = (nodes: FeatureNode[]) =>
-    nodes.forEach((node) => {
-      if (!node.isGroup) {
-        featureNodes.push(node)
-      } else {
-        if (node.children && node.children.length > 0) {
-          findFeature(node.children)
-        }
-      }
-    })
-  findFeature(nodeTree)
-  return featureNodes
+export const updateFeatureGroup = (
+  featureGroup: FeatureGroup | undefined,
+  features: Array<FeatureType>
+): FeatureGroup => {
+  const group: FeatureGroup = featureGroup
+    ? featureGroup
+    : { label: 'default', data: [] }
+
+  const newNodes: FeatureNode[] = features.map((feature) => ({
+    id: String(feature.id),
+    group: group.label,
+    data: feature,
+    visible: true,
+    selected: false
+  }))
+  const mergedNodes = group.data.map((oldNode) => {
+    const newNode = newNodes.find((newNode) => newNode.id === oldNode.id)
+    return newNode ? { ...oldNode, ...newNode } : oldNode
+  })
+  newNodes.forEach((newNode) => {
+    if (!group.data.find((oldNode) => oldNode.id === newNode.id)) {
+      mergedNodes.push(newNode)
+    }
+  })
+
+  return {
+    ...group,
+    data: mergedNodes
+  }
 }
 
 export const flattenFeatureGroupsToNodes = (
@@ -46,37 +66,6 @@ export const flattenFeatureGroupsToNodes = (
   return featureNodes
 }
 
-export const featureNodesToFeatures = (nodes: FeatureNode[]): FeatureType[] => {
-  const features: FeatureType[] = []
-  const findFeature = (nodes: FeatureNode[]) =>
-    nodes.forEach((node) => {
-      if (!node.isGroup && node.visible) {
-        features.push(node.data)
-      } else {
-        if (node.children && node.children.length > 0) {
-          findFeature(node.children)
-        }
-      }
-    })
-  findFeature(nodes)
-  return features
-}
-
-export const updateFeatureNodes = (
-  nodes: FeatureNode[],
-  targetId: string,
-  newData: Partial<FeatureNode>
-): FeatureNode[] => {
-  return nodes.map((node) => {
-    if (node.id === targetId) {
-      return { ...node, ...newData }
-    } else if (node.children && node.children.length > 0) {
-      return {
-        ...node,
-        children: updateFeatureNodes(node.children, targetId, newData)
-      }
-    } else {
-      return node
-    }
-  })
+export const featureGroupMapToList = (featureGroups: FeatureGroupMap) => {
+  return Object.values(featureGroups)
 }

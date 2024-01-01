@@ -2,11 +2,10 @@
 
 import { DrawToolbar } from '@/components/draw-toolbar'
 import FeatureLayer from '@/components/feature-layer'
-import DrawControl from '@/components/map/draw-control'
-import BaseMap from '@/components/map/map'
+import FeaturesControlPanel from '@/components/features-control-panel'
 import OperatePanel from '@/components/operate-panel'
 import { TopMenu } from '@/components/top-menu'
-import { featureTreeToNodes, flattenFeatureGroupsToNodes } from '@/lib/feature'
+import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
 import {
   DrawCreateEvent,
@@ -14,7 +13,7 @@ import {
   DrawUpdateEvent
 } from '@mapbox/mapbox-gl-draw'
 import dynamic from 'next/dynamic'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 const DynamicMap = dynamic(() => import('@/components/map/map'), {
   ssr: false
@@ -26,22 +25,19 @@ const DynamicDraw = dynamic(() => import('@/components/map/draw-control'), {
 
 export default function Home() {
   const {
-    // featureNodes,
-    featureGroups,
     updateFeatureGroups,
     selectedNodeIds,
     // updateFeatureNodes,
     updateSelectedNodeIds
   } = useFeatureStore((state) => state)
 
+  const { featureNodes } = useFeatures()
+
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
-  const nodes = useMemo(() => {
-    return flattenFeatureGroupsToNodes(featureGroups)
-  }, [featureGroups])
-
   const onDrawFeatures = (e: DrawCreateEvent) => {
-    updateFeatureGroups('default', e.features)
+    updateFeatureGroups(e.features)
+    // const featureNodes = updateFeatureGroups(currentGroupLabel, e.features)
     // setDrawMode('simple_select')
   }
 
@@ -65,11 +61,11 @@ export default function Home() {
           }}
         />
         <div className='relative h-[calc(100%-40px)] flex flex-row justify-between'>
-          <FeatureLayer />
+          <FeaturesControlPanel />
           <div className='h-full w-[calc(100%-200px-360px)]'>
             <DynamicMap>
               <DynamicDraw
-                featureNodes={nodes}
+                featureNodes={featureNodes}
                 selectedIds={selectedNodeIds}
                 mode={drawMode}
                 onDrawCreate={onDrawFeatures}

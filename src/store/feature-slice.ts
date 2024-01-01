@@ -1,107 +1,80 @@
-import { toggleNodeVisible } from '@/lib/feature'
-import { FeatureType, FeatureNode, FeatureGroup } from '@/types'
+import { mergeFeatureNodes } from '@/lib/feature'
+import {
+  FeatureType,
+  FeatureNode,
+  FeatureGroupMap,
+  FeatureGroup
+} from '@/types'
 import { StateCreator } from 'zustand'
 
+const DEFAULT_GROUP_LABEL = 'default'
+
 const initialFeatureState = {
-  featureGroup: [],
-  featureNodes: [],
+  currentGroupLabel: DEFAULT_GROUP_LABEL,
+  featureGroups: {
+    default: {
+      label: 'default',
+      data: []
+    }
+  },
   selectedNodeIds: []
   // selectedFeatureNodes: []
 }
 
 export interface FeatureSlice {
-  featureGroups: Array<FeatureGroup>
-  updateFeatureGroups: (label: string, feautreNodes: Array<FeatureNode>) => void
+  currentGroupLabel: string
+  setCurrentGroupLabel: (label: string) => void
+  featureGroups: FeatureGroupMap
+  updateFeatureGroups: (features: Array<FeatureType>) => void
+  addNewFeatureGroup: (label: string) => void
+  // featureGroupList: Array<FeatureGroup>
   // featureNodes: FeatureNode[]
   selectedNodeIds: string[]
   updateSelectedNodeIds: (ids: string[]) => void
   // updateFeatureNodes: (features: FeatureType[]) => void
-  toggleFeatureNodeVisible: (id: string) => void
+  // toggleFeatureNodeVisible: (id: string) => void
 }
 
 export const createFeatureSlice: StateCreator<
   FeatureSlice,
-  [],
-  [],
+  [['zustand/immer', never]],
+  [['zustand/immer', never]],
   FeatureSlice
 > = (set) => {
   return {
     ...initialFeatureState,
+    setCurrentGroupLabel: (label: string) =>
+      set(() => ({
+        currentGroupLabel: label
+      })),
     updateSelectedNodeIds: (ids: string[]) =>
       set((state) => ({
         selectedNodeIds: ids
       })),
-
-    updateFeatureGroups: (label: string, features: FeatureType[]) => {
+    addNewFeatureGroup(label: string) {
       set((state) => {
-        const oldGroup = state.featureGroups.find(
-          (group) => group.label === label
-        )
+        const newGroup: FeatureGroup = {
+          label: label,
+          data: []
+        }
+        state.featureGroups[label] = newGroup
+      })
+    },
+
+    updateFeatureGroups: (features: FeatureType[]) => {
+      set((state) => {
+        const oldNodes = state.featureGroups[state.currentGroupLabel].data
+
         const newNodes: FeatureNode[] = features.map((feature) => ({
           id: String(feature.id),
+          group: state.currentGroupLabel,
           data: feature,
           visible: true,
           selected: false
         }))
-        const newGroup: FeatureGroup = {
-          ...oldGroup,
-          data: newNodes
-        }
-        const mergedGroups: Array<FeatureGroup> = []
-
-        return { featureGroups: mergedGroups }
+        const mergedNodes = mergeFeatureNodes(oldNodes, newNodes)
+        state.featureGroups[state.currentGroupLabel].data = mergedNodes
       })
-
-      // set((state) => {
-      //   const oldNodes = state.featureNodes
-      //   const newNodes: FeatureNode[] = features.map((feature) => ({
-      //     id: String(feature.id),
-      //     data: feature,
-      //     visible: true,
-      //     selected: false
-      //   }))
-      //   const mergedNodes = oldNodes.map((oldNode) => {
-      //     const newNode = newNodes.find((newNode) => newNode.id === oldNode.id)
-      //     return newNode ? { ...oldNode, ...newNode } : oldNode
-      //   })
-      //   newNodes.forEach((newNode) => {
-      //     if (!oldNodes.find((oldNode) => oldNode.id === newNode.id)) {
-      //       mergedNodes.push(newNode)
-      //     }
-      //   })
-
-      //   return {
-      //     featureNodes: mergedNodes
-      //   }
-      // })
-    },
-    // updateFeatureNodes: (features: FeatureType[]) => {
-    //   set((state) => {
-    //     const oldNodes = state.featureNodes
-    //     const newNodes: FeatureNode[] = features.map((feature) => ({
-    //       id: String(feature.id),
-    //       data: feature,
-    //       visible: true,
-    //       selected: false
-    //     }))
-    //     const mergedNodes = oldNodes.map((oldNode) => {
-    //       const newNode = newNodes.find((newNode) => newNode.id === oldNode.id)
-    //       return newNode ? { ...oldNode, ...newNode } : oldNode
-    //     })
-    //     newNodes.forEach((newNode) => {
-    //       if (!oldNodes.find((oldNode) => oldNode.id === newNode.id)) {
-    //         mergedNodes.push(newNode)
-    //       }
-    //     })
-
-    //     return {
-    //       featureNodes: mergedNodes
-    //     }
-    //   })
-    // },
-    toggleFeatureNodeVisible: (id: string) =>
-      set((state) => ({
-        // featureNodes: toggleNodeVisible(state.featureNodes, [id])
-      }))
+    }
   }
 }

@@ -9,11 +9,11 @@ import {
 } from '@/components/ui/table'
 import { Icon } from '@iconify/react'
 import { Input } from '@/components/ui/input'
-import { useSelectedFeatures } from '@/hooks/use-selected-features'
+import { useFeatures } from '@/hooks/use-features'
 import { useRef, useState } from 'react'
 
 function PropertiesTable() {
-  const { topFeaturePropertyList, updateTopFeature } = useSelectedFeatures()
+  const { topFeaturePropertyList, updateTopFeature } = useFeatures()
 
   const [newRowOn, setNewRowOn] = useState<boolean>(false)
   const newKeyRef = useRef<HTMLInputElement>(null)

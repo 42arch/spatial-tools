@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { useSelectedFeatures } from '@/hooks/use-selected-features'
+import { useFeatures } from '@/hooks/use-features'
 import { FeatureType } from '@/types'
 import { useEffect, useState } from 'react'
 import { HexAlphaColorPicker } from 'react-colorful'
@@ -125,7 +125,7 @@ function NumberValue({}) {
 }
 
 function StyleSetting() {
-  const { topFeature, updateTopFeature } = useSelectedFeatures()
+  const { topFeature, updateTopFeature } = useFeatures()
 
   const [styleList, setStyleList] = useState<
     Array<{ checked: boolean; keyName: string; value: any }>
