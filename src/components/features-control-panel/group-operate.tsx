@@ -19,7 +19,7 @@ function GroupOperate({ onAddNew }: GroupOperateProps) {
   const [groupLabel, setGroupLabel] = useState<string>('')
 
   return (
-    <div className='w-full h-6 flex justify-between items-center px-2'>
+    <div className='flex h-6 w-full items-center justify-between px-2'>
       <div></div>
       <div>
         <Popover open={newPopoverOpen} onOpenChange={toggleNewPopover}>
@@ -31,7 +31,7 @@ function GroupOperate({ onAddNew }: GroupOperateProps) {
               xlinkTitle='Add new group'
             />
           </PopoverTrigger>
-          <PopoverContent className='text-sm flex p-2 gap-4'>
+          <PopoverContent className='flex gap-4 p-2 text-sm'>
             <Input
               className='h-6'
               value={groupLabel}

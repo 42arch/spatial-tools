@@ -454,8 +454,6 @@ const DrawControl = ({
 
       mapRef.current?.addControl(drawRef.current)
 
-      console.log('add control to map', mapRef.current)
-
       mapRef.current?.on('draw.create', (e: DrawCreateEvent) => {
         onDrawCreate && onDrawCreate(e)
       })
@@ -518,7 +516,7 @@ const DrawControl = ({
   }, [featureNodes])
 
   useEffect(() => {
-    // if (mapRef.current && drawRef.current) {
+    console.log(9999, selectedIds)
     if (selectedIds && selectedIds?.length > 0) {
       // should do nothing
     } else {

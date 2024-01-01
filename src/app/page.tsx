@@ -1,10 +1,9 @@
 'use client'
 
 import { DrawToolbar } from '@/components/draw-toolbar'
-import FeatureLayer from '@/components/feature-layer'
 import FeaturesControlPanel from '@/components/features-control-panel'
 import OperatePanel from '@/components/operate-panel'
-import { TopMenu } from '@/components/top-menu'
+import TopMenu from '@/components/top-menu'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
 import {
@@ -24,14 +23,9 @@ const DynamicDraw = dynamic(() => import('@/components/map/draw-control'), {
 })
 
 export default function Home() {
-  const {
-    updateFeatureGroups,
-    selectedNodeIds,
-    // updateFeatureNodes,
-    updateSelectedNodeIds
-  } = useFeatureStore((state) => state)
+  const { updateFeatureGroups } = useFeatureStore((state) => state)
 
-  const { featureNodes } = useFeatures()
+  const { featureNodes, selectedFeatureNodes } = useFeatures()
 
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
@@ -46,7 +40,7 @@ export default function Home() {
 
   const onSelectionChange = (e: DrawSelectionChangeEvent) => {
     const ids = e.features.map((feature) => String(feature.id))
-    updateSelectedNodeIds(ids)
+    // updateSelectedNodeIds(ids)
   }
 
   return (
@@ -65,7 +59,7 @@ export default function Home() {
             <DynamicMap>
               <DynamicDraw
                 featureNodes={featureNodes}
-                selectedIds={selectedNodeIds}
+                selectedIds={selectedFeatureNodes.map((n) => n.id)}
                 mode={drawMode}
                 onDrawCreate={onDrawFeatures}
                 onDrawUpdate={onUpdateFeatures}

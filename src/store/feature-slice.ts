@@ -1,5 +1,4 @@
 import { nanoid } from 'nanoid'
-import { mergeFeatureNodes } from '@/lib/feature'
 import {
   FeatureType,
   FeatureNode,
@@ -15,10 +14,11 @@ const initialFeatureState = {
     default: {
       id: 'default',
       label: 'default',
-      data: []
+      data: {}
     }
   },
-  selectedNodeIds: []
+  selectedFeatureNodeIds: []
+  // invisibleNodeIds: []
   // selectedFeatureNodes: []
 }
 
@@ -30,10 +30,15 @@ export interface FeatureSlice {
   addNewFeatureGroup: (label: string) => void
   // featureGroupList: Array<FeatureGroup>
   // featureNodes: FeatureNode[]
-  selectedNodeIds: string[]
-  updateSelectedNodeIds: (ids: string[]) => void
+  selectedFeatureNodeIds: Array<string>
+  // invisibleNodeIds: Array<string>
+  // selectedNodeIds: Array<string>
+  // updateSelectedNodeIds: (ids: Array<string>, isAppend: boolean) => void
+  // updateInvisibleNodeIds: (ids: Array<string>, isAppend: boolean) => void
   // updateFeatureNodes: (features: FeatureType[]) => void
-  // toggleFeatureNodeVisible: (id: string) => void
+  toggleFeatureNodesSelected: (groupId: string, nodeIds: Array<string>) => void
+  resetFeatureNodesSelected: () => void
+  toggleFeatureNodeVisible: (groupId: string, nodeId: string) => void
 }
 
 export const createFeatureSlice: StateCreator<
@@ -48,16 +53,46 @@ export const createFeatureSlice: StateCreator<
       set(() => ({
         currentGroupId: id
       })),
-    updateSelectedNodeIds: (ids: string[]) =>
-      set((state) => ({
-        selectedNodeIds: ids
-      })),
+
+    toggleFeatureNodesSelected(groupId: string, ids: Array<string>) {
+      set((state) => {
+        ids.forEach((id) => {
+          state.featureGroups[groupId].data[id].selected =
+            !state.featureGroups[groupId].data[id].selected
+
+          if (state.featureGroups[groupId].data[id].selected) {
+            state.selectedFeatureNodeIds.push(id)
+          }
+        })
+      })
+    },
+
+    resetFeatureNodesSelected() {
+      set((state) => {
+        const groupIds = Object.keys(state.featureGroups)
+        state.selectedFeatureNodeIds.forEach((id) => {
+          groupIds.forEach((groupId) => {
+            state.featureGroups[groupId].data[id].selected = false
+          })
+        })
+
+        state.selectedFeatureNodeIds = []
+      })
+    },
+
+    toggleFeatureNodeVisible(groupId: string, id: string) {
+      set((state) => {
+        state.featureGroups[groupId].data[id].visible =
+          !state.featureGroups[groupId].data[id].visible
+      })
+    },
+
     addNewFeatureGroup(label: string) {
       set((state) => {
         const newGroup: FeatureGroup = {
           id: nanoid(),
           label: label,
-          data: []
+          data: {}
         }
         state.featureGroups[label] = newGroup
       })
@@ -65,17 +100,30 @@ export const createFeatureSlice: StateCreator<
 
     updateFeatureGroups: (features: FeatureType[]) => {
       set((state) => {
-        const oldNodes = state.featureGroups[state.currentGroupId].data
+        features.forEach((feature) => {
+          if (feature.id) {
+            const featureNode = {
+              id: String(feature.id),
+              groupId: state.currentGroupId,
+              data: feature,
+              visible: true,
+              selected: false
+            }
+            state.featureGroups[state.currentGroupId].data[feature.id] =
+              featureNode
+          }
+        })
 
-        const newNodes: FeatureNode[] = features.map((feature) => ({
-          id: String(feature.id),
-          groupId: state.currentGroupId,
-          data: feature,
-          visible: true,
-          selected: false
-        }))
-        const mergedNodes = mergeFeatureNodes(oldNodes, newNodes)
-        state.featureGroups[state.currentGroupId].data = mergedNodes
+        // const oldNodes = state.featureGroups[state.currentGroupId].data
+        // const newNodes: FeatureNode[] = features.map((feature) => ({
+        //   id: String(feature.id),
+        //   groupId: state.currentGroupId,
+        //   data: feature,
+        //   visible: true,
+        //   selected: false
+        // }))
+        // const mergedNodes = mergeFeatureNodes(oldNodes, newNodes)
+        // state.featureGroups[state.currentGroupId].data = mergedNodes
       })
     }
   }

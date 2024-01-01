@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
 import GroupFolder from './group-folder'
@@ -10,49 +11,60 @@ interface FeaturesControlPanelProps {
 
 function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
   const {
-    selectedNodeIds,
-    updateSelectedNodeIds,
     currentGroupId,
     setCurrentGroupId,
-    addNewFeatureGroup
+    addNewFeatureGroup,
+    toggleFeatureNodeVisible,
+    toggleFeatureNodesSelected,
+    resetFeatureNodesSelected
   } = useFeatureStore((state) => state)
 
-  const { featureGroupList } = useFeatures()
+  const { featureTree } = useFeatures()
 
-  const onFeatureNodeClick = (nodeId: string, shiftKey: boolean) => {
-    const isSelected = selectedNodeIds.includes(nodeId)
+  const onIsSelectedChange = (
+    groupId: string,
+    nodeId: string,
+    shiftKey: boolean
+  ) => {
     if (shiftKey) {
-      const newSelectedNodeIds = isSelected
-        ? selectedNodeIds.filter((id) => id !== nodeId)
-        : [...selectedNodeIds, nodeId]
-      updateSelectedNodeIds(newSelectedNodeIds)
+      toggleFeatureNodesSelected(groupId, [nodeId])
     } else {
-      if (isSelected) {
-        updateSelectedNodeIds([])
-      } else {
-        updateSelectedNodeIds([nodeId])
-      }
+      resetFeatureNodesSelected()
+      toggleFeatureNodesSelected(groupId, [nodeId])
     }
   }
 
+  console.log('wtf', featureTree)
+
   return (
-    <div className='flex flex-col p-2 h-full w-[200px]'>
+    <div className='flex h-full w-[200px] flex-col p-2'>
       <GroupOperate
         onAddNew={(label) => {
           addNewFeatureGroup(label)
         }}
       />
-      {featureGroupList.map((featureGroup) => (
+      {featureTree.map((group) => (
         <GroupFolder
-          key={featureGroup.label}
-          label={featureGroup.label}
-          isEditing={featureGroup.label === currentGroupId}
+          key={group.label}
+          label={group.label}
+          isEditing={group.label === currentGroupId}
           onClick={() => {
-            setCurrentGroupId(featureGroup.label)
+            setCurrentGroupId(group.label)
           }}
         >
-          {featureGroup.data.map((node) => (
-            <FeatureNode key={node.id} data={node} />
+          {group.data.map((node) => (
+            <FeatureNode
+              key={node.id}
+              data={node}
+              isSelected={node.selected}
+              isVisible={node.visible}
+              onIsVisibleChange={() => {
+                toggleFeatureNodeVisible(group.id, node.id)
+              }}
+              onIsSelectedChange={(e: MouseEvent<HTMLDivElement>) => {
+                onIsSelectedChange(group.id, node.id, e.shiftKey)
+              }}
+            />
           ))}
         </GroupFolder>
       ))}

@@ -23,7 +23,7 @@ function GroupFolder({
   return (
     <div className='w-full'>
       <div
-        className='w-full flex justify-between items-center px-2 h-8  cursor-pointer'
+        className='flex h-8 w-full cursor-pointer items-center justify-between  px-2'
         onClick={onClick}
       >
         <span className='' title={label}>
@@ -38,7 +38,7 @@ function GroupFolder({
           />
         </div>
       </div>
-      {isOpen && <div className='mx-2'>{children}</div>}
+      {isOpen && <>{children}</>}
     </div>
   )
 }

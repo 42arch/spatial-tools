@@ -6,23 +6,20 @@ import {
   MenubarCheckboxItem,
   MenubarContent,
   MenubarItem,
-  MenubarLabel,
   MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
   MenubarSeparator,
   MenubarShortcut,
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger
-} from './ui/menubar'
+} from '@/components/ui/menubar'
 
 interface TopMemuProps {
   className?: string
 }
 
-export function TopMenu({ className }: TopMemuProps) {
+function TopMenu({ className }: TopMemuProps) {
   return (
     <Menubar
       className={cn(
@@ -139,3 +136,5 @@ export function TopMenu({ className }: TopMemuProps) {
     </Menubar>
   )
 }
+
+export default TopMenu

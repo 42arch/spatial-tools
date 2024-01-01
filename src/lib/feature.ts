@@ -1,9 +1,4 @@
-import {
-  FeatureGroup,
-  FeatureGroupMap,
-  FeatureNode,
-  FeatureType
-} from '@/types'
+import { FeatureGroup, FeatureGroupMap, FeatureNode } from '@/types'
 
 export const mergeFeatureNodes = (
   oldNodes: Array<FeatureNode>,
@@ -23,49 +18,58 @@ export const mergeFeatureNodes = (
   return [...updatedNodes, ...addedNodes]
 }
 
-export const updateFeatureGroup = (
-  featureGroup: FeatureGroup | undefined,
-  features: Array<FeatureType>
-): FeatureGroup => {
-  const group: FeatureGroup = featureGroup
-    ? featureGroup
-    : { label: 'default', data: [] }
-
-  const newNodes: FeatureNode[] = features.map((feature) => ({
-    id: String(feature.id),
-    group: group.label,
-    data: feature,
-    visible: true,
-    selected: false
-  }))
-  const mergedNodes = group.data.map((oldNode) => {
-    const newNode = newNodes.find((newNode) => newNode.id === oldNode.id)
-    return newNode ? { ...oldNode, ...newNode } : oldNode
-  })
-  newNodes.forEach((newNode) => {
-    if (!group.data.find((oldNode) => oldNode.id === newNode.id)) {
-      mergedNodes.push(newNode)
-    }
-  })
-
-  return {
-    ...group,
-    data: mergedNodes
-  }
-}
-
-export const flattenFeatureGroupsToNodes = (
-  featureGroups: Array<FeatureGroup>
-) => {
+export const flattenFeatureGroupsToNodes = (featureGroups: FeatureGroupMap) => {
+  const featureGroupList = Object.values(featureGroups)
   const featureNodes: Array<FeatureNode> = []
-  featureGroups.forEach((group) => {
-    group.data.map((node) => {
+  featureGroupList.forEach((group) => {
+    const nodeList = Object.values(group.data)
+    nodeList.map((node) => {
       featureNodes.push(node)
     })
   })
   return featureNodes
 }
 
-export const featureGroupMapToList = (featureGroups: FeatureGroupMap) => {
-  return Object.values(featureGroups)
+type FeatureListGroup = {
+  [K in keyof FeatureGroup]: K extends 'data'
+    ? Array<FeatureNode>
+    : FeatureGroup[K]
+}
+
+export const convertFeatureGroupsToTree = (featureGroups: FeatureGroupMap) => {
+  const newGroupList: Array<FeatureListGroup> = []
+  const featureGroupList = Object.values(featureGroups)
+  featureGroupList.forEach((group) => {
+    const newGroup: FeatureListGroup = {
+      ...group,
+      data: []
+    }
+    const nodeList = Object.values(group.data)
+    nodeList.map((node) => {
+      newGroup.data.push(node)
+    })
+    newGroupList.push(newGroup)
+  })
+  return newGroupList
+}
+
+export const getSelectedNodesFromFeatureTree = (
+  featureTree: Array<FeatureListGroup>
+) => {
+  const selectedNodes: Array<FeatureNode> = []
+  featureTree.forEach((group) => {
+    group.data.forEach((node) => {
+      if (node.selected) {
+        selectedNodes.push(node)
+      }
+    })
+  })
+  return selectedNodes
+}
+
+export const getSelectedNodeIdsFromFeatureTree = (
+  featureTree: Array<FeatureListGroup>
+) => {
+  const selectedNodes = getSelectedNodesFromFeatureTree(featureTree)
+  return selectedNodes.map((node) => node.id)
 }
