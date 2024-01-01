@@ -37,7 +37,6 @@ export default function Home() {
 
   const onDrawFeatures = (e: DrawCreateEvent) => {
     updateFeatureGroups(e.features)
-    // const featureNodes = updateFeatureGroups(currentGroupLabel, e.features)
     // setDrawMode('simple_select')
   }
 

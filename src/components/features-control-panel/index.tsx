@@ -12,8 +12,8 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
   const {
     selectedNodeIds,
     updateSelectedNodeIds,
-    currentGroupLabel,
-    setCurrentGroupLabel,
+    currentGroupId,
+    setCurrentGroupId,
     addNewFeatureGroup
   } = useFeatureStore((state) => state)
 
@@ -46,9 +46,9 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
         <GroupFolder
           key={featureGroup.label}
           label={featureGroup.label}
-          isEditing={featureGroup.label === currentGroupLabel}
+          isEditing={featureGroup.label === currentGroupId}
           onClick={() => {
-            setCurrentGroupLabel(featureGroup.label)
+            setCurrentGroupId(featureGroup.label)
           }}
         >
           {featureGroup.data.map((node) => (

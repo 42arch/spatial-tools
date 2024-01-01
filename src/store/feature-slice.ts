@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { mergeFeatureNodes } from '@/lib/feature'
 import {
   FeatureType,
@@ -8,11 +9,11 @@ import {
 import { StateCreator } from 'zustand'
 
 const DEFAULT_GROUP_LABEL = 'default'
-
 const initialFeatureState = {
-  currentGroupLabel: DEFAULT_GROUP_LABEL,
+  currentGroupId: DEFAULT_GROUP_LABEL,
   featureGroups: {
     default: {
+      id: 'default',
       label: 'default',
       data: []
     }
@@ -22,8 +23,8 @@ const initialFeatureState = {
 }
 
 export interface FeatureSlice {
-  currentGroupLabel: string
-  setCurrentGroupLabel: (label: string) => void
+  currentGroupId: string
+  setCurrentGroupId: (id: string) => void
   featureGroups: FeatureGroupMap
   updateFeatureGroups: (features: Array<FeatureType>) => void
   addNewFeatureGroup: (label: string) => void
@@ -43,9 +44,9 @@ export const createFeatureSlice: StateCreator<
 > = (set) => {
   return {
     ...initialFeatureState,
-    setCurrentGroupLabel: (label: string) =>
+    setCurrentGroupId: (id: string) =>
       set(() => ({
-        currentGroupLabel: label
+        currentGroupId: id
       })),
     updateSelectedNodeIds: (ids: string[]) =>
       set((state) => ({
@@ -54,6 +55,7 @@ export const createFeatureSlice: StateCreator<
     addNewFeatureGroup(label: string) {
       set((state) => {
         const newGroup: FeatureGroup = {
+          id: nanoid(),
           label: label,
           data: []
         }
@@ -63,17 +65,17 @@ export const createFeatureSlice: StateCreator<
 
     updateFeatureGroups: (features: FeatureType[]) => {
       set((state) => {
-        const oldNodes = state.featureGroups[state.currentGroupLabel].data
+        const oldNodes = state.featureGroups[state.currentGroupId].data
 
         const newNodes: FeatureNode[] = features.map((feature) => ({
           id: String(feature.id),
-          group: state.currentGroupLabel,
+          groupId: state.currentGroupId,
           data: feature,
           visible: true,
           selected: false
         }))
         const mergedNodes = mergeFeatureNodes(oldNodes, newNodes)
-        state.featureGroups[state.currentGroupLabel].data = mergedNodes
+        state.featureGroups[state.currentGroupId].data = mergedNodes
       })
     }
   }
