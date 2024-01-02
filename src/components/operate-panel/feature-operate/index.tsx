@@ -11,14 +11,14 @@ import StyleSetting from './style-setting'
 import GeojsonEditor from './geojson-editor'
 
 function FeatureOperate() {
-  const { selectedFeatures } = useFeatures()
+  const { selectedFeatureNodeIds } = useFeatures()
 
   return (
     <div className='h-full px-2'>
-      {selectedFeatures.length > 0 ? (
+      {selectedFeatureNodeIds.length ? (
         <>
           <div className='h-2/5'>
-            <span className='text-sm inline-block pb-2'>Properties</span>
+            <span className='inline-block pb-2 text-sm'>Properties</span>
             <ScrollArea className='h-[calc(100%-28px)]'>
               <PropertiesTable />
             </ScrollArea>

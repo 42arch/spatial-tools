@@ -24,7 +24,7 @@ function FeatureNode({
     <div
       key={data.id}
       className={cn(
-        'flex cursor-pointer items-center justify-between px-2 py-1 text-xs hover:bg-zinc-200',
+        'flex cursor-pointer select-none items-center justify-between px-2 py-1 text-xs hover:bg-zinc-200',
         isSelected ? 'bg-zinc-200' : 'bg-zinc-100'
       )}
       onClick={onSelectClick}

@@ -380,13 +380,6 @@ function setStyleProperties(
         break
       case 'Point':
       case 'MultiPoint':
-        console.log(
-          44444,
-          drawRef.current,
-          featureNode.id,
-          drawRef.current.get(featureNode.id)
-        )
-
         drawRef.current?.setFeatureProperty(
           featureNode.id,
           'stroke',
@@ -501,6 +494,8 @@ const DrawControl = ({
         .map((n) => n.id)
       featureNodes?.forEach((node) => {
         if (!node.visible) {
+          console.log(221112222, node, drawFeatures)
+
           setStyleProperties(drawRef, node)
           drawRef.current.delete(node.id)
         } else {

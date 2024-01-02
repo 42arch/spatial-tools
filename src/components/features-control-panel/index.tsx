@@ -1,4 +1,5 @@
 import { MouseEvent } from 'react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
 import GroupFolder from './group-folder'
@@ -21,19 +22,6 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
 
   const { featureTree } = useFeatures()
 
-  // const onIsSelectedChange = (
-  //   groupId: string,
-  //   nodeId: string,
-  //   shiftKey: boolean
-  // ) => {
-  //   if (shiftKey) {
-  //     toggleFeatureNodesSelected(groupId, [nodeId])
-  //   } else {
-  //     resetFeatureNodesSelected()
-  //     toggleFeatureNodesSelected(groupId, [nodeId])
-  //   }
-  // }
-
   const handleSelectClick = (nodeId: string, shiftKey: boolean) => {
     const isSelected = selectedFeatureNodeIds.includes(nodeId)
     if (shiftKey) {
@@ -50,8 +38,6 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
     }
   }
 
-  console.log('wtf', featureTree)
-
   return (
     <div className='flex h-full w-[200px] flex-col p-2'>
       <GroupOperate
@@ -59,32 +45,37 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
           addNewFeatureGroup(label)
         }}
       />
-      {featureTree.map((group) => (
-        <GroupFolder
-          key={group.label}
-          label={group.label}
-          isEditing={group.label === currentGroupId}
-          onClick={() => {
-            setCurrentGroupId(group.label)
-          }}
-        >
-          {group.data.map((node) => (
-            <FeatureNode
-              key={node.id}
-              data={node}
-              isSelected={selectedFeatureNodeIds.includes(node.id)}
-              isVisible={node.visible}
-              onIsVisibleChange={() => {
-                toggleFeatureNodeVisible(group.id, node.id)
-              }}
-              onSelectClick={(e: MouseEvent<HTMLDivElement>) => {
-                handleSelectClick(node.id, e.shiftKey)
-              }}
-            />
-          ))}
-        </GroupFolder>
-      ))}
+      <ScrollArea className='h-[calc(100%-32px)]'>
+        {featureTree.map((group) => (
+          <GroupFolder
+            key={group.label}
+            label={group.label}
+            isEditing={group.label === currentGroupId}
+            onClick={() => {
+              setCurrentGroupId(group.label)
+            }}
+          >
+            {group.data.map((node) => (
+              <FeatureNode
+                key={node.id}
+                data={node}
+                isSelected={selectedFeatureNodeIds.includes(node.id)}
+                isVisible={node.visible}
+                onIsVisibleChange={() => {
+                  toggleFeatureNodeVisible(group.id, node.id)
+                }}
+                onSelectClick={(e: MouseEvent<HTMLDivElement>) => {
+                  handleSelectClick(node.id, e.shiftKey)
+                }}
+              />
+            ))}
+          </GroupFolder>
+        ))}
+      </ScrollArea>
     </div>
+    // <div className='flex h-full w-[200px] flex-col p-2'>
+
+    // </div>
   )
 }
 

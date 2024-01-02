@@ -180,13 +180,13 @@ function StyleSetting() {
   }
 
   return (
-    <div className='flex flex-col text-sm border-b'>
+    <div className='flex flex-col border-b text-sm'>
       {styleList.map((style) => (
         <div
           key={style.keyName}
-          className='flex flex-row h-8 justify-between border-t'
+          className='flex h-8 flex-row justify-between border-t'
         >
-          <div className='w-1/2 flex flex-row items-center gap-2 border-r'>
+          <div className='flex w-1/2 flex-row items-center gap-2 border-r'>
             <Checkbox
               id={style.keyName}
               checked={style.checked}
@@ -202,7 +202,7 @@ function StyleSetting() {
               {style.keyName}
             </label>
           </div>
-          <div className='text-sm w-1/2 p-0.5 flex flex-row items-center'>
+          <div className='flex w-1/2 flex-row items-center p-0.5 text-sm'>
             <ColorValue
               value={style.value}
               onChange={(e) => handleStyleChange(style.keyName, e)}

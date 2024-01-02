@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '../ui/button'
 import { useState } from 'react'
 import { useToggle } from 'react-use'
+import DataImportModal from '../data-import-modal'
 
 interface GroupOperateProps {
   onAddNew: (label: string) => void
@@ -19,17 +20,19 @@ function GroupOperate({ onAddNew }: GroupOperateProps) {
   const [groupLabel, setGroupLabel] = useState<string>('')
 
   return (
-    <div className='flex h-6 w-full items-center justify-between px-2'>
+    <div className='flex h-8 w-full items-center justify-between px-2'>
       <div></div>
-      <div>
+      <div className='flex items-center gap-4'>
         <Popover open={newPopoverOpen} onOpenChange={toggleNewPopover}>
           <PopoverTrigger>
-            <Icon
-              className='cursor-pointer'
-              width={18}
-              icon={folderPlus}
-              xlinkTitle='Add new group'
-            />
+            <Button variant='outline' size='icon' className='h-7 w-7 text-sm'>
+              <Icon
+                className='cursor-pointer'
+                width={18}
+                icon={folderPlus}
+                xlinkTitle='Add new group'
+              />
+            </Button>
           </PopoverTrigger>
           <PopoverContent className='flex gap-4 p-2 text-sm'>
             <Input
@@ -50,6 +53,12 @@ function GroupOperate({ onAddNew }: GroupOperateProps) {
             </Button>
           </PopoverContent>
         </Popover>
+
+        {/* <DataImportModal>
+          <Button variant='outline' className='h-8 text-sm'>
+            Import
+          </Button>
+        </DataImportModal> */}
       </div>
     </div>
   )

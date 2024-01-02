@@ -1,19 +1,14 @@
-import { nanoid } from 'nanoid'
-import {
-  FeatureType,
-  FeatureNode,
-  FeatureGroupMap,
-  FeatureGroup
-} from '@/types'
 import { StateCreator } from 'zustand'
+import { nanoid } from 'nanoid'
+import { FeatureType, FeatureGroupMap, FeatureGroup } from '@/types'
 
-const DEFAULT_GROUP_LABEL = 'default'
+const DEFAULT_GROUP_LABEL = 'Untitled'
 const initialFeatureState = {
   currentGroupId: DEFAULT_GROUP_LABEL,
   featureGroups: {
-    default: {
-      id: 'default',
-      label: 'default',
+    [DEFAULT_GROUP_LABEL]: {
+      id: DEFAULT_GROUP_LABEL,
+      label: DEFAULT_GROUP_LABEL,
       data: {}
     }
   },
@@ -24,7 +19,7 @@ export interface FeatureSlice {
   currentGroupId: string
   setCurrentGroupId: (id: string) => void
   featureGroups: FeatureGroupMap
-  setFeatureGroups: (features: Array<FeatureType>) => void
+  setFeatureGroups: (features: Array<FeatureType>, groupLabel?: string) => void
   addNewFeatureGroup: (label: string) => void
   selectedFeatureNodeIds: Array<string>
   setSelectedFeatureNodeIds: (ids: Array<string>) => void
@@ -91,36 +86,34 @@ export const createFeatureSlice: StateCreator<
           label: label,
           data: {}
         }
-        state.featureGroups[label] = newGroup
+        state.featureGroups[newGroup.id] = newGroup
       })
     },
 
-    setFeatureGroups: (features: FeatureType[]) => {
+    setFeatureGroups: (features: FeatureType[], groupLabel?: string) => {
       set((state) => {
-        features.forEach((feature) => {
-          if (feature.id) {
-            const featureNode = {
-              id: String(feature.id),
-              groupId: state.currentGroupId,
-              data: feature,
-              visible: true,
-              selected: false
-            }
-            state.featureGroups[state.currentGroupId].data[feature.id] =
-              featureNode
+        let groupId = state.currentGroupId
+        if (groupLabel) {
+          const newGroup: FeatureGroup = {
+            id: nanoid(),
+            label: groupLabel,
+            data: {}
           }
+          state.featureGroups[newGroup.id] = newGroup
+          groupId = newGroup.id
+        }
+        features.forEach((feature) => {
+          const featureId = feature.id ? String(feature.id) : nanoid()
+          feature.id = featureId
+          const featureNode = {
+            id: featureId,
+            groupId: state.currentGroupId,
+            data: feature,
+            visible: true,
+            selected: false
+          }
+          state.featureGroups[groupId].data[featureId] = featureNode
         })
-
-        // const oldNodes = state.featureGroups[state.currentGroupId].data
-        // const newNodes: FeatureNode[] = features.map((feature) => ({
-        //   id: String(feature.id),
-        //   groupId: state.currentGroupId,
-        //   data: feature,
-        //   visible: true,
-        //   selected: false
-        // }))
-        // const mergedNodes = mergeFeatureNodes(oldNodes, newNodes)
-        // state.featureGroups[state.currentGroupId].data = mergedNodes
       })
     }
   }

@@ -81,10 +81,10 @@ function PropertiesTable() {
     <Table className='w-full'>
       <TableHeader>
         <TableRow className='border-t'>
-          <TableHead className='h-6 p-1.5 text-sm border-r w-[120px]'>
+          <TableHead className='h-6 w-[120px] border-r p-1.5 text-sm'>
             key
           </TableHead>
-          <TableHead className='h-6 p-1.5 text-sm border-r w-[120px]'>
+          <TableHead className='h-6 w-[120px] border-r p-1.5 text-sm'>
             value
           </TableHead>
         </TableRow>
@@ -93,9 +93,9 @@ function PropertiesTable() {
         {topFeaturePropertyList.map((row, idx) => {
           return (
             <TableRow key={idx} className=''>
-              <TableCell className='p-0.5 h-6 border-r'>
+              <TableCell className='h-6 border-r p-0.5'>
                 <Input
-                  className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
+                  className='h-6 w-full rounded-none border-0 p-0 focus:ring-slate-800 focus-visible:ring-slate-800'
                   defaultValue={row.keyName}
                   title={row.keyName}
                   onBlur={(e) => {
@@ -103,9 +103,9 @@ function PropertiesTable() {
                   }}
                 />
               </TableCell>
-              <TableCell className='p-1.5 h-6 border-r'>
+              <TableCell className='h-6 border-r p-1.5'>
                 <Input
-                  className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
+                  className='h-6 w-full rounded-none border-0 p-0 focus:ring-slate-800 focus-visible:ring-slate-800'
                   value={row.value}
                   title={row.value}
                   onChange={(e) => {
@@ -118,16 +118,16 @@ function PropertiesTable() {
         })}
         {newRowOn && (
           <TableRow>
-            <TableCell className='p-0.5 h-6 border-r'>
+            <TableCell className='h-6 border-r p-0.5'>
               <Input
-                className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
+                className='h-6 w-full rounded-none border-0 p-0 focus:ring-slate-800 focus-visible:ring-slate-800'
                 ref={newKeyRef}
                 onBlur={handleNewKeyValueUpdate}
               />
             </TableCell>
-            <TableCell className='p-1.5 h-6 border-r'>
+            <TableCell className='h-6 border-r p-1.5'>
               <Input
-                className='rounded-none focus:ring-slate-800 focus-visible:ring-slate-800 h-6 p-0 border-0 w-full'
+                className='h-6 w-full rounded-none border-0 p-0 focus:ring-slate-800 focus-visible:ring-slate-800'
                 ref={newValueRef}
                 onBlur={handleNewKeyValueUpdate}
               />
@@ -139,7 +139,7 @@ function PropertiesTable() {
         <TableRow>
           <TableCell colSpan={3} className='p-1.5'>
             <button
-              className='flex items-center justify-center gap-2 w-full h-full'
+              className='flex h-full w-full items-center justify-center gap-2'
               onClick={addNewKeyValue}
             >
               <Icon icon='ph:plus' />

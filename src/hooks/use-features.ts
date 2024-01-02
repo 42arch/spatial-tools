@@ -1,7 +1,6 @@
 import {
   convertFeatureGroupsToTree,
   flattenFeatureGroupsToNodes,
-  getSelectedNodeIdsFromFeatureTree,
   getSelectedNodesFromFeatureTree
 } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
@@ -9,17 +8,14 @@ import { FeatureType } from '@/types'
 import { useMemo } from 'react'
 
 export const useFeatures = () => {
-  const { featureGroups, setFeatureGroups } = useFeatureStore()
+  const { featureGroups, setFeatureGroups, selectedFeatureNodeIds } =
+    useFeatureStore()
 
   const featureNodes = flattenFeatureGroupsToNodes(featureGroups)
 
   const featureTree = convertFeatureGroupsToTree(featureGroups)
 
-  // const selectedIds
-
   const selectedFeatureNodes = getSelectedNodesFromFeatureTree(featureTree)
-
-  const selectedFeatudeNodeIds = getSelectedNodeIdsFromFeatureTree(featureTree)
 
   const selectedFeatures = useMemo(() => {
     return selectedFeatureNodes.map((node) => node.data)
@@ -64,7 +60,7 @@ export const useFeatures = () => {
 
   return {
     selectedFeatureNodes,
-    selectedFeatudeNodeIds,
+    selectedFeatureNodeIds,
     selectedFeatures,
     topFeature,
     featureTree,

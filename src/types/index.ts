@@ -35,3 +35,5 @@ export interface FeatureNode {
   data: FeatureType
   // data: FeatureType
 }
+
+export type AcceptedFileType = 'application/json' | '.geojson'
