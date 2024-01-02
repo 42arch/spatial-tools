@@ -516,9 +516,12 @@ const DrawControl = ({
   }, [featureNodes])
 
   useEffect(() => {
-    console.log(9999, selectedIds)
     if (selectedIds && selectedIds?.length > 0) {
-      // should do nothing
+      if (mode === 'simple_select') {
+        drawRef.current?.changeMode(mode, {
+          featureIds: selectedIds
+        })
+      }
     } else {
       drawRef.current?.changeMode(mode)
     }

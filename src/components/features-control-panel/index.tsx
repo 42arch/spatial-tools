@@ -12,25 +12,41 @@ interface FeaturesControlPanelProps {
 function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
   const {
     currentGroupId,
+    selectedFeatureNodeIds,
+    setSelectedFeatureNodeIds,
     setCurrentGroupId,
     addNewFeatureGroup,
-    toggleFeatureNodeVisible,
-    toggleFeatureNodesSelected,
-    resetFeatureNodesSelected
+    toggleFeatureNodeVisible
   } = useFeatureStore((state) => state)
 
   const { featureTree } = useFeatures()
 
-  const onIsSelectedChange = (
-    groupId: string,
-    nodeId: string,
-    shiftKey: boolean
-  ) => {
+  // const onIsSelectedChange = (
+  //   groupId: string,
+  //   nodeId: string,
+  //   shiftKey: boolean
+  // ) => {
+  //   if (shiftKey) {
+  //     toggleFeatureNodesSelected(groupId, [nodeId])
+  //   } else {
+  //     resetFeatureNodesSelected()
+  //     toggleFeatureNodesSelected(groupId, [nodeId])
+  //   }
+  // }
+
+  const handleSelectClick = (nodeId: string, shiftKey: boolean) => {
+    const isSelected = selectedFeatureNodeIds.includes(nodeId)
     if (shiftKey) {
-      toggleFeatureNodesSelected(groupId, [nodeId])
+      const newSelectedNodeIds = isSelected
+        ? selectedFeatureNodeIds.filter((id) => id !== nodeId)
+        : [...selectedFeatureNodeIds, nodeId]
+      setSelectedFeatureNodeIds(newSelectedNodeIds)
     } else {
-      resetFeatureNodesSelected()
-      toggleFeatureNodesSelected(groupId, [nodeId])
+      if (isSelected) {
+        setSelectedFeatureNodeIds([])
+      } else {
+        setSelectedFeatureNodeIds([nodeId])
+      }
     }
   }
 
@@ -56,13 +72,13 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
             <FeatureNode
               key={node.id}
               data={node}
-              isSelected={node.selected}
+              isSelected={selectedFeatureNodeIds.includes(node.id)}
               isVisible={node.visible}
               onIsVisibleChange={() => {
                 toggleFeatureNodeVisible(group.id, node.id)
               }}
-              onIsSelectedChange={(e: MouseEvent<HTMLDivElement>) => {
-                onIsSelectedChange(group.id, node.id, e.shiftKey)
+              onSelectClick={(e: MouseEvent<HTMLDivElement>) => {
+                handleSelectClick(node.id, e.shiftKey)
               }}
             />
           ))}

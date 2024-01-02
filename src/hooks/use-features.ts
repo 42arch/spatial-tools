@@ -9,7 +9,7 @@ import { FeatureType } from '@/types'
 import { useMemo } from 'react'
 
 export const useFeatures = () => {
-  const { featureGroups, updateFeatureGroups } = useFeatureStore()
+  const { featureGroups, setFeatureGroups } = useFeatureStore()
 
   const featureNodes = flattenFeatureGroupsToNodes(featureGroups)
 
@@ -49,7 +49,7 @@ export const useFeatures = () => {
         ...topFeature,
         properties
       }
-      updateFeatureGroups([newFeature])
+      setFeatureGroups([newFeature])
     }
   }
 
@@ -58,7 +58,7 @@ export const useFeatures = () => {
       const newFeature: FeatureType = {
         ...feature
       }
-      updateFeatureGroups([newFeature])
+      setFeatureGroups([newFeature])
     }
   }
 

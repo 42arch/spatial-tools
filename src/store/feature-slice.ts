@@ -18,24 +18,16 @@ const initialFeatureState = {
     }
   },
   selectedFeatureNodeIds: []
-  // invisibleNodeIds: []
-  // selectedFeatureNodes: []
 }
 
 export interface FeatureSlice {
   currentGroupId: string
   setCurrentGroupId: (id: string) => void
   featureGroups: FeatureGroupMap
-  updateFeatureGroups: (features: Array<FeatureType>) => void
+  setFeatureGroups: (features: Array<FeatureType>) => void
   addNewFeatureGroup: (label: string) => void
-  // featureGroupList: Array<FeatureGroup>
-  // featureNodes: FeatureNode[]
   selectedFeatureNodeIds: Array<string>
-  // invisibleNodeIds: Array<string>
-  // selectedNodeIds: Array<string>
-  // updateSelectedNodeIds: (ids: Array<string>, isAppend: boolean) => void
-  // updateInvisibleNodeIds: (ids: Array<string>, isAppend: boolean) => void
-  // updateFeatureNodes: (features: FeatureType[]) => void
+  setSelectedFeatureNodeIds: (ids: Array<string>) => void
   toggleFeatureNodesSelected: (groupId: string, nodeIds: Array<string>) => void
   resetFeatureNodesSelected: () => void
   toggleFeatureNodeVisible: (groupId: string, nodeId: string) => void
@@ -53,6 +45,11 @@ export const createFeatureSlice: StateCreator<
       set(() => ({
         currentGroupId: id
       })),
+
+    setSelectedFeatureNodeIds: (ids: Array<string>) =>
+      set((state) => {
+        state.selectedFeatureNodeIds = ids
+      }),
 
     toggleFeatureNodesSelected(groupId: string, ids: Array<string>) {
       set((state) => {
@@ -98,7 +95,7 @@ export const createFeatureSlice: StateCreator<
       })
     },
 
-    updateFeatureGroups: (features: FeatureType[]) => {
+    setFeatureGroups: (features: FeatureType[]) => {
       set((state) => {
         features.forEach((feature) => {
           if (feature.id) {

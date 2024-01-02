@@ -10,24 +10,24 @@ interface FeatureNodeProps {
   isSelected?: boolean
   isVisible?: boolean
   onIsVisibleChange?: () => void
-  onIsSelectedChange?: (e: MouseEvent<HTMLDivElement>) => void
+  onSelectClick?: (e: MouseEvent<HTMLDivElement>) => void
 }
 
 function FeatureNode({
   data,
   isSelected = false,
   isVisible = true,
-  onIsSelectedChange,
+  onSelectClick,
   onIsVisibleChange
 }: FeatureNodeProps) {
   return (
     <div
       key={data.id}
       className={cn(
-        'flex cursor-pointer items-center justify-between  px-2 py-1 text-sm hover:bg-zinc-200',
+        'flex cursor-pointer items-center justify-between px-2 py-1 text-xs hover:bg-zinc-200',
         isSelected ? 'bg-zinc-200' : 'bg-zinc-100'
       )}
-      onClick={onIsSelectedChange}
+      onClick={onSelectClick}
     >
       <span>{data.data.geometry.type}</span>
       <div>

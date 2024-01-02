@@ -23,24 +23,28 @@ const DynamicDraw = dynamic(() => import('@/components/map/draw-control'), {
 })
 
 export default function Home() {
-  const { updateFeatureGroups } = useFeatureStore((state) => state)
+  const {
+    setFeatureGroups,
+    selectedFeatureNodeIds,
+    setSelectedFeatureNodeIds
+  } = useFeatureStore((state) => state)
 
   const { featureNodes, selectedFeatureNodes } = useFeatures()
 
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
   const onDrawFeatures = (e: DrawCreateEvent) => {
-    updateFeatureGroups(e.features)
+    setFeatureGroups(e.features)
     // setDrawMode('simple_select')
   }
 
   const onUpdateFeatures = (e: DrawUpdateEvent) => {
-    updateFeatureGroups(e.features)
+    setFeatureGroups(e.features)
   }
 
   const onSelectionChange = (e: DrawSelectionChangeEvent) => {
     const ids = e.features.map((feature) => String(feature.id))
-    // updateSelectedNodeIds(ids)
+    setSelectedFeatureNodeIds(ids)
   }
 
   return (
@@ -59,7 +63,7 @@ export default function Home() {
             <DynamicMap>
               <DynamicDraw
                 featureNodes={featureNodes}
-                selectedIds={selectedFeatureNodes.map((n) => n.id)}
+                selectedIds={selectedFeatureNodeIds}
                 mode={drawMode}
                 onDrawCreate={onDrawFeatures}
                 onDrawUpdate={onUpdateFeatures}
