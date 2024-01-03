@@ -15,7 +15,17 @@ export const useFeatures = () => {
 
   const featureTree = convertFeatureGroupsToTree(featureGroups)
 
-  const selectedFeatureNodes = getSelectedNodesFromFeatureTree(featureTree)
+  // const selectedFeatureNodes = getSelectedNodesFromFeatureTree(featureTree)
+
+  // const selectedFeatures = useMemo(() => {
+  //   return selectedFeatureNodes.map((node) => node.data)
+  // }, [selectedFeatureNodes])
+
+  const selectedFeatureNodes = useMemo(() => {
+    return featureNodes.filter((node) =>
+      selectedFeatureNodeIds.includes(node.id)
+    )
+  }, [featureNodes, selectedFeatureNodeIds])
 
   const selectedFeatures = useMemo(() => {
     return selectedFeatureNodes.map((node) => node.data)

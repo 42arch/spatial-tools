@@ -1,6 +1,7 @@
 'use client'
 
 import { DrawToolbar } from '@/components/draw-toolbar'
+import FeatureOperate from '@/components/feature-operate'
 import FeaturesControlPanel from '@/components/features-control-panel'
 import OperatePanel from '@/components/operate-panel'
 import TopMenu from '@/components/top-menu'
@@ -29,7 +30,7 @@ export default function Home() {
     setSelectedFeatureNodeIds
   } = useFeatureStore((state) => state)
 
-  const { featureNodes, selectedFeatureNodes } = useFeatures()
+  const { featureNodes } = useFeatures()
 
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
@@ -71,7 +72,8 @@ export default function Home() {
               />
             </DynamicMap>
           </div>
-          <OperatePanel className='w-[360px]' />
+          <FeatureOperate />
+          {/* <OperatePanel className='w-[360px]' /> */}
         </div>
       </div>
     </main>
