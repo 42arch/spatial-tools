@@ -1,4 +1,11 @@
-import { FeatureGroup, FeatureGroupMap, FeatureNode } from '@/types'
+import {
+  FeatureGroup,
+  FeatureGroupMap,
+  FeatureNode,
+  FeatureType,
+  GeometryType
+} from '@/types'
+import { flatMapDeep, get, uniq } from 'lodash-es'
 
 export const mergeFeatureNodes = (
   oldNodes: Array<FeatureNode>,
@@ -72,4 +79,11 @@ export const getSelectedNodeIdsFromFeatureTree = (
 ) => {
   const selectedNodes = getSelectedNodesFromFeatureTree(featureTree)
   return selectedNodes.map((node) => node.id)
+}
+
+export function getFeatureTypes(features: Array<FeatureType>) {
+  const types = uniq(
+    flatMapDeep(features, (obj) => get(obj, 'geometry.type', []))
+  ) as Array<GeometryType>
+  return types
 }

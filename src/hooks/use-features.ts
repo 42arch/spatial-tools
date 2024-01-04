@@ -1,6 +1,7 @@
 import {
   convertFeatureGroupsToTree,
   flattenFeatureGroupsToNodes,
+  getFeatureTypes,
   getSelectedNodesFromFeatureTree
 } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
@@ -15,21 +16,11 @@ export const useFeatures = () => {
 
   const featureTree = convertFeatureGroupsToTree(featureGroups)
 
-  // const selectedFeatureNodes = getSelectedNodesFromFeatureTree(featureTree)
+  const selectedFeatureNodes = featureNodes.filter((node) =>
+    selectedFeatureNodeIds.includes(node.id)
+  )
 
-  // const selectedFeatures = useMemo(() => {
-  //   return selectedFeatureNodes.map((node) => node.data)
-  // }, [selectedFeatureNodes])
-
-  const selectedFeatureNodes = useMemo(() => {
-    return featureNodes.filter((node) =>
-      selectedFeatureNodeIds.includes(node.id)
-    )
-  }, [featureNodes, selectedFeatureNodeIds])
-
-  const selectedFeatures = useMemo(() => {
-    return selectedFeatureNodes.map((node) => node.data)
-  }, [selectedFeatureNodes])
+  const selectedFeatures = selectedFeatureNodes.map((node) => node.data)
 
   const getFeatureById = (id: string | number) => {
     return selectedFeatures.find((feature) => feature.id === id)
@@ -49,6 +40,8 @@ export const useFeatures = () => {
       : []
   }, [topFeature])
 
+  const selectedFeatureTypes = getFeatureTypes(selectedFeatures)
+
   const updateTopFeature = (properties: { [key: string]: any }) => {
     if (topFeature) {
       const newFeature: FeatureType = {
@@ -59,18 +52,19 @@ export const useFeatures = () => {
     }
   }
 
-  const updateSelectedFeature = (feature: FeatureType) => {
-    if (topFeature) {
-      const newFeature: FeatureType = {
-        ...feature
-      }
-      setFeatureGroups([newFeature])
-    }
+  const updateSelectedFeature = (features: Array<FeatureType>) => {
+    // if (topFeature) {
+    //   const newFeature: FeatureType = {
+    //     ...feature
+    //   }
+    //   setFeatureGroups([newFeature])
+    // }
   }
 
   return {
     selectedFeatureNodes,
     selectedFeatureNodeIds,
+    selectedFeatureTypes,
     selectedFeatures,
     topFeature,
     featureTree,

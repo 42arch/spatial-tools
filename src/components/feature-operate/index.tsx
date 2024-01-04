@@ -1,16 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import StyleSetting from './style-setting'
+import StyleOperate from './style-operate'
 
 function FeatureOperate() {
   return (
     <Tabs defaultValue='style' className='w-[400px]'>
-      <TabsList>
+      <TabsList className='h-9'>
         <TabsTrigger value='style'>Style</TabsTrigger>
         <TabsTrigger value='details'>Details</TabsTrigger>
         <TabsTrigger value='code'>Code</TabsTrigger>
       </TabsList>
-      <TabsContent value='style' className='h-full'>
-        <StyleSetting />
+      <TabsContent value='style'>
+        <StyleOperate />
       </TabsContent>
       <TabsContent value='details'>Change your password here.</TabsContent>
       <TabsContent value='code'>Change your password here.</TabsContent>
