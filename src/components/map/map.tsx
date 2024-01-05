@@ -18,17 +18,6 @@ export default function BaseMap({ children }: Props) {
 
   const onMapLoaded = () => {
     setLoaded(true)
-    // const resizeObserver = new ResizeObserver((entries) => {
-    //   entries.forEach(() => {
-    //     let resizeTimer = null as any
-    //     const delay = 500
-    //     clearTimeout(resizeTimer)
-    //     resizeTimer = setTimeout(() => {
-    //       mapRef.current?.resize()
-    //     }, delay)
-    //   })
-    // })
-    // resizeObserver.observe(mapContainerRef.current)
   }
 
   useEffect(() => {
@@ -53,7 +42,7 @@ export default function BaseMap({ children }: Props) {
         mapRef: mapRef
       }}
     >
-      <div className='w-full h-full' ref={mapContainerRef}>
+      <div className='h-full w-full' ref={mapContainerRef}>
         {loaded && children}
       </div>
     </MapContext.Provider>

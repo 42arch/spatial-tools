@@ -90,29 +90,29 @@ export const createFeatureSlice: StateCreator<
       })
     },
 
-    setFeatureGroups: (features: FeatureType[], groupLabel?: string) => {
+    setFeatureGroups: (features: FeatureType[], groupId?: string) => {
       set((state) => {
-        let groupId = state.currentGroupId
-        if (groupLabel) {
-          const newGroup: FeatureGroup = {
-            id: nanoid(),
-            label: groupLabel,
-            data: {}
-          }
-          state.featureGroups[newGroup.id] = newGroup
-          groupId = newGroup.id
-        }
+        const currentGroupId = groupId || state.currentGroupId
+        // if (groupLabel) {
+        //   const newGroup: FeatureGroup = {
+        //     id: nanoid(),
+        //     label: groupLabel,
+        //     data: {}
+        //   }
+        //   state.featureGroups[newGroup.id] = newGroup
+        //   groupId = newGroup.id
+        // }
         features.forEach((feature) => {
           const featureId = feature.id ? String(feature.id) : nanoid()
           feature.id = featureId
           const featureNode = {
             id: featureId,
-            groupId: state.currentGroupId,
+            groupId: currentGroupId,
             data: feature,
             visible: true,
             selected: false
           }
-          state.featureGroups[groupId].data[featureId] = featureNode
+          state.featureGroups[currentGroupId].data[featureId] = featureNode
         })
       })
     }

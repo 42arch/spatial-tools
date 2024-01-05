@@ -4,41 +4,40 @@ import { useFeatures } from '@/hooks/use-features'
 import {
   LineStringStyleId,
   PolygonStyleId,
-  StyleGroup,
-  StyleObject,
+  StyleGroupProps,
   StyleValue,
-  generateStyleGroupList,
-  getStylePropertyKey
+  getStylePropKey,
+  generateStyleSetting,
+  StyleId
 } from '@/lib/style'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ColorInput from './color-input'
 import StrokeStyleInput from './stroke-style-input'
 import NumberInput from './number-input'
-import { getFeatureTypes } from '@/lib/feature'
 
 interface GeometryStyleProps {
-  data: StyleGroup
+  styles: StyleGroupProps
   onKeyValueChange: (key: string, value: StyleValue) => void
 }
 
-function PointStyle({ data }: GeometryStyleProps) {
+function PointStyle({ styles }: GeometryStyleProps) {
   return (
     <div className='flex flex-col'>
       <div className='flex flex-row'>
         <label>Color</label>
-        <div>{data.style.Color?.value}</div>
+        <div>{styles.Color?.value}</div>
       </div>
       <div className='flex flex-row'>
         <label>Icon</label>
-        <div>{data.style.Symbol?.value}</div>
+        <div>{styles.Symbol?.value}</div>
       </div>
     </div>
   )
 }
 
-function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
+function LineStringStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
   const handleValueChange = (id: LineStringStyleId, value: StyleValue) => {
-    const key = getStylePropertyKey(id)
+    const key = getStylePropKey(id)
     onKeyValueChange(key, value)
   }
 
@@ -48,7 +47,7 @@ function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24'>Color</label>
         <div className='w-[calc(100%-96px)]'>
           <ColorInput
-            value={data.style.Color?.value as string}
+            value={styles.Color?.value as string}
             onChange={(value) => handleValueChange('linestring-color', value)}
           />
         </div>
@@ -58,7 +57,7 @@ function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
-            value={data.style.Stroke?.value as number}
+            value={styles.Stroke?.value as number}
             onChange={(value) =>
               handleValueChange('linestring-stroke-opacity', value)
             }
@@ -72,7 +71,7 @@ function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
             type='number'
             max={10}
             step={0.1}
-            value={data.style.Width?.value as number}
+            value={styles.Width?.value as number}
             onChange={(value) =>
               handleValueChange('linestring-stroke-width', value)
             }
@@ -83,7 +82,7 @@ function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24'>Style</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
-            value={data.style.Style?.value as string}
+            value={styles.Style?.value as string}
             onChange={(value) =>
               handleValueChange('linestring-stroke-style', value)
             }
@@ -94,9 +93,9 @@ function LineStringStyle({ data, onKeyValueChange }: GeometryStyleProps) {
   )
 }
 
-function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
+function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
   const handleValueChange = (id: PolygonStyleId, value: StyleValue) => {
-    const key = getStylePropertyKey(id)
+    const key = getStylePropKey(id)
     onKeyValueChange(key, value)
   }
 
@@ -106,7 +105,7 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24'>Color</label>
         <div className='w-[calc(100%-96px)]'>
           <ColorInput
-            value={data.style.Color?.value as string}
+            value={styles.Color?.value as string}
             onChange={(value) => handleValueChange('polygon-color', value)}
           />
         </div>
@@ -116,9 +115,9 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
-            value={data.style.Fill?.value as number}
+            value={styles.Fill?.value as number}
             onChange={(value) =>
-              handleValueChange('polygon-stroke-opacity', value)
+              handleValueChange('polygon-fill-opacity', value)
             }
           />
         </div>
@@ -128,7 +127,7 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
-            value={data.style.Stroke?.value as number}
+            value={styles.Stroke?.value as number}
             onChange={(value) =>
               handleValueChange('polygon-stroke-opacity', value)
             }
@@ -142,7 +141,7 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
             type='number'
             max={10}
             step={0.1}
-            value={data.style.Width?.value as number}
+            value={styles.Width?.value as number}
             onChange={(value) =>
               handleValueChange('polygon-stroke-width', value)
             }
@@ -153,7 +152,7 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24'>Style</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
-            value={data.style.Style?.value as string}
+            value={styles.Style?.value as string}
             onChange={(value) =>
               handleValueChange('polygon-stroke-style', value)
             }
@@ -165,21 +164,86 @@ function PolygonStyle({ data, onKeyValueChange }: GeometryStyleProps) {
 }
 
 function StyleOperate() {
-  const { selectedFeatures, selectedFeatureTypes, updateSelectedFeature } =
-    useFeatures()
+  const { selectedFeatures, updateSelectedFeature } = useFeatures()
 
-  const styleGroupList = useMemo(() => {
-    return generateStyleGroupList(selectedFeatures)
+  const styleGroup = useMemo(() => {
+    console.log(
+      5555555,
+      selectedFeatures,
+      generateStyleSetting(selectedFeatures)
+    )
+
+    return generateStyleSetting(selectedFeatures)
   }, [selectedFeatures])
+
+  const handleKeyValueChange = useCallback(
+    (
+      type: 'Point' | 'LineString' | 'Polygon',
+      key: string,
+      value: StyleValue
+    ) => {
+      // const properties: Record<string, any> = {}
+      // // if (type === 'Point') {
+      // styleProperties[key] = value
+      // // }
+      const newFeatures = selectedFeatures.map((feature) => {
+        const oldProperties = feature.properties
+        // switch (feature.geometry.type) {
+        //   case 'Point':
+        //   case 'MultiPoint':
+        return {
+          ...feature,
+          properties: { ...oldProperties, [key]: value }
+        }
+        // default:
+        //   break
+        // }
+      })
+      console.log(44444, newFeatures)
+
+      updateSelectedFeature(newFeatures)
+    },
+    [selectedFeatures, updateSelectedFeature]
+  )
 
   return (
     <div className='flex h-full flex-col border-b px-3 text-sm'>
-      {styleGroupList.map((styleGroup) => (
-        <div key={styleGroup.type}>
-          <div>{styleGroup.type}</div>
-          <LineStringStyle data={styleGroup} onKeyValueChange={() => {}} />
+      {styleGroup.Point.has && (
+        <div>
+          <div>Point</div>
+          <PointStyle
+            styles={styleGroup.Point.style}
+            onKeyValueChange={(key, value) => {
+              // console.log(333333, key, value)
+              handleKeyValueChange('Point', key, value)
+            }}
+          />
         </div>
-      ))}
+      )}
+      {styleGroup.LineString.has && (
+        <div>
+          <div>LineString</div>
+          <LineStringStyle
+            styles={styleGroup.LineString.style}
+            onKeyValueChange={(key, value) => {
+              // console.log(333333, key, value)
+              handleKeyValueChange('LineString', key, value)
+            }}
+          />
+        </div>
+      )}
+      {styleGroup.Polygon.has && (
+        <div>
+          <div>Polygon</div>
+          <PolygonStyle
+            styles={styleGroup.Polygon.style}
+            onKeyValueChange={(key, value) => {
+              // console.log(333333, key, value)
+              handleKeyValueChange('Polygon', key, value)
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }
