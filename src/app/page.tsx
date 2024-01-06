@@ -35,6 +35,10 @@ export default function Home() {
   const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
 
   const onDrawFeatures = (e: DrawCreateEvent) => {
+    e.features.forEach((f) => {
+      f.properties = { ...f.properties, ['st:visibility']: 'visible' }
+    })
+    console.log(e.features)
     setFeatureGroups(e.features)
     // setDrawMode('simple_select')
   }

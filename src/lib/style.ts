@@ -102,7 +102,7 @@ export const STROKE_STYLES: Array<string> = ['Solid', 'Dashed', 'Dotted']
 //   }
 // ]
 
-type StrokeStyle = 'Solid' | 'Dashed' | 'Dotted'
+export type StrokeStyle = 'Solid' | 'Dashed' | 'Dotted'
 
 export type StyleValue = string | number
 
@@ -150,7 +150,7 @@ export const DEFAULT_COLOR = '#af1790'
 export const DEFAULT_SYMBOL = 'dot'
 export const DEFAULT_STROKE_OPACITY = 1
 export const DEFAULT_STROKE_STYLE: StrokeStyle = 'Solid'
-export const DEFAULT_STROKE_WIDTH = 1
+export const DEFAULT_STROKE_WIDTH = 2
 export const DEFAULT_FILL_OPACITY = 0.6
 
 const POINT_STYLE_IDS: Array<PointStyleId> = ['point-color', 'point-symbol']
