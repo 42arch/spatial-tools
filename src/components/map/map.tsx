@@ -29,9 +29,9 @@ export default function BaseMap({ children }: Props) {
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [0, 0],
-      zoom: 2
+      style: 'mapbox://styles/mapbox/satellite-v9', // style URL
+      center: [-91.874, 42.76], // starting position [lng, lat]
+      zoom: 12 // starting zoom
     })
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
     mapRef.current.on('load', onMapLoaded)

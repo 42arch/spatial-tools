@@ -38,7 +38,7 @@ function PointStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
           />
         </div>
       </div>
-      <div className='flex h-8 flex-row items-center justify-between'>
+      {/* <div className='flex h-8 flex-row items-center justify-between'>
         <label className='w-24'>Symbol</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
@@ -46,7 +46,7 @@ function PointStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
             onChange={(value) => handleValueChange('point-symbol', value)}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

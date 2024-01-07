@@ -10,83 +10,29 @@ import {
 
 const ACTIVE_COLOR = '#fa983a'
 
-// feature styles
 export const CUSTOM_STYLES: object[] = [
+  // Polygon style
   {
-    id: 'gl-draw-midpoint',
-    type: 'circle',
-    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint']],
-    paint: {
-      'circle-radius': 3,
-      'circle-stroke-width': 1,
-      'circle-stroke-color': '#fff',
-      'circle-color': ACTIVE_COLOR
-    }
-  },
-  {
-    id: 'gl-draw-polygon-and-line-vertex-inactive',
-    type: 'circle',
-    filter: [
-      'all',
-      ['==', 'meta', 'vertex'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static']
-    ],
-    paint: {
-      'circle-radius': 4,
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff',
-      'circle-color': ACTIVE_COLOR
-    }
-  },
-  {
-    id: 'gl-draw-polygon-and-line-vertex-active',
-    type: 'circle',
-    filter: [
-      'all',
-      ['==', 'meta', 'vertex'],
-      ['==', 'active', 'true'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static']
-    ],
-    paint: {
-      'circle-radius': 5,
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff',
-      'circle-color': ACTIVE_COLOR
-    }
-  },
-  {
-    id: 'gl-draw-polygon-fill',
-    type: 'fill',
-    filter: [
-      'all',
-      ['==', '$type', 'Polygon'],
-      ['has', 'user_color'],
-      ['has', 'user_fill'],
-      ['has', 'user_stroke']
-    ],
-    paint: {
-      'fill-color': ['get', 'user_color'],
-      // 'fill-outline-color': ['get', 'user_color'],
-      'fill-opacity': ['get', 'user_fill']
-    }
-  },
-  {
-    id: 'gl-draw-polygon-fill-create',
-    type: 'fill',
+    id: 'gl-draw-polygon-stroke-create',
+    type: 'line',
     filter: [
       'all',
       ['==', '$type', 'Polygon'],
       ['==', 'active', 'true'],
+      ['!=', 'mode', 'static'],
       ['!has', 'user_color'],
-      ['!has', 'user_fill'],
-      ['!has', 'user_stroke']
+      ['!has', 'user_stroke'],
+      ['!has', 'user_width'],
+      ['!has', 'user_style']
     ],
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    },
     paint: {
-      'fill-color': DEFAULT_COLOR,
-      // 'fill-outline-color': DEFAULT_COLOR,
-      'fill-opacity': 0.3
+      'line-color': DEFAULT_COLOR,
+      'line-opacity': DEFAULT_STROKE_OPACITY,
+      'line-width': DEFAULT_STROKE_WIDTH
     }
   },
   {
@@ -112,28 +58,41 @@ export const CUSTOM_STYLES: object[] = [
     }
   },
   {
-    id: 'gl-draw-polygon-stroke-create',
-    type: 'line',
+    id: 'gl-draw-polygon-fill-create',
+    type: 'fill',
     filter: [
       'all',
       ['==', '$type', 'Polygon'],
       ['==', 'active', 'true'],
-      ['!=', 'mode', 'static'],
       ['!has', 'user_color'],
-      ['!has', 'user_stroke'],
-      ['!has', 'user_width'],
-      ['!has', 'user_style']
+      ['!has', 'user_fill'],
+      ['!has', 'user_stroke']
     ],
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
     paint: {
-      'line-color': DEFAULT_COLOR,
-      'line-opacity': DEFAULT_STROKE_OPACITY,
-      'line-width': DEFAULT_STROKE_WIDTH
+      'fill-antialias': false,
+      'fill-color': DEFAULT_COLOR,
+      // 'fill-outline-color': DEFAULT_COLOR,
+      'fill-opacity': 0.3
     }
   },
+  {
+    id: 'gl-draw-polygon-fill',
+    type: 'fill',
+    filter: [
+      'all',
+      ['==', '$type', 'Polygon'],
+      ['has', 'user_color'],
+      ['has', 'user_fill'],
+      ['has', 'user_stroke']
+    ],
+    paint: {
+      'fill-antialias': false,
+      'fill-color': ['get', 'user_color'],
+      // 'fill-outline-color': ['get', 'user_color'],
+      'fill-opacity': ['get', 'user_fill']
+    }
+  },
+
   // LineString Style
   {
     id: 'gl-draw-line',
@@ -141,7 +100,7 @@ export const CUSTOM_STYLES: object[] = [
     filter: [
       'all',
       ['==', '$type', 'LineString'],
-      ['!=', 'active', 'true'],
+      // ['!=', 'active', 'true'],
       ['has', 'user_stroke'],
       ['has', 'user_color'],
       ['has', 'user_width'],
@@ -179,6 +138,7 @@ export const CUSTOM_STYLES: object[] = [
       'line-width': DEFAULT_STROKE_WIDTH
     }
   },
+  // point style
   {
     id: 'gl-draw-point',
     type: 'circle',
@@ -219,6 +179,51 @@ export const CUSTOM_STYLES: object[] = [
       ['==', 'active', 'true'],
       ['==', '$type', 'Point'],
       ['has', 'user_color']
+    ],
+    paint: {
+      'circle-radius': 5,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff',
+      'circle-color': ACTIVE_COLOR
+    }
+  },
+  // control points
+  {
+    id: 'gl-draw-midpoint',
+    type: 'circle',
+    filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint']],
+    paint: {
+      'circle-radius': 3,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fff',
+      'circle-color': ACTIVE_COLOR
+    }
+  },
+  {
+    id: 'gl-draw-polygon-and-line-vertex-inactive',
+    type: 'circle',
+    filter: [
+      'all',
+      ['==', 'meta', 'vertex'],
+      ['==', '$type', 'Point'],
+      ['!=', 'mode', 'static']
+    ],
+    paint: {
+      'circle-radius': 4,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff',
+      'circle-color': ACTIVE_COLOR
+    }
+  },
+  {
+    id: 'gl-draw-polygon-and-line-vertex-active',
+    type: 'circle',
+    filter: [
+      'all',
+      ['==', 'meta', 'vertex'],
+      ['==', 'active', 'true'],
+      ['==', '$type', 'Point'],
+      ['!=', 'mode', 'static']
     ],
     paint: {
       'circle-radius': 5,
