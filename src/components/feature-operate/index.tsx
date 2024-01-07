@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import StyleOperate from './style-operate'
+import StylePanel from './style-panel'
+import DetailsPanel from './details-panel'
 
 function FeatureOperate() {
   return (
@@ -10,9 +11,11 @@ function FeatureOperate() {
         <TabsTrigger value='code'>Code</TabsTrigger>
       </TabsList>
       <TabsContent value='style'>
-        <StyleOperate />
+        <StylePanel />
       </TabsContent>
-      <TabsContent value='details'>Change your password here.</TabsContent>
+      <TabsContent value='details'>
+        <DetailsPanel />
+      </TabsContent>
       <TabsContent value='code'>Change your password here.</TabsContent>
     </Tabs>
   )

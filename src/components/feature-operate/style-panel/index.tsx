@@ -180,7 +180,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
   )
 }
 
-function StyleOperate() {
+function StylePanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
   const [styleGroup, setStyleGroup] = useState<StyleGroup | undefined>()
 
@@ -210,7 +210,7 @@ function StyleOperate() {
     <div className='flex h-full flex-col border-b px-3 text-sm'>
       {styleGroup && styleGroup.point.has && (
         <div>
-          <div>Point</div>
+          <span className='inline-block h-8 font-bold leading-8'>Point</span>
           <PointStyle
             styles={styleGroup.point}
             onKeyValueChange={(key, value) => {
@@ -222,7 +222,7 @@ function StyleOperate() {
       )}
       {styleGroup && styleGroup.line.has && (
         <div>
-          <div>Line</div>
+          <span className='inline-block h-8 font-bold leading-8'>Line</span>
           <LineStringStyle
             styles={styleGroup.line}
             onKeyValueChange={(key, value) => {
@@ -234,7 +234,7 @@ function StyleOperate() {
       )}
       {styleGroup && styleGroup.polygon.has && (
         <div>
-          <div>Polygon</div>
+          <span className='inline-block h-8 font-bold leading-8'>Polygon</span>
           <PolygonStyle
             styles={styleGroup.polygon}
             onKeyValueChange={(key, value) => {
@@ -248,4 +248,4 @@ function StyleOperate() {
   )
 }
 
-export default StyleOperate
+export default StylePanel
