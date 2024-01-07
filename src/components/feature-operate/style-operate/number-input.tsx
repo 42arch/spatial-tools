@@ -1,5 +1,5 @@
 import { Slider } from '@/components/ui/slider'
-import { useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useDebounce } from 'react-use'
 
 interface NumberInputProps {
@@ -38,4 +38,4 @@ function NumberInput({
   )
 }
 
-export default NumberInput
+export default memo(NumberInput)

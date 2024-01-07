@@ -1,106 +1,13 @@
-import { FeatureType, GeometryType } from '@/types'
+import { AppGeometryType, FeatureType, GeometryType } from '@/types'
 import { getFeatureTypes } from './feature'
 
 export const STYLE_PREFIX = 'st:'
 
+type StylePrefix = 'st:'
+
 type StyleValueType = 'color' | 'number' | 'list' | 'symbol'
 
-export type StyleProp = {
-  id: string
-  name: string
-  // checked: boolean
-  type: GeometryType
-  valueType: StyleValueType
-  value: StyleValue
-}
-
 export const STROKE_STYLES: Array<string> = ['Solid', 'Dashed', 'Dotted']
-
-// export const POINT_STYLE_PROPERTIES: Array<StyleProp> = [
-//   {
-//     id: 'point-color',
-//     name: `${STYLE_PREFIX}color`,
-//     checked: false,
-//     type: 'color',
-//     value: '#af1790'
-//   },
-//   {
-//     id: 'point-color',
-//     name: `${STYLE_PREFIX}symbol`,
-//     checked: false,
-//     type: 'color',
-//     value: '#af1790'
-//   }
-// ]
-
-// export const LINESTRING_STYLE_PROPERTIES: Array<StyleProp> = [
-//   {
-//     id: 'linestring-color',
-//     name: `${STYLE_PREFIX}:color`,
-//     checked: false,
-//     type: 'color',
-//     value: '#af1790'
-//   },
-//   {
-//     id: 'linestring-stroke-opacity',
-//     name: `${STYLE_PREFIX}:strokeOpacity`,
-//     checked: false,
-//     type: 'number',
-//     value: 1
-//   },
-//   {
-//     id: 'linestring-stroke-style',
-//     name: `${STYLE_PREFIX}:strokeStyle`,
-//     checked: false,
-//     type: 'number',
-//     value: 'Solid'
-//   },
-//   {
-//     id: 'linestring-stroke-width',
-//     name: `${STYLE_PREFIX}:strokeWidth`,
-//     checked: false,
-//     type: 'number',
-//     value: 2
-//   }
-// ]
-
-// export const POLYGON_STYLE_PROPERTIES: Array<StyleProp> = [
-//   {
-//     id: 'polygon-color',
-//     name: `${STYLE_PREFIX}:color`,
-//     checked: false,
-//     type: 'color',
-//     value: '#af1790'
-//   },
-//   {
-//     id: 'polygon-fill-opacity',
-//     name: `${STYLE_PREFIX}:fillOpacity`,
-//     checked: false,
-//     type: 'number',
-//     value: 1
-//   },
-//   {
-//     id: 'polygon-stroke-opacity',
-//     name: `${STYLE_PREFIX}:strokeOpacity`,
-//     checked: false,
-//     type: 'number',
-//     value: 1
-//   },
-//   {
-//     id: 'polygon-stroke-style',
-//     name: `${STYLE_PREFIX}:strokeStyle`,
-//     checked: false,
-//     type: 'number',
-//     value: 'Solid'
-//   },
-//   {
-//     id: 'polygon-stroke-width',
-//     name: `${STYLE_PREFIX}:strokeWidth`,
-//     checked: false,
-//     type: 'number',
-//     value: 2
-//   }
-// ]
 
 export type StrokeStyle = 'Solid' | 'Dashed' | 'Dotted'
 
@@ -124,27 +31,20 @@ export type StyleId = PointStyleId | LineStringStyleId | PolygonStyleId
 
 export type StyleObject = Partial<Record<StyleId, StyleValue>>
 
-export type StyleName =
-  | 'Color'
-  | 'Stroke'
-  | 'Width'
-  | 'Style'
-  | 'Fill'
-  | 'Symbol'
+// type StyleKeyGen<T extends string, U extends string> = `${T}${U}`
 
-// export type StyleGroup = {
-//   type: 'Point' | 'LineString' | 'Polygon'
-//   style: Partial<Record<StyleName, StyleProp>>
-// }
-export type StyleGroupProps = Partial<Record<StyleName, StyleProp>>
+export type StyleKey =
+  | 'color'
+  | 'stroke'
+  | 'width'
+  | 'style'
+  | 'fill'
+  | 'symbol'
 
-export type StyleGroup = Record<
-  'Point' | 'LineString' | 'Polygon',
-  {
-    has: boolean
-    style: StyleGroupProps
-  }
+export type StyleGroupProps = { has: boolean } & Partial<
+  Record<StyleKey, StyleValue>
 >
+export type StyleGroup = Record<AppGeometryType, StyleGroupProps>
 
 export const DEFAULT_COLOR = '#af1790'
 export const DEFAULT_SYMBOL = 'dot'
@@ -180,6 +80,28 @@ const DEFAULT_STYLE_MAP: Record<StyleId, string | number> = {
   'polygon-stroke-opacity': DEFAULT_STROKE_OPACITY,
   'polygon-stroke-style': DEFAULT_STROKE_STYLE,
   'polygon-stroke-width': DEFAULT_STROKE_WIDTH
+}
+
+function getStyleKey(styleId: StyleId): StyleKey {
+  switch (styleId) {
+    case 'linestring-color':
+    case 'point-color':
+    case 'polygon-color':
+      return 'color'
+    case 'linestring-stroke-opacity':
+    case 'polygon-stroke-opacity':
+      return 'stroke'
+    case 'linestring-stroke-width':
+    case 'polygon-stroke-width':
+      return 'width'
+    case 'linestring-stroke-style':
+    case 'polygon-stroke-style':
+      return 'style'
+    case 'polygon-fill-opacity':
+      return 'fill'
+    case 'point-symbol':
+      return 'symbol'
+  }
 }
 
 export function getStylePropKey(styleId: StyleId) {
@@ -294,67 +216,6 @@ export function generateStyleSetting(features: Array<FeatureType>) {
     return styleValuesMap
   }
 
-  function getType(styleId: StyleId): GeometryType {
-    switch (styleId) {
-      case 'point-color':
-      case 'point-symbol':
-        return 'Point'
-      case 'linestring-color':
-      case 'linestring-stroke-opacity':
-      case 'linestring-stroke-style':
-      case 'linestring-stroke-width':
-        return 'LineString'
-      case 'polygon-color':
-      case 'polygon-fill-opacity':
-      case 'polygon-stroke-opacity':
-      case 'polygon-stroke-style':
-      case 'polygon-stroke-width':
-        return 'Polygon'
-    }
-  }
-
-  function getStyleName(styleId: StyleId): StyleName {
-    switch (styleId) {
-      case 'linestring-color':
-      case 'point-color':
-      case 'polygon-color':
-        return 'Color'
-      case 'linestring-stroke-opacity':
-      case 'polygon-stroke-opacity':
-        return 'Stroke'
-      case 'linestring-stroke-width':
-      case 'polygon-stroke-width':
-        return 'Width'
-      case 'linestring-stroke-style':
-      case 'polygon-stroke-style':
-        return 'Style'
-      case 'polygon-fill-opacity':
-        return 'Fill'
-      case 'point-symbol':
-        return 'Symbol'
-    }
-  }
-
-  function getValueType(styleId: StyleId): StyleValueType {
-    switch (styleId) {
-      case 'linestring-color':
-      case 'point-color':
-      case 'polygon-color':
-        return 'color'
-      case 'linestring-stroke-opacity':
-      case 'polygon-stroke-opacity':
-      case 'polygon-fill-opacity':
-      case 'linestring-stroke-width':
-      case 'polygon-stroke-width':
-        return 'number'
-      case 'linestring-stroke-style':
-      case 'polygon-stroke-style':
-        return 'list'
-      default:
-        return 'symbol'
-    }
-  }
-
   function getValue(valueList: Array<StyleValue>, styleId: StyleId) {
     if (valueList.length > 1) {
       return 'mixed'
@@ -367,64 +228,42 @@ export function generateStyleSetting(features: Array<FeatureType>) {
 
   function getStyleSetting(features: Array<FeatureType>) {
     const styleGroup: StyleGroup = {
-      Point: {
-        has: false,
-        style: {}
+      point: {
+        has: false
       },
-      LineString: {
-        has: false,
-        style: {}
+      line: {
+        has: false
       },
-      Polygon: {
-        has: false,
-        style: {}
+      polygon: {
+        has: false
       }
     }
     const styleValuesMap = getStyleValuesMap(features)
     const types = getFeatureTypes(features)
 
     if (types.includes('Point') || types.includes('MultiPoint')) {
-      styleGroup['Point'].has = true
+      styleGroup['point'].has = true
 
       POINT_STYLE_IDS.forEach((id) => {
-        const styleName = getStyleName(id)
-        const styleProps: StyleProp = {
-          id: id,
-          type: 'Point',
-          name: styleName,
-          valueType: getValueType(id),
-          value: getValue(styleValuesMap[id], id)
-        }
-        styleGroup['Point'].style[styleName] = styleProps
+        const styleKey = getStyleKey(id)
+        const styleValue: StyleValue = getValue(styleValuesMap[id], id)
+        styleGroup['point'][styleKey] = styleValue
       })
     }
     if (types.includes('LineString') || types.includes('MultiLineString')) {
-      styleGroup['LineString'].has = true
+      styleGroup['line'].has = true
       LINESTRING_STYLE_IDS.forEach((id) => {
-        const styleName = getStyleName(id)
-        const styleProps: StyleProp = {
-          id: id,
-          type: 'LineString',
-          name: styleName,
-          valueType: getValueType(id),
-          value: getValue(styleValuesMap[id], id)
-        }
-        styleGroup['LineString'].style[styleName] = styleProps
+        const styleKey = getStyleKey(id)
+        const styleValue: StyleValue = getValue(styleValuesMap[id], id)
+        styleGroup['line'][styleKey] = styleValue
       })
     }
     if (types.includes('Polygon') || types.includes('MultiPolygon')) {
-      styleGroup['Polygon'].has = true
+      styleGroup['polygon'].has = true
       POLYGON_STYLE_IDS.forEach((id) => {
-        const styleName = getStyleName(id)
-
-        const styleProps: StyleProp = {
-          id: id,
-          type: 'Polygon',
-          name: styleName,
-          valueType: getValueType(id),
-          value: getValue(styleValuesMap[id], id)
-        }
-        styleGroup['Polygon'].style[styleName] = styleProps
+        const styleKey = getStyleKey(id)
+        const styleValue: StyleValue = getValue(styleValuesMap[id], id)
+        styleGroup['polygon'][styleKey] = styleValue
       })
       return styleGroup
     }

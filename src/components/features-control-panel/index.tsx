@@ -62,6 +62,7 @@ function FeaturesControlPanel({ className }: FeaturesControlPanelProps) {
                 isSelected={selectedFeatureNodeIds.includes(node.id)}
                 isVisible={node.visible}
                 onIsVisibleChange={() => {
+                  console.log('change visible', node.visible)
                   toggleFeatureNodeVisible(group.id, node.id)
                 }}
                 onSelectClick={(e: MouseEvent<HTMLDivElement>) => {

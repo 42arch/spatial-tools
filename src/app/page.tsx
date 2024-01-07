@@ -3,7 +3,6 @@
 import { DrawToolbar } from '@/components/draw-toolbar'
 import FeatureOperate from '@/components/feature-operate'
 import FeaturesControlPanel from '@/components/features-control-panel'
-import OperatePanel from '@/components/operate-panel'
 import TopMenu from '@/components/top-menu'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
@@ -36,9 +35,8 @@ export default function Home() {
 
   const onDrawFeatures = (e: DrawCreateEvent) => {
     e.features.forEach((f) => {
-      f.properties = { ...f.properties, ['st:visibility']: 'visible' }
+      f.properties = { ...f.properties }
     })
-    console.log(e.features)
     setFeatureGroups(e.features)
     // setDrawMode('simple_select')
   }

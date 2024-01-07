@@ -70,6 +70,7 @@ const DrawControl = ({
       mapRef.current?.on(
         'draw.selectionchange',
         (e: DrawSelectionChangeEvent) => {
+          console.log('selection change')
           onDrawSelectionChange && onDrawSelectionChange(e)
         }
       )
@@ -106,10 +107,13 @@ const DrawControl = ({
       const displayFeatureIds = featureNodes
         ?.filter((n) => !featureIds.includes(n.id))
         .map((n) => n.id)
+
+      console.log(33344, featureNodes)
+
       featureNodes?.forEach((node) => {
         if (!node.visible) {
-          setStyleProperties(drawRef, node)
           drawRef.current.delete(node.id)
+          // setStyleProperties(drawRef, node)
         } else {
           if (displayFeatureIds?.includes(node.id)) {
             // const feature = drawRef.current.get(node.id)

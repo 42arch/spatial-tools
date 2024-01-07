@@ -43,7 +43,11 @@ export const createFeatureSlice: StateCreator<
 
     setSelectedFeatureNodeIds: (ids: Array<string>) =>
       set((state) => {
-        state.selectedFeatureNodeIds = ids
+        console.log('who set', ids)
+        return {
+          selectedFeatureNodeIds: ids
+        }
+        // state.selectedFeatureNodeIds = [...ids]
       }),
 
     toggleFeatureNodesSelected(groupId: string, ids: Array<string>) {
@@ -74,6 +78,7 @@ export const createFeatureSlice: StateCreator<
 
     toggleFeatureNodeVisible(groupId: string, id: string) {
       set((state) => {
+        console.log('visible', state.featureGroups[groupId].data[id].visible)
         state.featureGroups[groupId].data[id].visible =
           !state.featureGroups[groupId].data[id].visible
       })
@@ -87,32 +92,34 @@ export const createFeatureSlice: StateCreator<
           data: {}
         }
         state.featureGroups[newGroup.id] = newGroup
+        state.currentGroupId = newGroup.id
       })
     },
 
     setFeatureGroups: (features: FeatureType[], groupId?: string) => {
       set((state) => {
         const currentGroupId = groupId || state.currentGroupId
-        // if (groupLabel) {
-        //   const newGroup: FeatureGroup = {
-        //     id: nanoid(),
-        //     label: groupLabel,
-        //     data: {}
-        //   }
-        //   state.featureGroups[newGroup.id] = newGroup
-        //   groupId = newGroup.id
-        // }
+        const group = state.featureGroups[currentGroupId]
         features.forEach((feature) => {
           const featureId = feature.id ? String(feature.id) : nanoid()
-          feature.id = featureId
-          const featureNode = {
-            id: featureId,
-            groupId: currentGroupId,
-            data: feature,
-            visible: true,
-            selected: false
+          const featureNode = group.data[featureId]
+          if (group && featureNode) {
+            const newFeatureNode = {
+              ...featureNode,
+              data: feature
+            }
+            state.featureGroups[currentGroupId].data[featureId] = newFeatureNode
+          } else {
+            feature.id = featureId
+            const newFeatureNode = {
+              id: featureId,
+              groupId: currentGroupId,
+              data: feature,
+              visible: true,
+              selected: false
+            }
+            state.featureGroups[currentGroupId].data[featureId] = newFeatureNode
           }
-          state.featureGroups[currentGroupId].data[featureId] = featureNode
         })
       })
     }
