@@ -1,12 +1,19 @@
-import { useFeatures } from '@/hooks/use-features'
 import { useEffect, useState } from 'react'
+import { useFeatures } from '@/hooks/use-features'
+import { Icon } from '@iconify/react'
+import plusIcon from '@iconify/icons-ph/plus'
 import { CombinedProperty, getCombinedPropertyList } from './utils'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { nanoid } from 'nanoid'
+import RowMenu from './row-menu'
+import KeyInput from './key-input'
+import ValueInput from './value-input'
 
 function DetailsPanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
   const [propertyList, setPropertyList] = useState<Array<CombinedProperty>>([])
+  const [isInputChange, setIsInputChange] = useState(false)
   const [emptyIndex, setEmptyIndex] = useState<Array<number>>([])
 
   useEffect(() => {
@@ -14,84 +21,103 @@ function DetailsPanel() {
     setPropertyList(getCombinedPropertyList(selectedFeatures))
   }, [selectedFeatures])
 
-  const updateFeature = (propertyList: Array<CombinedProperty>) => {
-    const updatedData: Record<string, string> = propertyList.reduce(
-      (result, item) => {
-        result[item.key] = item.value
-        return result
-      },
-      {}
-    )
-    console.log(updatedData, 44444)
+  const updateFeature = (
+    propertyList: Array<CombinedProperty>,
+    deleteKey?: string
+  ) => {
     const newFeatures = selectedFeatures.map((feature) => {
+      const oldProperties = { ...feature.properties }
+      const newProperties: Record<string, string> = {}
+      propertyList.forEach((item) => {
+        if (!item.mixed) {
+          newProperties[item.key] = item.value
+        } else {
+          newProperties[item.key] = oldProperties[item.key]
+        }
+      })
+
+      if (deleteKey) {
+        delete newProperties[deleteKey]
+      }
+
       return {
         ...feature,
-        properties: updatedData
+        properties: newProperties
       }
     })
     updateSelectedFeature(newFeatures)
   }
 
-  const handleEdit = (index: number, filed: 'key' | 'value', value: string) => {
+  const handleEdit = (id: string, field: 'key' | 'value', value: string) => {
     const updatedPropertyList = [...propertyList]
-    // if (filed == 'key' && value.trim() === '') {
-    //   setEmptyIndex((prev) => [...prev, index])
-    //   return
-    // }
+    const index = propertyList.findIndex((property) => property.id === id)
     const itemToUpdate = updatedPropertyList[index] as CombinedProperty
-    itemToUpdate[filed] = value
+    itemToUpdate[field] = value
+    if (field === 'value') {
+      itemToUpdate.mixed = false
+    }
     setPropertyList(updatedPropertyList)
-    updateFeature(updatedPropertyList)
   }
 
   const handleAdd = () => {
     const updatedPropertyList = [
       ...propertyList,
-      { key: '', count: 0, value: '' }
+      { key: '', id: nanoid(), count: 0, mixed: false, value: '' }
     ]
     setPropertyList(updatedPropertyList)
     updateFeature(updatedPropertyList)
   }
 
-  const handleDelete = () => {}
+  const handleDelete = (key: string) => {
+    updateFeature(propertyList, key)
+  }
 
   return (
     <div className='block '>
-      {propertyList.map((property, index) => (
+      {propertyList.map((property) => (
         <div
-          key={index}
+          key={property.id}
           className={cn(
-            'flex flex-row justify-between odd:bg-accent',
-            emptyIndex.includes(index) ? 'border border-destructive' : ''
+            'group relative flex flex-row justify-between odd:bg-accent'
+            // emptyIndex.includes(index) ? 'border border-destructive' : ''
           )}
         >
-          <div className='w-2/5 px-1 py-[1px]'>
-            <Input
-              type='text'
-              placeholder='key'
-              className='h-6 border-none px-3 py-[1px] text-xs text-accent-foreground'
-              // defaultValue={property.key}
-              value={property.key}
-              onChange={(e) => {
-                handleEdit(index, 'key', e.target.value)
+          <div className='relative w-2/5 px-1 py-[1px]'>
+            <KeyInput
+              data={property}
+              onEdit={(v) => {
+                handleEdit(property.id, 'key', v)
               }}
-              onFocus={handleAdd}
+              onUpdate={() => {
+                updateFeature(propertyList, property.id)
+              }}
             />
           </div>
           <div className='w-3/5 px-1 py-[1px]'>
-            <Input
-              type='text'
-              placeholder='value'
-              className='h-6 border-none px-3 py-[1px] text-xs text-secondary-foreground'
-              value={property.value}
-              onChange={(e) => {
-                handleEdit(index, 'value', e.target.value)
+            <ValueInput
+              data={property}
+              onEdit={(v) => {
+                handleEdit(property.id, 'value', v)
               }}
-              onFocus={handleAdd}
+              onUpdate={() => {
+                updateFeature(propertyList)
+              }}
+              onDelete={() => handleDelete(property.key)}
             />
           </div>
         </div>
       ))}
+      {selectedFeatures.length ? (
+        <div className='flex h-6 items-center justify-end px-4'>
+          <Icon
+            icon={plusIcon}
+            width={16}
+            height={16}
+            className='cursor-pointer'
+            onClick={handleAdd}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }
