@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ColorInput from './color-input'
 import StrokeStyleInput from './stroke-style-input'
 import NumberInput from './number-input'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface GeometryStyleProps {
   styles: StyleGroupProps
@@ -119,7 +120,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
   return (
     <div className='flex w-full flex-col gap-1 py-2'>
       <div className='flex h-8 flex-row items-center justify-between'>
-        <label className='w-24'>Color</label>
+        <label className='w-24 text-muted-foreground'>Color</label>
         <div className='w-[calc(100%-96px)]'>
           <ColorInput
             value={styles.color as string}
@@ -128,7 +129,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         </div>
       </div>
       <div className='flex h-8 flex-row items-center  justify-between'>
-        <label className='w-24'>Fill</label>
+        <label className='w-24 text-muted-foreground'>Fill</label>
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
@@ -140,7 +141,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         </div>
       </div>
       <div className='flex h-8 flex-row items-center  justify-between'>
-        <label className='w-24'>Stroke</label>
+        <label className='w-24 text-muted-foreground'>Stroke</label>
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
@@ -152,7 +153,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         </div>
       </div>
       <div className='flex h-8 flex-row items-center justify-between'>
-        <label className='w-24'>Width</label>
+        <label className='w-24 text-muted-foreground'>Width</label>
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='number'
@@ -166,7 +167,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         </div>
       </div>
       <div className='flex h-8 flex-row items-center justify-between'>
-        <label className='w-24'>Style</label>
+        <label className='w-24 text-muted-foreground'>Style</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
             value={styles.style as string}
@@ -201,16 +202,19 @@ function StylePanel() {
         properties: { ...oldProperties, [key]: value }
       }
     })
-
-    console.log(88888888, newFeatures)
     updateSelectedFeature(newFeatures)
   }
 
   return (
-    <div className='flex h-full flex-col border-b px-3 text-sm'>
+    <ScrollArea
+      type='scroll'
+      className='flex h-full flex-col border-b px-3 pb-4 text-sm'
+    >
       {styleGroup && styleGroup.point.has && (
         <div>
-          <span className='inline-block h-8 font-bold leading-8'>Point</span>
+          <span className='inline-block h-8 font-bold leading-8 text-accent-foreground'>
+            Point
+          </span>
           <PointStyle
             styles={styleGroup.point}
             onKeyValueChange={(key, value) => {
@@ -222,7 +226,9 @@ function StylePanel() {
       )}
       {styleGroup && styleGroup.line.has && (
         <div>
-          <span className='inline-block h-8 font-bold leading-8'>Line</span>
+          <span className='inline-block h-8 font-bold leading-8 text-accent-foreground'>
+            Line
+          </span>
           <LineStringStyle
             styles={styleGroup.line}
             onKeyValueChange={(key, value) => {
@@ -234,7 +240,9 @@ function StylePanel() {
       )}
       {styleGroup && styleGroup.polygon.has && (
         <div>
-          <span className='inline-block h-8 font-bold leading-8'>Polygon</span>
+          <span className='inline-block h-8 font-bold leading-8 text-accent-foreground'>
+            Polygon
+          </span>
           <PolygonStyle
             styles={styleGroup.polygon}
             onKeyValueChange={(key, value) => {
@@ -244,7 +252,7 @@ function StylePanel() {
           />
         </div>
       )}
-    </div>
+    </ScrollArea>
   )
 }
 

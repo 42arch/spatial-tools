@@ -21,9 +21,9 @@ function ColorInput({ value = DEFAULT_COLOR, onChange }: ColorInputProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className='flex w-[220px] items-center gap-4'>
+        <div className='flex h-8 w-[240px] items-center gap-2 border border-border px-2 text-xs'>
           <div
-            className='h-4 w-4 rounded-full'
+            className='h-3 w-3 rounded-full'
             style={{ backgroundColor: value }}
           ></div>
           <span>{value.toUpperCase()}</span>

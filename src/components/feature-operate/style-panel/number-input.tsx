@@ -21,7 +21,7 @@ function NumberInput({
   useDebounce(() => onChange(numberValue), 200, [numberValue])
 
   return (
-    <div className='flex w-[220px] flex-row items-center justify-between gap-4'>
+    <div className='flex h-8 w-[240px] flex-row items-center justify-between gap-2 border border-border px-2 text-xs'>
       <Slider
         className='h-3 w-[170px]'
         defaultValue={[numberValue]}

@@ -2,27 +2,23 @@ import { useEffect, useState } from 'react'
 import { useFeatures } from '@/hooks/use-features'
 import { Icon } from '@iconify/react'
 import plusIcon from '@iconify/icons-ph/plus'
-import { CombinedProperty, getCombinedPropertyList } from './utils'
-import { Input } from '@/components/ui/input'
+import { CombinedKeyValue, getCombinedPropertyList } from './utils'
 import { cn } from '@/lib/utils'
 import { nanoid } from 'nanoid'
-import RowMenu from './row-menu'
 import KeyInput from './key-input'
 import ValueInput from './value-input'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 function DetailsPanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
-  const [propertyList, setPropertyList] = useState<Array<CombinedProperty>>([])
-  const [isInputChange, setIsInputChange] = useState(false)
-  const [emptyIndex, setEmptyIndex] = useState<Array<number>>([])
+  const [propertyList, setPropertyList] = useState<Array<CombinedKeyValue>>([])
 
   useEffect(() => {
-    console.log(7776666, getCombinedPropertyList(selectedFeatures))
     setPropertyList(getCombinedPropertyList(selectedFeatures))
   }, [selectedFeatures])
 
   const updateFeature = (
-    propertyList: Array<CombinedProperty>,
+    propertyList: Array<CombinedKeyValue>,
     deleteKey?: string
   ) => {
     const newFeatures = selectedFeatures.map((feature) => {
@@ -35,7 +31,6 @@ function DetailsPanel() {
           newProperties[item.key] = oldProperties[item.key]
         }
       })
-
       if (deleteKey) {
         delete newProperties[deleteKey]
       }
@@ -51,7 +46,7 @@ function DetailsPanel() {
   const handleEdit = (id: string, field: 'key' | 'value', value: string) => {
     const updatedPropertyList = [...propertyList]
     const index = propertyList.findIndex((property) => property.id === id)
-    const itemToUpdate = updatedPropertyList[index] as CombinedProperty
+    const itemToUpdate = updatedPropertyList[index] as CombinedKeyValue
     itemToUpdate[field] = value
     if (field === 'value') {
       itemToUpdate.mixed = false
@@ -73,18 +68,19 @@ function DetailsPanel() {
   }
 
   return (
-    <div className='block '>
+    <ScrollArea type='scroll' className='h-full pb-4'>
       {propertyList.map((property) => (
         <div
           key={property.id}
           className={cn(
             'group relative flex flex-row justify-between odd:bg-accent'
-            // emptyIndex.includes(index) ? 'border border-destructive' : ''
           )}
         >
           <div className='relative w-2/5 px-1 py-[1px]'>
             <KeyInput
-              data={property}
+              value={property.key}
+              count={property.count}
+              countShow={selectedFeatures.length > 1}
               onEdit={(v) => {
                 handleEdit(property.id, 'key', v)
               }}
@@ -95,7 +91,9 @@ function DetailsPanel() {
           </div>
           <div className='w-3/5 px-1 py-[1px]'>
             <ValueInput
-              data={property}
+              value={property.value}
+              mixed={property.mixed}
+              menuShow
               onEdit={(v) => {
                 handleEdit(property.id, 'value', v)
               }}
@@ -114,11 +112,11 @@ function DetailsPanel() {
             width={16}
             height={16}
             className='cursor-pointer'
-            onClick={handleAdd}
+            onClick={() => handleAdd()}
           />
         </div>
       ) : null}
-    </div>
+    </ScrollArea>
   )
 }
 

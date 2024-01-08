@@ -1,7 +1,7 @@
 import { FeatureType } from '@/types'
 import { nanoid } from 'nanoid'
 
-export interface CombinedProperty {
+export interface CombinedKeyValue {
   id: string
   key: string
   count: number
@@ -9,12 +9,8 @@ export interface CombinedProperty {
   value: string
 }
 
-// export function getKeyById(propertyList: Array<CombinedProperty>, id: string) {
-//   return propertyList.find((p) => p.id === id)?.key
-// }
-
 export function getCombinedPropertyList(features: Array<FeatureType>) {
-  const result: Array<CombinedProperty> = []
+  const result: Array<CombinedKeyValue> = []
   features.forEach((feature) => {
     const properties = feature.properties
     if (properties) {

@@ -15,12 +15,12 @@ interface StrokeStyleInputProps {
 function StrokeStyleInput({ value, onChange }: StrokeStyleInputProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className='h-8 w-[220px]'>
-        <SelectValue className='' placeholder='stroke style' />
+      <SelectTrigger className='h-8 w-[240px] text-xs'>
+        <SelectValue placeholder='stroke style' />
       </SelectTrigger>
       <SelectContent>
         {STROKE_STYLES.map((style) => (
-          <SelectItem value={style} key={style}>
+          <SelectItem className='text-xs' value={style} key={style}>
             {style}
           </SelectItem>
         ))}
