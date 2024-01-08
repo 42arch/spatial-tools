@@ -1,15 +1,6 @@
 import Ajv from 'ajv'
 import schema from '@/lib/geojson-schema.json'
 
-export const isJSONString = (str: string): boolean => {
-  try {
-    JSON.parse(str)
-    return true
-  } catch (e) {
-    return false
-  }
-}
-
 export const validateGeoJSON = (json: object) => {
   const ajv = new Ajv()
   const validate = ajv.compile(schema)
