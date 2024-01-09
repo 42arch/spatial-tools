@@ -17,12 +17,6 @@ interface FeatureNodeProps {
   onSelectClick?: (e: MouseEvent<HTMLDivElement>) => void
 }
 
-const ShapeIconMap = {
-  Point: <Icon icon={pointIcon} className='text-sm' />,
-  LineString: <Icon icon={polylineIcon} className='text-sm' />,
-  Polygon: <Icon icon={polygonO} className='text-sm' />
-}
-
 function getShapeIcon(type: GeometryType) {
   switch (type) {
     case 'Point':

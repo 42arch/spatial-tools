@@ -13,7 +13,6 @@ import {
   DEFAULT_STROKE_WIDTH
 } from './style'
 import {
-  APP_PREFIX,
   COLOR_FIELD,
   FILL_FIELD,
   STROKE_FIELD,

@@ -12,10 +12,6 @@ import { CUSTOM_STYLES } from './style-spec'
 import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson'
 import { useDrawStore, useMapStore } from '@/store'
 
-function noop(): void {
-  /* do nothing */
-}
-
 interface Porps {
   features?: FeatureType[]
   featureNodes?: FeatureNode[]
@@ -28,7 +24,6 @@ interface Porps {
 }
 
 const DrawControl = ({
-  features,
   featureNodes,
   selectedIds,
   onDrawCreate,
@@ -73,12 +68,6 @@ const DrawControl = ({
         }
       )
     }
-    // if (mapRef.current) {
-    //   // mapRef.current.addControl(drawRef.current)
-    //   // mapRef.current.on('draw.create', onDrawCreate || noop)
-    //   // mapRef.current.on('draw.update', onDrawUpdate || noop)
-    //   // mapRef.current.on('draw.selectionchange', onDrawSelectionChange || noop)
-    // }
 
     // return () => {
     //   mapRef.current?.off('draw.create', onDrawCreate || noop)
@@ -93,7 +82,6 @@ const DrawControl = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef])
 
-  // control the display of features
   useEffect(() => {
     if (drawRef.current) {
       const features = featureNodes?.filter((n) => n.visible).map((n) => n.data)

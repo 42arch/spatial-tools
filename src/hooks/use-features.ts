@@ -5,7 +5,7 @@ import {
 } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
 import { FeatureType } from '@/types'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 export const useFeatures = () => {
   const { featureGroups, setFeatureGroups, selectedFeatureNodeIds } =

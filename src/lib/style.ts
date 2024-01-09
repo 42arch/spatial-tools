@@ -1,4 +1,4 @@
-import { AppGeometryType, FeatureType, GeometryType } from '@/types'
+import { AppGeometryType, FeatureType } from '@/types'
 import { getFeatureTypes } from './feature'
 import { APP_PREFIX } from './constants'
 

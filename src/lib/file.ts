@@ -29,7 +29,7 @@ export const openFileExplorer = (): Promise<FileList | null> => {
 }
 
 export const parseJSONFile = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       const content = e.target?.result as string
