@@ -5,19 +5,19 @@ import caretRightFill from '@iconify/icons-ph/caret-right-fill'
 import crosshairSimple from '@iconify/icons-ph/crosshair-simple'
 import { cn } from '@/lib/utils'
 
-interface GroupFolderProps {
+interface GroupNodeProps {
   isEditing: boolean
   label: string
   onClick: () => void
   children: ReactNode
 }
 
-function GroupFolder({
+function GroupNode({
   label,
   isEditing = false,
   onClick,
   children
-}: GroupFolderProps) {
+}: GroupNodeProps) {
   const [open, toggleOpen] = useToggle(false)
 
   const handleClick = () => {
@@ -40,7 +40,10 @@ function GroupFolder({
         </span>
         <Icon
           icon={crosshairSimple}
-          className={cn('ml-2 text-sm', isEditing ? 'block' : 'hidden')}
+          className={cn(
+            'ml-2 text-sm text-accent-foreground',
+            isEditing ? 'block' : 'hidden'
+          )}
         />
       </div>
       {open && <>{children}</>}
@@ -48,4 +51,4 @@ function GroupFolder({
   )
 }
 
-export default GroupFolder
+export default GroupNode

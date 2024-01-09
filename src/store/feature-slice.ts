@@ -99,6 +99,7 @@ export const createFeatureSlice: StateCreator<
       set((state) => {
         const currentGroupId = groupId || state.currentGroupId
         const group = state.featureGroups[currentGroupId]
+
         features.forEach((f) => {
           const feature = addDefaultStylePropertiesToFeature(f)
           const featureId = feature.id ? String(feature.id) : nanoid()
