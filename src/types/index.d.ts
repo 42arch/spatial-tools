@@ -1,4 +1,4 @@
-import { Feature, Geometry, GeoJsonProperties, Point } from 'geojson'
+import { Feature, Geometry, GeoJsonProperties } from 'geojson'
 
 export type DrawMode =
   | 'simple_select'
@@ -37,5 +37,3 @@ export interface FeatureNode {
   data: FeatureType
   // data: FeatureType
 }
-
-export type AcceptedFileType = 'application/json' | '.geojson'

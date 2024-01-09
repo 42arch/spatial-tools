@@ -31,14 +31,8 @@ export default function Home() {
 
   const { featureNodes } = useFeatures()
 
-  const [drawMode, setDrawMode] = useState<MapboxDraw.DrawMode>('simple_select')
-
   const onDrawFeatures = (e: DrawCreateEvent) => {
-    e.features.forEach((f) => {
-      f.properties = { ...f.properties }
-    })
     setFeatureGroups(e.features)
-    // setDrawMode('simple_select')
   }
 
   const onUpdateFeatures = (e: DrawUpdateEvent) => {
@@ -54,12 +48,7 @@ export default function Home() {
     <main className='h-full w-full'>
       <TopMenu className='h-10' />
       <div className='h-[calc(100%-40px)]'>
-        <DrawToolbar
-          currentMode={drawMode}
-          onModeChange={(mode) => {
-            setDrawMode(mode)
-          }}
-        />
+        <DrawToolbar />
         <div className='relative flex h-[calc(100%-40px)] flex-row justify-between'>
           <FeaturesControlPanel />
           <div className='h-full w-[calc(100%-200px-360px)]'>
@@ -67,7 +56,6 @@ export default function Home() {
               <DynamicDraw
                 featureNodes={featureNodes}
                 selectedIds={selectedFeatureNodeIds}
-                mode={drawMode}
                 onDrawCreate={onDrawFeatures}
                 onDrawUpdate={onUpdateFeatures}
                 onDrawSelectionChange={onSelectionChange}
@@ -75,7 +63,6 @@ export default function Home() {
             </DynamicMap>
           </div>
           <FeatureOperate />
-          {/* <OperatePanel className='w-[360px]' /> */}
         </div>
       </div>
     </main>

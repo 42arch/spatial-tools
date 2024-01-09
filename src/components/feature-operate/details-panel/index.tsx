@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid'
 import KeyInput from './key-input'
 import ValueInput from './value-input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { APP_PREFIX } from '@/lib/constants'
 
 function DetailsPanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
@@ -69,42 +70,44 @@ function DetailsPanel() {
 
   return (
     <ScrollArea type='scroll' className='h-full pb-4'>
-      {propertyList.map((property) => (
-        <div
-          key={property.id}
-          className={cn(
-            'group relative flex flex-row justify-between odd:bg-accent'
-          )}
-        >
-          <div className='relative w-2/5 px-1 py-[1px]'>
-            <KeyInput
-              value={property.key}
-              count={property.count}
-              countShow={selectedFeatures.length > 1}
-              onEdit={(v) => {
-                handleEdit(property.id, 'key', v)
-              }}
-              onUpdate={() => {
-                updateFeature(propertyList, property.id)
-              }}
-            />
+      {propertyList
+        .filter((p) => !p.key.startsWith(APP_PREFIX))
+        .map((p) => (
+          <div
+            key={p.id}
+            className={cn(
+              'group relative flex flex-row justify-between odd:bg-accent'
+            )}
+          >
+            <div className='relative w-2/5 px-1 py-[1px]'>
+              <KeyInput
+                value={p.key}
+                count={p.count}
+                countShow={selectedFeatures.length > 1}
+                onEdit={(v) => {
+                  handleEdit(p.id, 'key', v)
+                }}
+                onUpdate={() => {
+                  updateFeature(propertyList, p.id)
+                }}
+              />
+            </div>
+            <div className='w-3/5 px-1 py-[1px]'>
+              <ValueInput
+                value={p.value}
+                mixed={p.mixed}
+                menuShow
+                onEdit={(v) => {
+                  handleEdit(p.id, 'value', v)
+                }}
+                onUpdate={() => {
+                  updateFeature(propertyList)
+                }}
+                onDelete={() => handleDelete(p.key)}
+              />
+            </div>
           </div>
-          <div className='w-3/5 px-1 py-[1px]'>
-            <ValueInput
-              value={property.value}
-              mixed={property.mixed}
-              menuShow
-              onEdit={(v) => {
-                handleEdit(property.id, 'value', v)
-              }}
-              onUpdate={() => {
-                updateFeature(propertyList)
-              }}
-              onDelete={() => handleDelete(property.key)}
-            />
-          </div>
-        </div>
-      ))}
+        ))}
       {selectedFeatures.length ? (
         <div className='flex h-6 items-center justify-end px-4'>
           <Icon

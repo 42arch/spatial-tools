@@ -6,6 +6,21 @@ import {
   GeometryType
 } from '@/types'
 import { flatMapDeep, get, uniq } from 'lodash-es'
+import {
+  DEFAULT_COLOR,
+  DEFAULT_FILL_OPACITY,
+  DEFAULT_STROKE_OPACITY,
+  DEFAULT_STROKE_WIDTH
+} from './style'
+import {
+  APP_PREFIX,
+  COLOR_FIELD,
+  FILL_FIELD,
+  STROKE_FIELD,
+  STYLE_FIELD,
+  WIDTH_FIELD
+} from './constants'
+import { GeoJsonProperties } from 'geojson'
 
 export const mergeFeatureNodes = (
   oldNodes: Array<FeatureNode>,
@@ -86,4 +101,50 @@ export function getFeatureTypes(features: Array<FeatureType>) {
     flatMapDeep(features, (obj) => get(obj, 'geometry.type', []))
   ) as Array<GeometryType>
   return types
+}
+
+export function addDefaultStylePropertiesToFeature(feature: FeatureType) {
+  function getValue(properties: GeoJsonProperties, key: string) {
+    if (properties) {
+      return properties[key]
+    }
+  }
+
+  const properties = feature.properties
+  switch (feature.geometry.type) {
+    case 'Point':
+    case 'MultiPoint':
+      feature.properties = {
+        ...properties,
+        [COLOR_FIELD]: getValue(properties, COLOR_FIELD) || DEFAULT_COLOR
+      }
+      break
+    case 'LineString':
+    case 'MultiLineString':
+      feature.properties = {
+        ...feature.properties,
+        [COLOR_FIELD]: getValue(properties, COLOR_FIELD) || DEFAULT_COLOR,
+        [WIDTH_FIELD]:
+          getValue(properties, WIDTH_FIELD) || DEFAULT_STROKE_WIDTH,
+        [STROKE_FIELD]:
+          getValue(properties, STROKE_FIELD) || DEFAULT_STROKE_OPACITY,
+        [STYLE_FIELD]: getValue(properties, STYLE_FIELD) || [1000]
+      }
+      break
+    case 'Polygon':
+    case 'MultiPolygon':
+      feature.properties = {
+        ...feature.properties,
+        [COLOR_FIELD]: getValue(properties, COLOR_FIELD) || DEFAULT_COLOR,
+        [WIDTH_FIELD]:
+          getValue(properties, WIDTH_FIELD) || DEFAULT_STROKE_WIDTH,
+        [STROKE_FIELD]:
+          getValue(properties, STROKE_FIELD) || DEFAULT_STROKE_OPACITY,
+        [FILL_FIELD]: getValue(properties, FILL_FIELD) || DEFAULT_FILL_OPACITY,
+        [STYLE_FIELD]: getValue(properties, STYLE_FIELD) || [1000]
+      }
+      break
+  }
+
+  return feature
 }

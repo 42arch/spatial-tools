@@ -8,15 +8,15 @@ import {
   StyleValue,
   getStylePropKey,
   generateStyleSetting,
-  StyleId,
   PointStyleId,
   StyleGroup
 } from '@/lib/style'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ColorInput from './color-input'
 import StrokeStyleInput from './stroke-style-input'
 import NumberInput from './number-input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import useDraw from '@/hooks/use-draw'
 
 interface GeometryStyleProps {
   styles: StyleGroupProps
@@ -100,7 +100,7 @@ function LineStringStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24'>Style</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
-            value={styles.style as string}
+            value={styles.style}
             onChange={(value) =>
               handleValueChange('linestring-stroke-style', value)
             }
@@ -123,7 +123,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24 text-muted-foreground'>Color</label>
         <div className='w-[calc(100%-96px)]'>
           <ColorInput
-            value={styles.color as string}
+            value={styles.color}
             onChange={(value) => handleValueChange('polygon-color', value)}
           />
         </div>
@@ -133,7 +133,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
-            value={styles.fill as number}
+            value={styles.fill}
             onChange={(value) =>
               handleValueChange('polygon-fill-opacity', value)
             }
@@ -145,7 +145,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         <div className='w-[calc(100%-96px)]'>
           <NumberInput
             type='precent'
-            value={styles.stroke as number}
+            value={styles.stroke}
             onChange={(value) =>
               handleValueChange('polygon-stroke-opacity', value)
             }
@@ -159,7 +159,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
             type='number'
             max={10}
             step={0.1}
-            value={styles.width as number}
+            value={styles.width}
             onChange={(value) => {
               handleValueChange('polygon-stroke-width', value)
             }}
@@ -170,7 +170,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
         <label className='w-24 text-muted-foreground'>Style</label>
         <div className='w-[calc(100%-96px)]'>
           <StrokeStyleInput
-            value={styles.style as string}
+            value={styles.style}
             onChange={(value) =>
               handleValueChange('polygon-stroke-style', value)
             }
@@ -183,6 +183,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
 
 function StylePanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
+  const { setFeatureProperty } = useDraw()
   const [styleGroup, setStyleGroup] = useState<StyleGroup | undefined>()
 
   useEffect(() => {
@@ -203,6 +204,11 @@ function StylePanel() {
       }
     })
     updateSelectedFeature(newFeatures)
+    selectedFeatures.forEach((f) => {
+      if (f.id) {
+        setFeatureProperty(String(f.id), key, value)
+      }
+    })
   }
 
   return (
@@ -218,7 +224,6 @@ function StylePanel() {
           <PointStyle
             styles={styleGroup.point}
             onKeyValueChange={(key, value) => {
-              // console.log(333333, key, value)
               handleKeyValueChange('Point', key, value)
             }}
           />

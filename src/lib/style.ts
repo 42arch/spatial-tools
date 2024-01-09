@@ -1,17 +1,34 @@
 import { AppGeometryType, FeatureType, GeometryType } from '@/types'
 import { getFeatureTypes } from './feature'
-
-export const STYLE_PREFIX = 'st:'
-
-type StylePrefix = 'st:'
-
-type StyleValueType = 'color' | 'number' | 'list' | 'symbol'
-
-export const STROKE_STYLES: Array<string> = ['Solid', 'Dashed', 'Dotted']
+import { APP_PREFIX } from './constants'
 
 export type StrokeStyle = 'Solid' | 'Dashed' | 'Dotted'
 
-export type StyleValue = string | number
+export const STROKE_STYLE_LABELS: Array<StrokeStyle> = [
+  'Solid',
+  'Dashed',
+  'Dotted'
+]
+
+export const STROKE_STYLES: Array<{
+  label: StrokeStyle
+  value: Array<number>
+}> = [
+  {
+    label: 'Solid',
+    value: [1000]
+  },
+  {
+    label: 'Dashed',
+    value: [4, 2]
+  },
+  {
+    label: 'Dotted',
+    value: [0, 2]
+  }
+]
+
+export type StyleValue = any
 
 export type PointStyleId = 'point-color' | 'point-symbol'
 export type LineStringStyleId =
@@ -109,20 +126,20 @@ export function getStylePropKey(styleId: StyleId) {
     case 'linestring-color':
     case 'point-color':
     case 'polygon-color':
-      return `${STYLE_PREFIX}color`
+      return `${APP_PREFIX}color`
     case 'point-symbol':
-      return `${STYLE_PREFIX}symbol`
+      return `${APP_PREFIX}symbol`
     case 'linestring-stroke-opacity':
     case 'polygon-stroke-opacity':
-      return `${STYLE_PREFIX}stroke`
+      return `${APP_PREFIX}stroke`
     case 'linestring-stroke-style':
     case 'polygon-stroke-style':
-      return `${STYLE_PREFIX}style`
+      return `${APP_PREFIX}style`
     case 'linestring-stroke-width':
     case 'polygon-stroke-width':
-      return `${STYLE_PREFIX}width`
+      return `${APP_PREFIX}width`
     case 'polygon-fill-opacity':
-      return `${STYLE_PREFIX}fill`
+      return `${APP_PREFIX}fill`
   }
 }
 
@@ -159,54 +176,54 @@ export function generateStyleSetting(features: Array<FeatureType>) {
       switch (feature.geometry.type) {
         case 'Point':
         case 'MultiPoint':
-          setStyleValuesMap(properties, 'point-color', `${STYLE_PREFIX}color`)
-          setStyleValuesMap(properties, 'point-symbol', `${STYLE_PREFIX}symbol`)
+          setStyleValuesMap(properties, 'point-color', `${APP_PREFIX}color`)
+          setStyleValuesMap(properties, 'point-symbol', `${APP_PREFIX}symbol`)
           break
         case 'LineString':
         case 'MultiLineString':
           setStyleValuesMap(
             properties,
             'linestring-color',
-            `${STYLE_PREFIX}color`
+            `${APP_PREFIX}color`
           )
           setStyleValuesMap(
             properties,
             'linestring-stroke-opacity',
-            `${STYLE_PREFIX}stroke`
+            `${APP_PREFIX}stroke`
           )
           setStyleValuesMap(
             properties,
             'linestring-stroke-style',
-            `${STYLE_PREFIX}style`
+            `${APP_PREFIX}style`
           )
           setStyleValuesMap(
             properties,
             'linestring-stroke-width',
-            `${STYLE_PREFIX}width`
+            `${APP_PREFIX}width`
           )
           break
         case 'Polygon':
         case 'MultiPolygon':
-          setStyleValuesMap(properties, 'polygon-color', `${STYLE_PREFIX}color`)
+          setStyleValuesMap(properties, 'polygon-color', `${APP_PREFIX}color`)
           setStyleValuesMap(
             properties,
             'polygon-fill-opacity',
-            `${STYLE_PREFIX}fill`
+            `${APP_PREFIX}fill`
           )
           setStyleValuesMap(
             properties,
             'polygon-stroke-opacity',
-            `${STYLE_PREFIX}stroke`
+            `${APP_PREFIX}stroke`
           )
           setStyleValuesMap(
             properties,
             'polygon-stroke-style',
-            `${STYLE_PREFIX}style`
+            `${APP_PREFIX}style`
           )
           setStyleValuesMap(
             properties,
             'polygon-stroke-width',
-            `${STYLE_PREFIX}width`
+            `${APP_PREFIX}width`
           )
           break
         default:

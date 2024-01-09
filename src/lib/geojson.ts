@@ -10,5 +10,7 @@ export const isJSONString = (str: string): boolean => {
 }
 
 export function toGeoJSONString(elements: Array<FeatureType>) {
-  return JSON.stringify(elements, null, 2)
+  return elements.length > 1
+    ? JSON.stringify(elements, null, 2)
+    : JSON.stringify(elements[0], null, 2)
 }

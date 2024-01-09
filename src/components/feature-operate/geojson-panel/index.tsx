@@ -4,10 +4,12 @@ import { useFeatures } from '@/hooks/use-features'
 import { useEffect, useState } from 'react'
 import { isJSONString, toGeoJSONString } from '@/lib/geojson'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import useDraw from '@/hooks/use-draw'
 
 function GeoJSONPanel() {
   const [jsonString, setJsonString] = useState('')
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
+  const { refreshStyle } = useDraw()
 
   useEffect(() => {
     setJsonString(toGeoJSONString(selectedFeatures))
@@ -15,7 +17,14 @@ function GeoJSONPanel() {
 
   const handleChange = (value: string) => {
     if (!isJSONString(value)) return
-    updateSelectedFeature(JSON.parse(value))
+    const elements = JSON.parse(value)
+    if (Array.isArray(elements)) {
+      updateSelectedFeature(elements)
+      refreshStyle(elements)
+    } else {
+      updateSelectedFeature([elements])
+      refreshStyle([elements])
+    }
   }
 
   return (

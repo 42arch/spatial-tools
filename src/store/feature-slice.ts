@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
 import { FeatureType, FeatureGroupMap, FeatureGroup } from '@/types'
+import { addDefaultStylePropertiesToFeature } from '@/lib/feature'
 
 const DEFAULT_GROUP_LABEL = 'Untitled'
 const initialFeatureState = {
@@ -100,7 +101,8 @@ export const createFeatureSlice: StateCreator<
       set((state) => {
         const currentGroupId = groupId || state.currentGroupId
         const group = state.featureGroups[currentGroupId]
-        features.forEach((feature) => {
+        features.forEach((f) => {
+          const feature = addDefaultStylePropertiesToFeature(f)
           const featureId = feature.id ? String(feature.id) : nanoid()
           const featureNode = group.data[featureId]
           if (group && featureNode) {

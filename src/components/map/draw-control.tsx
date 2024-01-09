@@ -1,25 +1,16 @@
-'use client'
-
-import {
-  MutableRefObject,
-  memo,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import MapboxDraw, {
   DrawCreateEvent,
+  DrawModeChangeEvent,
   DrawSelectionChangeEvent,
   DrawUpdateEvent,
   MapboxDrawOptions
 } from '@mapbox/mapbox-gl-draw'
-import type { FeatureCollection } from 'geojson'
-import { MapContext } from './context'
 import { FeatureNode, FeatureType } from '@/types'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
-import { CUSTOM_STYLES, setStyleProperties } from './style-spec'
+import { CUSTOM_STYLES } from './style-spec'
+import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson'
+import { useDrawStore, useMapStore } from '@/store'
 
 function noop(): void {
   /* do nothing */
@@ -30,9 +21,9 @@ interface Porps {
   featureNodes?: FeatureNode[]
   selectedIds?: string[]
   options?: MapboxDrawOptions
-  mode?: MapboxDraw.DrawMode
   onDrawCreate?: (event: DrawCreateEvent) => void
   onDrawUpdate?: (event: DrawUpdateEvent) => void
+  onModeChange?: (event: DrawModeChangeEvent) => void
   onDrawSelectionChange?: (event: DrawSelectionChangeEvent) => void
 }
 
@@ -40,13 +31,13 @@ const DrawControl = ({
   features,
   featureNodes,
   selectedIds,
-  mode,
   onDrawCreate,
   onDrawUpdate,
   onDrawSelectionChange
 }: Porps) => {
-  const { mapRef } = useContext(MapContext)
-  const drawRef = useRef<any>(null)
+  const { mapRef } = useMapStore()
+  const { setDrawRef, mode, setMode } = useDrawStore()
+  const drawRef = useRef<MapboxDraw | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -55,29 +46,32 @@ const DrawControl = ({
     if (!drawRef.current) {
       drawRef.current = new MapboxDraw({
         displayControlsDefault: false,
+        // defaultMode: mode,
         styles: CUSTOM_STYLES,
         userProperties: true
       })
 
-      mapRef.current?.addControl(drawRef.current)
+      mapRef?.current?.addControl(drawRef.current)
+      if (drawRef.current) {
+        setDrawRef(drawRef)
+      }
 
-      mapRef.current?.on('draw.create', (e: DrawCreateEvent) => {
-        onDrawCreate && onDrawCreate(e)
+      mapRef?.current?.on('draw.create', (e: DrawCreateEvent) => {
+        onDrawCreate?.(e)
       })
-      mapRef.current?.on('draw.update', (e: DrawUpdateEvent) => {
-        onDrawUpdate && onDrawUpdate(e)
+      mapRef?.current?.on('draw.update', (e: DrawUpdateEvent) => {
+        onDrawUpdate?.(e)
       })
-      mapRef.current?.on(
-        'draw.selectionchange',
-        (e: DrawSelectionChangeEvent) => {
-          console.log('selection change')
-          onDrawSelectionChange && onDrawSelectionChange(e)
-        }
+      mapRef?.current?.on('draw.modechange', (e: DrawModeChangeEvent) =>
+        setMode(e.mode)
       )
 
-      // mapRef.current?.on('draw.create', onDrawCreate || noop)
-      // mapRef.current?.on('draw.update', onDrawUpdate || noop)
-      // mapRef.current?.on('draw.selectionchange', onDrawSelectionChange || noop)
+      mapRef?.current?.on(
+        'draw.selectionchange',
+        (e: DrawSelectionChangeEvent) => {
+          onDrawSelectionChange?.(e)
+        }
+      )
     }
     // if (mapRef.current) {
     //   // mapRef.current.addControl(drawRef.current)
@@ -100,29 +94,15 @@ const DrawControl = ({
   }, [mapRef])
 
   // control the display of features
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (drawRef.current) {
-      const drawFeatures = drawRef.current.getAll() as FeatureCollection
-      const featureIds = drawFeatures.features.map((f) => f.id)
-      const displayFeatureIds = featureNodes
-        ?.filter((n) => !featureIds.includes(n.id))
-        .map((n) => n.id)
-
-      console.log(33344, featureNodes)
-
-      featureNodes?.forEach((node) => {
-        if (!node.visible) {
-          drawRef.current.delete(node.id)
-          // setStyleProperties(drawRef, node)
-        } else {
-          if (displayFeatureIds?.includes(node.id)) {
-            // const feature = drawRef.current.get(node.id)
-            const feature = featureNodes.find((n) => n.id === node.id)?.data
-            drawRef.current.add(feature)
-          }
-          setStyleProperties(drawRef, node)
+      const features = featureNodes?.filter((n) => n.visible).map((n) => n.data)
+      const featureCollection: FeatureCollection<Geometry, GeoJsonProperties> =
+        {
+          type: 'FeatureCollection',
+          features: features || []
         }
-      })
+      drawRef.current.set(featureCollection)
     }
   }, [featureNodes])
 
@@ -133,7 +113,7 @@ const DrawControl = ({
       //     featureIds: selectedIds
       //   })
       // }
-    } else {
+    } else if (mode) {
       drawRef.current?.changeMode(mode)
     }
   }, [mode, selectedIds])
