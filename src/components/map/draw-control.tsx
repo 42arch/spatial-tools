@@ -102,19 +102,20 @@ const DrawControl = ({
           type: 'FeatureCollection',
           features: features || []
         }
+
       drawRef.current.set(featureCollection)
     }
   }, [featureNodes])
 
   useEffect(() => {
-    if (selectedIds && selectedIds?.length > 0) {
-      // if (mode === 'simple_select') {
-      //   drawRef.current?.changeMode(mode, {
-      //     featureIds: selectedIds
-      //   })
-      // }
-    } else if (mode) {
-      drawRef.current?.changeMode(mode)
+    if (selectedIds && selectedIds.length > 0) {
+      if (mode === 'simple_select') {
+        drawRef.current?.changeMode(mode, {
+          featureIds: selectedIds
+        })
+      }
+    } else {
+      drawRef.current?.changeMode(mode as string)
     }
   }, [mode, selectedIds])
 

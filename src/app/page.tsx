@@ -2,7 +2,6 @@
 
 import { DrawToolbar } from '@/components/draw-toolbar'
 import FeatureOperate from '@/components/feature-operate'
-import FeaturesControlPanel from '@/components/features-control-panel'
 import TopMenu from '@/components/top-menu'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
@@ -12,7 +11,7 @@ import {
   DrawUpdateEvent
 } from '@mapbox/mapbox-gl-draw'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import DataList from '@/components/data-list'
 
 const DynamicMap = dynamic(() => import('@/components/map/map'), {
   ssr: false
@@ -50,7 +49,7 @@ export default function Home() {
       <div className='h-[calc(100%-40px)]'>
         <DrawToolbar />
         <div className='relative flex h-[calc(100%-40px)] flex-row justify-between'>
-          <FeaturesControlPanel />
+          <DataList />
           <div className='h-full w-[calc(100%-200px-360px)]'>
             <DynamicMap>
               <DynamicDraw

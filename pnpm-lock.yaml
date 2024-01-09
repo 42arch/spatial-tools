@@ -11,9 +11,15 @@ dependencies:
   '@codemirror/lint':
     specifier: ^6.4.2
     version: 6.4.2
+  '@iconify/icons-gis':
+    specifier: ^1.2.6
+    version: 1.2.6
   '@iconify/icons-ph':
     specifier: ^1.2.5
     version: 1.2.5
+  '@iconify/react':
+    specifier: ^4.1.1
+    version: 4.1.1(react@18.0.0)
   '@mapbox/mapbox-gl-draw':
     specifier: ^1.4.3
     version: 1.4.3
@@ -124,12 +130,6 @@ dependencies:
     version: 4.4.7(@types/react@18.0.0)(immer@10.0.3)(react@18.0.0)
 
 devDependencies:
-  '@iconify/icons-gis':
-    specifier: ^1.2.6
-    version: 1.2.6
-  '@iconify/react':
-    specifier: ^4.1.1
-    version: 4.1.1(react@18.0.0)
   '@types/geojson':
     specifier: ^7946.0.13
     version: 7946.0.13
@@ -376,7 +376,7 @@ packages:
     resolution: {integrity: sha512-U3yGrdBxQQViXSkc73zVosLcC8367xXodATs86+DgzKQoPdw+4KxOcthjiAaXXciFyb4j8xbNVRLw0XLcRrABg==}
     dependencies:
       '@iconify/types': 2.0.0
-    dev: true
+    dev: false
 
   /@iconify/icons-ph@1.2.5:
     resolution: {integrity: sha512-ewrnpL0u3MAP0wLDnXb/39W9W71ObyY8DNig6rYj7NEwcndWWlrGHt1RxEGYE3eqILl/IUcNIQQF1CXZAhwr/w==}
@@ -391,10 +391,11 @@ packages:
     dependencies:
       '@iconify/types': 2.0.0
       react: 18.0.0
-    dev: true
+    dev: false
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+    dev: false
 
   /@jridgewell/gen-mapping@0.3.3:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
@@ -4259,6 +4260,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}

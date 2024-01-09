@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react'
 import { Icon } from '@iconify/react'
 import eyeIcon from '@iconify/icons-ph/eye'
-import eyeSlash from '@iconify/icons-ph/eye-slash'
+import eyeClosed from '@iconify/icons-ph/eye-closed'
 import { FeatureNode } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -24,16 +24,16 @@ function FeatureNode({
     <div
       key={data.id}
       className={cn(
-        'flex cursor-pointer select-none items-center justify-between px-2 py-1 text-xs hover:bg-zinc-200',
-        isSelected ? 'bg-zinc-200' : 'bg-zinc-100'
+        'group flex cursor-pointer select-none items-center justify-between py-1 pl-6 pr-2 text-xs hover:bg-primary/10',
+        isSelected ? 'bg-primary/10' : ''
       )}
       onClick={onSelectClick}
     >
-      <span>{data.data.geometry.type}</span>
+      <span className='text-accent-foreground'>{data.data.geometry.type}</span>
       <div>
         <Icon
-          width={14}
-          icon={isVisible ? eyeSlash : eyeIcon}
+          className='invisible text-sm group-hover:visible'
+          icon={isVisible ? eyeIcon : eyeClosed}
           onClick={onIsVisibleChange}
         />
       </div>

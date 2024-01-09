@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import { FeatureType, FeatureGroupMap, FeatureGroup } from '@/types'
 import { addDefaultStylePropertiesToFeature } from '@/lib/feature'
 
-const DEFAULT_GROUP_LABEL = 'Untitled'
+const DEFAULT_GROUP_LABEL = 'Ungrouped'
 const initialFeatureState = {
   currentGroupId: DEFAULT_GROUP_LABEL,
   featureGroups: {
@@ -43,12 +43,10 @@ export const createFeatureSlice: StateCreator<
       })),
 
     setSelectedFeatureNodeIds: (ids: Array<string>) =>
-      set((state) => {
-        console.log('who set', ids)
+      set(() => {
         return {
           selectedFeatureNodeIds: ids
         }
-        // state.selectedFeatureNodeIds = [...ids]
       }),
 
     toggleFeatureNodesSelected(groupId: string, ids: Array<string>) {

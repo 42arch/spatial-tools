@@ -6,10 +6,9 @@ import {
 import { Icon } from '@iconify/react'
 import folderPlus from '@iconify/icons-ph/folder-plus'
 import { Input } from '@/components/ui/input'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import { useState } from 'react'
 import { useToggle } from 'react-use'
-import DataImportModal from '../data-import-modal'
 
 interface GroupOperateProps {
   onAddNew: (label: string) => void

@@ -183,7 +183,7 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
 
 function StylePanel() {
   const { selectedFeatures, updateSelectedFeature } = useFeatures()
-  const { setFeatureProperty } = useDraw()
+  const { refreshStyle } = useDraw()
   const [styleGroup, setStyleGroup] = useState<StyleGroup | undefined>()
 
   useEffect(() => {
@@ -204,11 +204,7 @@ function StylePanel() {
       }
     })
     updateSelectedFeature(newFeatures)
-    selectedFeatures.forEach((f) => {
-      if (f.id) {
-        setFeatureProperty(String(f.id), key, value)
-      }
-    })
+    refreshStyle(selectedFeatures)
   }
 
   return (
