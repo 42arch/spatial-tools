@@ -1,10 +1,11 @@
 import { Feature, Geometry, GeoJsonProperties } from 'geojson'
 
 export type DrawMode =
-  | 'simple_select'
   | 'draw_line_string'
   | 'draw_polygon'
   | 'draw_point'
+  | 'draw_rectangle'
+  | 'drag_circle'
 
 export type GeometryType =
   | 'Point'

@@ -42,6 +42,8 @@
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "mapbox-gl": "^3.0.0",
+    "mapbox-gl-draw-circle": "^1.1.2",
+    "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "nanoid": "^5.0.4",
     "next": "14.0.3",
     "react": "^18",

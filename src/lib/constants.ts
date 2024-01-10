@@ -17,6 +17,14 @@ export const MODES: Array<DrawMode> = [
   'static'
 ]
 
+export const DRAW_MODES: Array<string> = [
+  'draw_line_string',
+  'draw_point',
+  'draw_polygon',
+  'draw_rectangle',
+  'drag_circle'
+]
+
 type StyleType = 'color' | 'number'
 
 export type StyleProperty = {

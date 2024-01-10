@@ -6,11 +6,18 @@ import MapboxDraw, {
   DrawUpdateEvent,
   MapboxDrawOptions
 } from '@mapbox/mapbox-gl-draw'
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
+import {
+  CircleMode,
+  DragCircleMode,
+  DirectMode,
+  SimpleSelectMode
+} from 'mapbox-gl-draw-circle'
 import { FeatureNode, FeatureType } from '@/types'
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { CUSTOM_STYLES } from './style-spec'
 import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson'
 import { useDrawStore, useMapStore } from '@/store'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 
 interface Porps {
   features?: FeatureType[]
@@ -39,11 +46,21 @@ const DrawControl = ({
     setMounted(true)
 
     if (!drawRef.current) {
+      const modes = {
+        ...MapboxDraw.modes,
+        draw_rectangle: DrawRectangle,
+        // Todo: draw_circle needs to be fixed
+        draw_circle: CircleMode,
+        direct_select: DirectMode,
+        simple_select: SimpleSelectMode,
+        drag_circle: DragCircleMode
+      }
+
       drawRef.current = new MapboxDraw({
         displayControlsDefault: false,
-        // defaultMode: mode,
         styles: CUSTOM_STYLES,
-        userProperties: true
+        userProperties: true,
+        modes: modes
       })
 
       mapRef?.current?.addControl(drawRef.current)

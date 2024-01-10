@@ -3,7 +3,9 @@ import { useToggle } from 'react-use'
 import { Icon } from '@iconify/react'
 import pointIcon from '@iconify/icons-gis/point'
 import polylineIcon from '@iconify/icons-gis/polyline'
-import polygonO from '@iconify/icons-gis/polygon-o'
+import polygonIcon from '@iconify/icons-gis/polygon'
+import rectangleIcon from '@iconify/icons-gis/rectangle'
+import circleIcon from '@iconify/icons-gis/circle'
 import caretDown from '@iconify/icons-ph/caret-down'
 import {
   DropdownMenu,
@@ -15,15 +17,21 @@ import {
 import { Button } from '../ui/button'
 import useDraw from '@/hooks/use-draw'
 import { cn } from '@/lib/utils'
+import type { DrawMode } from '@/types'
+import { DRAW_MODES } from '@/lib/constants'
 
-function getIcon(value: 'draw_point' | 'draw_line_string' | 'draw_polygon') {
+function getIcon(value: DrawMode) {
   switch (value) {
     case 'draw_point':
       return pointIcon
     case 'draw_line_string':
       return polylineIcon
     case 'draw_polygon':
-      return polygonO
+      return polygonIcon
+    case 'draw_rectangle':
+      return rectangleIcon
+    case 'drag_circle':
+      return circleIcon
   }
 }
 
@@ -35,36 +43,34 @@ function DrawMenu() {
   const [open, toggleOpen] = useToggle(false)
   const [active, toggleActive] = useToggle(false)
   const { mode, setMode } = useDraw()
-  const [currentMode, setCurrentMode] = useState<
-    'draw_point' | 'draw_line_string' | 'draw_polygon'
-  >('draw_point')
+  const [currentMode, setCurrentMode] = useState<DrawMode>('draw_point')
 
   useEffect(() => {
-    if (
-      ['draw_point', 'draw_line_string', 'draw_polygon'].includes(currentMode)
-    ) {
+    if (DRAW_MODES.includes(currentMode)) {
       if (active) {
+        // @ts-expect-error
         setMode(currentMode)
       }
     }
   }, [currentMode, setMode, active])
 
   useEffect(() => {
-    if (!['draw_point', 'draw_line_string', 'draw_polygon'].includes(mode)) {
+    if (!DRAW_MODES.includes(mode)) {
       toggleActive(false)
     }
   }, [mode, toggleActive])
 
   const handleActive = () => {
+    console.log('active', active)
     toggleActive()
     setMode('simple_select')
   }
 
-  const handleModeChange = (
-    v: 'draw_point' | 'draw_line_string' | 'draw_polygon'
-  ) => {
-    setCurrentMode(v)
+  const handleModeChange = (v: DrawMode) => {
+    console.log('mode change', v)
+
     toggleActive(true)
+    setCurrentMode(v)
   }
 
   return (
@@ -114,8 +120,22 @@ function DrawMenu() {
               value='draw_polygon'
               className={itemCn(mode, 'draw_polygon')}
             >
-              <Icon icon={polygonO} width={16} />
+              <Icon icon={polygonIcon} width={16} />
               <span className='ml-1'>Polygon</span>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem
+              value='draw_rectangle'
+              className={itemCn(mode, 'draw_rectangle')}
+            >
+              <Icon icon={rectangleIcon} width={16} />
+              <span className='ml-1'>Rectagle</span>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem
+              value='drag_circle'
+              className={itemCn(mode, 'drag_circle')}
+            >
+              <Icon icon={circleIcon} width={16} />
+              <span className='ml-1'>Circle</span>
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
