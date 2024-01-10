@@ -51,13 +51,13 @@ function FeatureNode({
         onClick={onSelectClick}
         onContextMenu={onSelectClick}
       >
-        <div className='flex items-center'>
+        <div className='flex w-[calc(100%-1.5rem)] items-center'>
           {getShapeIcon(data.data.geometry.type as GeometryType)}
           <span className='pl-2 text-accent-foreground'>
             {data.data.geometry.type}
           </span>
         </div>
-        <div>
+        <div className='flex w-6 justify-end'>
           <Icon
             className='invisible text-sm text-accent-foreground group-hover:visible'
             icon={isVisible ? eyeIcon : eyeClosed}

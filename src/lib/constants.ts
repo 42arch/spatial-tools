@@ -1,3 +1,5 @@
+import { DrawMode } from '@mapbox/mapbox-gl-draw'
+
 export const APP_PREFIX = 'st:'
 
 export const COLOR_FIELD = `${APP_PREFIX}color`
@@ -5,6 +7,15 @@ export const STROKE_FIELD = `${APP_PREFIX}stroke`
 export const WIDTH_FIELD = `${APP_PREFIX}width`
 export const STYLE_FIELD = `${APP_PREFIX}style`
 export const FILL_FIELD = `${APP_PREFIX}fill`
+
+export const MODES: Array<DrawMode> = [
+  'direct_select',
+  'simple_select',
+  'draw_line_string',
+  'draw_point',
+  'draw_polygon',
+  'static'
+]
 
 type StyleType = 'color' | 'number'
 
