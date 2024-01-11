@@ -1,32 +1,39 @@
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
-import { FeatureType, FeatureGroupMap, FeatureGroup } from '@/types'
-import { addDefaultStylePropertiesToFeature } from '@/lib/feature'
+import { FeatureType, FeatureGroup, FeatureGroups } from '@/types'
+import { setStyleProperties } from '@/lib/feature'
 
-const DEFAULT_GROUP_LABEL = 'Ungrouped'
+const DEFAULT_GROUP: FeatureGroup = {
+  id: 'default',
+  name: 'Default',
+  selected: false,
+  hidden: false,
+  data: {}
+}
 const initialFeatureState = {
-  currentGroupId: DEFAULT_GROUP_LABEL,
-  featureGroups: {
-    [DEFAULT_GROUP_LABEL]: {
-      id: DEFAULT_GROUP_LABEL,
-      label: DEFAULT_GROUP_LABEL,
-      data: {}
-    }
-  },
-  selectedFeatureNodeIds: []
+  activatedGroupId: DEFAULT_GROUP.id,
+  featureGroups: { [DEFAULT_GROUP.id]: DEFAULT_GROUP },
+  selectedGroupIds: [],
+  hiddenGroupIds: [],
+  hiddenFeatureIds: [],
+  selectedFeatureIds: []
 }
 
 export interface FeatureSlice {
-  currentGroupId: string
-  setCurrentGroupId: (id: string) => void
-  featureGroups: FeatureGroupMap
-  setFeatureGroups: (features: Array<FeatureType>, groupLabel?: string) => void
-  addNewFeatureGroup: (label: string) => void
-  selectedFeatureNodeIds: Array<string>
-  setSelectedFeatureNodeIds: (ids: Array<string>) => void
-  toggleFeatureNodesSelected: (groupId: string, nodeIds: Array<string>) => void
-  resetFeatureNodesSelected: () => void
-  toggleFeatureNodeVisible: (groupId: string, nodeId: string) => void
+  activatedGroupId: string
+  setActivatedGroupId: (id: string) => void
+  featureGroups: FeatureGroups
+  addNewFeatureGroup: (name: string) => void
+  addFeatures: (features: Array<FeatureType>, groupId?: string) => void
+  updateFeatures: (features: Array<FeatureType>) => void
+  selectedGroupIds: Array<string>
+  setSelectedGroupIds: (ids: Array<string>) => void
+  hiddenGroupIds: Array<string>
+  toggleGroupVisibility: (id: string) => void
+  selectedFeatureIds: Array<string | number | undefined>
+  setSelectedFeatureIds: (ids: Array<string | number | undefined>) => void
+  hiddenFeatureIds: Array<string | number | undefined>
+  toggleFeatureVisibility: (id: string | number | undefined) => void
 }
 
 export const createFeatureSlice: StateCreator<
@@ -37,92 +44,80 @@ export const createFeatureSlice: StateCreator<
 > = (set) => {
   return {
     ...initialFeatureState,
-    setCurrentGroupId: (id: string) =>
-      set(() => ({
-        currentGroupId: id
-      })),
-
-    setSelectedFeatureNodeIds: (ids: Array<string>) =>
-      set(() => {
-        return {
-          selectedFeatureNodeIds: ids
-        }
+    setActivatedGroupId: (id: string) =>
+      set((state) => {
+        state.activatedGroupId = id
       }),
-
-    toggleFeatureNodesSelected(groupId: string, ids: Array<string>) {
-      set((state) => {
-        ids.forEach((id) => {
-          state.featureGroups[groupId].data[id].selected =
-            !state.featureGroups[groupId].data[id].selected
-
-          if (state.featureGroups[groupId].data[id].selected) {
-            state.selectedFeatureNodeIds.push(id)
-          }
-        })
-      })
-    },
-
-    resetFeatureNodesSelected() {
-      set((state) => {
-        const groupIds = Object.keys(state.featureGroups)
-        state.selectedFeatureNodeIds.forEach((id) => {
-          groupIds.forEach((groupId) => {
-            state.featureGroups[groupId].data[id].selected = false
-          })
-        })
-
-        state.selectedFeatureNodeIds = []
-      })
-    },
-
-    toggleFeatureNodeVisible(groupId: string, id: string) {
-      set((state) => {
-        console.log('visible', state.featureGroups[groupId].data[id].visible)
-        state.featureGroups[groupId].data[id].visible =
-          !state.featureGroups[groupId].data[id].visible
-      })
-    },
-
-    addNewFeatureGroup(label: string) {
+    addNewFeatureGroup: (name: string) =>
       set((state) => {
         const newGroup: FeatureGroup = {
           id: nanoid(),
-          label: label,
+          name: name,
+          selected: false,
+          hidden: false,
           data: {}
         }
         state.featureGroups[newGroup.id] = newGroup
-        state.currentGroupId = newGroup.id
-      })
-    },
-
-    setFeatureGroups: (features: FeatureType[], groupId?: string) => {
+      }),
+    addFeatures: (features: Array<FeatureType>, groupId?: string) =>
       set((state) => {
-        const currentGroupId = groupId || state.currentGroupId
+        const currentGroupId = groupId || state.activatedGroupId
         const group = state.featureGroups[currentGroupId]
-
-        features.forEach((f) => {
-          const feature = addDefaultStylePropertiesToFeature(f)
-          const featureId = feature.id ? String(feature.id) : nanoid()
-          const featureNode = group.data[featureId]
-          if (group && featureNode) {
-            const newFeatureNode = {
-              ...featureNode,
-              data: feature
+        if (group) {
+          for (const feature of features) {
+            if (feature.id) {
+              group.data[feature.id] = setStyleProperties(feature)
             }
-            state.featureGroups[currentGroupId].data[featureId] = newFeatureNode
-          } else {
-            feature.id = featureId
-            const newFeatureNode = {
-              id: featureId,
-              groupId: currentGroupId,
-              data: feature,
-              visible: true,
-              selected: false
-            }
-            state.featureGroups[currentGroupId].data[featureId] = newFeatureNode
           }
-        })
+        }
+      }),
+    updateFeatures: (features: Array<FeatureType>) =>
+      set((state) => {
+        for (const groupId in state.featureGroups) {
+          const group = state.featureGroups[groupId]
+          if (group) {
+            for (const feature of features) {
+              if (feature.id) {
+                const existedFeature = group.data[feature.id]
+                if (existedFeature) {
+                  group.data[feature.id] = feature
+                }
+              }
+            }
+          }
+        }
+      }),
+    setSelectedGroupIds: (groupIds: Array<string>) =>
+      set((state) => {
+        state.selectedGroupIds = groupIds
+      }),
+    setSelectedFeatureIds: (featureIds: Array<string | number | undefined>) =>
+      set((state) => {
+        state.selectedFeatureIds = featureIds
+      }),
+    toggleGroupVisibility: (groupId: string) =>
+      set((state) => {
+        const group = state.featureGroups[groupId]
+        if (group) {
+          group.hidden = !group.hidden
+          if (state.hiddenGroupIds.indexOf(group.id) === -1) {
+            state.hiddenGroupIds.push(groupId)
+          } else {
+            state.hiddenGroupIds = state.hiddenGroupIds.filter(
+              (id) => id !== groupId
+            )
+          }
+        }
+      }),
+    toggleFeatureVisibility: (featureId: string | number | undefined) =>
+      set((state) => {
+        if (state.hiddenFeatureIds.indexOf(featureId) === -1) {
+          state.hiddenFeatureIds.push(featureId)
+        } else {
+          state.hiddenFeatureIds = state.hiddenFeatureIds.filter(
+            (id) => id !== featureId
+          )
+        }
       })
-    }
   }
 }

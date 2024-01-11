@@ -66,11 +66,9 @@ function DrawMenu() {
     setMode('simple_select')
   }
 
-  const handleModeChange = (v: DrawMode) => {
-    console.log('mode change', v)
-
+  const handleModeChange = (v: string) => {
     toggleActive(true)
-    setCurrentMode(v)
+    setCurrentMode(v as DrawMode)
   }
 
   return (

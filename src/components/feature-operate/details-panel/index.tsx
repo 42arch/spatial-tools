@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { APP_PREFIX } from '@/lib/constants'
 
 function DetailsPanel() {
-  const { selectedFeatures, updateSelectedFeature } = useFeatures()
+  const { selectedFeatures, updateFeatures } = useFeatures()
   const [propertyList, setPropertyList] = useState<Array<CombinedKeyValue>>([])
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function DetailsPanel() {
         properties: newProperties
       }
     })
-    updateSelectedFeature(newFeatures)
+    updateFeatures(newFeatures)
   }
 
   const handleEdit = (id: string, field: 'key' | 'value', value: string) => {

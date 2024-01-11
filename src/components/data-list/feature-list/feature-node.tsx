@@ -5,15 +5,15 @@ import eyeClosed from '@iconify/icons-ph/eye-closed'
 import pointIcon from '@iconify/icons-gis/point'
 import polylineIcon from '@iconify/icons-gis/polyline'
 import polygonO from '@iconify/icons-gis/polygon-o'
-import { FeatureNode, GeometryType } from '@/types'
+import { FeatureType, GeometryType } from '@/types'
 import { cn } from '@/lib/utils'
 import FeatureNodeMenu from './feature-node-menu'
 
 interface FeatureNodeProps {
-  data: FeatureNode
+  data: FeatureType
   isSelected?: boolean
-  isVisible?: boolean
-  onIsVisibleChange?: () => void
+  isHidden?: boolean
+  onIsHiddenChange?: () => void
   onSelectClick?: (e: MouseEvent<HTMLDivElement>) => void
 }
 
@@ -36,32 +36,34 @@ function getShapeIcon(type: GeometryType) {
 function FeatureNode({
   data,
   isSelected = false,
-  isVisible = true,
+  isHidden = false,
   onSelectClick,
-  onIsVisibleChange
+  onIsHiddenChange
 }: FeatureNodeProps) {
   return (
-    <FeatureNodeMenu data={data.data}>
+    <FeatureNodeMenu data={data}>
       <div
         key={data.id}
         className={cn(
           'group flex cursor-pointer select-none items-center justify-between py-1 pl-4 pr-2 text-xs hover:bg-primary/10',
           isSelected ? 'bg-primary/10' : ''
         )}
-        onClick={onSelectClick}
         onContextMenu={onSelectClick}
       >
-        <div className='flex w-[calc(100%-1.5rem)] items-center'>
-          {getShapeIcon(data.data.geometry.type as GeometryType)}
+        <div
+          className='flex w-[calc(100%-1.5rem)] items-center'
+          onClick={onSelectClick}
+        >
+          {getShapeIcon(data.geometry.type as GeometryType)}
           <span className='pl-2 text-accent-foreground'>
-            {data.data.geometry.type}
+            {data.geometry.type}
           </span>
         </div>
         <div className='flex w-6 justify-end'>
           <Icon
             className='invisible text-sm text-accent-foreground group-hover:visible'
-            icon={isVisible ? eyeIcon : eyeClosed}
-            onClick={onIsVisibleChange}
+            icon={isHidden ? eyeClosed : eyeIcon}
+            onClick={onIsHiddenChange}
           />
         </div>
       </div>

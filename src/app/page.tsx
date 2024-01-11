@@ -1,10 +1,8 @@
 'use client'
 
-import { DrawToolbar } from '@/components/draw-toolbar'
 import FeatureOperate from '@/components/feature-operate'
 import TopMenu from '@/components/top-menu'
 import { useFeatures } from '@/hooks/use-features'
-import { useFeatureStore } from '@/store'
 import {
   DrawCreateEvent,
   DrawSelectionChangeEvent,
@@ -23,26 +21,20 @@ const DynamicDraw = dynamic(() => import('@/components/map/draw-control'), {
 })
 
 export default function Home() {
-  const {
-    setFeatureGroups,
-    selectedFeatureNodeIds,
-    setSelectedFeatureNodeIds
-  } = useFeatureStore((state) => state)
+  const { features } = useFeatures()
 
-  const { featureNodes } = useFeatures()
+  // const onDrawFeatures = (e: DrawCreateEvent) => {
+  //   setFeatureGroups(e.features)
+  // }
 
-  const onDrawFeatures = (e: DrawCreateEvent) => {
-    setFeatureGroups(e.features)
-  }
+  // const onUpdateFeatures = (e: DrawUpdateEvent) => {
+  //   setFeatureGroups(e.features)
+  // }
 
-  const onUpdateFeatures = (e: DrawUpdateEvent) => {
-    setFeatureGroups(e.features)
-  }
-
-  const onSelectionChange = (e: DrawSelectionChangeEvent) => {
-    const ids = e.features.map((feature) => String(feature.id))
-    setSelectedFeatureNodeIds(ids)
-  }
+  // const onSelectionChange = (e: DrawSelectionChangeEvent) => {
+  //   const ids = e.features.map((feature) => String(feature.id))
+  //   setSelectedFeatureNodeIds(ids)
+  // }
 
   return (
     <main className='h-full w-full'>
@@ -57,11 +49,11 @@ export default function Home() {
           <div className='h-full w-[calc(100%-200px-360px)]'>
             <DynamicMap>
               <DynamicDraw
-                featureNodes={featureNodes}
-                selectedIds={selectedFeatureNodeIds}
-                onDrawCreate={onDrawFeatures}
-                onDrawUpdate={onUpdateFeatures}
-                onDrawSelectionChange={onSelectionChange}
+              // featureNodes={[]}
+              // selectedIds={[]}
+              // onDrawCreate={}
+              // onDrawUpdate={onUpdateFeatures}
+              // onDrawSelectionChange={onSelectionChange}
               />
             </DynamicMap>
           </div>

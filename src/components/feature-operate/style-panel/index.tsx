@@ -182,12 +182,14 @@ function PolygonStyle({ styles, onKeyValueChange }: GeometryStyleProps) {
 }
 
 function StylePanel() {
-  const { selectedFeatures, updateSelectedFeature } = useFeatures()
+  const { selectedFeatures, updateFeatures } = useFeatures()
   const { refreshStyle } = useDraw()
   const [styleGroup, setStyleGroup] = useState<StyleGroup | undefined>()
 
   useEffect(() => {
     setStyleGroup(generateStyleSetting(selectedFeatures))
+
+    console.log('stype panel', selectedFeatures)
   }, [selectedFeatures])
 
   const handleKeyValueChange = (
@@ -203,7 +205,7 @@ function StylePanel() {
         properties: { ...oldProperties, [key]: value }
       }
     })
-    updateSelectedFeature(newFeatures)
+    updateFeatures(newFeatures)
     refreshStyle(selectedFeatures)
   }
 
@@ -233,7 +235,6 @@ function StylePanel() {
           <LineStringStyle
             styles={styleGroup.line}
             onKeyValueChange={(key, value) => {
-              // console.log(333333, key, value)
               handleKeyValueChange('LineString', key, value)
             }}
           />

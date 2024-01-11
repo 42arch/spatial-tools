@@ -5,8 +5,6 @@ import caretRightFill from '@iconify/icons-ph/caret-right-fill'
 import folderSimplePlus from '@iconify/icons-ph/folder-simple-plus'
 import { useFeatures } from '@/hooks/use-features'
 import { useFeatureStore } from '@/store'
-import GroupNode from './group-node'
-import FeatureNode from './feature-node'
 import { cn } from '@/lib/utils'
 import useDraw from '@/hooks/use-draw'
 import {
@@ -16,6 +14,8 @@ import {
 } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import GroupNode from './group-node'
+import FeatureNode from './feature-node'
 
 function AddNewGroup() {
   const [open, toggleOpen] = useToggle(false)
@@ -58,29 +58,33 @@ function AddNewGroup() {
 function FeatureList() {
   const [open, toggleOpen] = useToggle(false)
   const { setMode } = useDraw()
+
   const {
-    currentGroupId,
-    selectedFeatureNodeIds,
-    setSelectedFeatureNodeIds,
-    setCurrentGroupId,
-    toggleFeatureNodeVisible
-  } = useFeatureStore((state) => state)
+    activatedGroupId,
+    setActivatedGroupId,
+    featureList,
+    selectedFeatureIds,
+    setSelectedFeatureIds,
+    hiddenFeatureIds,
+    toggleFeatureVisibility
+  } = useFeatures()
 
-  const { featureTree } = useFeatures()
-
-  const handleSelectClick = (nodeId: string, shiftKey: boolean) => {
+  const handleSelectClick = (
+    featureId: string | number | undefined,
+    shiftKey: boolean
+  ) => {
     setMode('simple_select')
-    const isSelected = selectedFeatureNodeIds.includes(nodeId)
+    const isSelected = selectedFeatureIds.includes(featureId)
     if (shiftKey) {
       const newSelectedNodeIds = isSelected
-        ? selectedFeatureNodeIds.filter((id) => id !== nodeId)
-        : [...selectedFeatureNodeIds, nodeId]
-      setSelectedFeatureNodeIds(newSelectedNodeIds)
+        ? selectedFeatureIds.filter((id) => id !== featureId)
+        : [...selectedFeatureIds, featureId]
+      setSelectedFeatureIds(newSelectedNodeIds)
     } else {
       if (isSelected) {
-        setSelectedFeatureNodeIds([])
+        setSelectedFeatureIds([])
       } else {
-        setSelectedFeatureNodeIds([nodeId])
+        setSelectedFeatureIds([featureId])
       }
     }
   }
@@ -101,27 +105,27 @@ function FeatureList() {
         <AddNewGroup />
       </div>
       <div className={cn('text-[13px]', open ? 'block' : 'hidden')}>
-        {featureTree.map((group) => (
+        {featureList.map((group) => (
           <GroupNode
-            key={group.label}
-            label={group.label}
-            isEditing={group.id === currentGroupId}
+            key={group.id}
+            label={group.name}
+            isEditing={group.id === activatedGroupId}
             onClick={() => {
-              setCurrentGroupId(group.id)
+              setActivatedGroupId(group.id)
             }}
           >
             <div className=''>
-              {group.data.map((node) => (
+              {group.data.map((feature) => (
                 <FeatureNode
-                  key={node.id}
-                  data={node}
-                  isSelected={selectedFeatureNodeIds.includes(node.id)}
-                  isVisible={node.visible}
-                  onIsVisibleChange={() => {
-                    toggleFeatureNodeVisible(group.id, node.id)
+                  key={feature.id}
+                  data={feature}
+                  isSelected={selectedFeatureIds.includes(feature.id as string)}
+                  isHidden={hiddenFeatureIds.includes(feature.id as string)}
+                  onIsHiddenChange={() => {
+                    toggleFeatureVisibility(feature.id as string)
                   }}
                   onSelectClick={(e: MouseEvent<HTMLDivElement>) => {
-                    handleSelectClick(node.id, e.shiftKey)
+                    handleSelectClick(feature.id, e.shiftKey)
                   }}
                 />
               ))}

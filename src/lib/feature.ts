@@ -1,10 +1,4 @@
-import {
-  FeatureGroup,
-  FeatureGroupMap,
-  FeatureNode,
-  FeatureType,
-  GeometryType
-} from '@/types'
+import { FeatureGroup, FeatureGroups, FeatureType, GeometryType } from '@/types'
 import { flatMapDeep, get, uniq } from 'lodash-es'
 import {
   DEFAULT_COLOR,
@@ -21,43 +15,25 @@ import {
 } from './constants'
 import { GeoJsonProperties } from 'geojson'
 
-export const mergeFeatureNodes = (
-  oldNodes: Array<FeatureNode>,
-  newNodes: Array<FeatureNode>
-) => {
-  const updatedNodes = oldNodes.map((oldNode) => {
-    const newNode = newNodes.find((node) => node.id === oldNode.id)
-    if (newNode) {
-      return { ...oldNode, ...newNode }
+export const getAllFeatures = (featureGroups: FeatureGroups) => {
+  const features: Array<FeatureType> = []
+  for (const groupId in featureGroups) {
+    const group = featureGroups[groupId]
+    for (const id in group.data) {
+      const feature = group.data[id]
+      features.push(feature)
     }
-    return oldNode
-  })
-  const addedNodes = newNodes.filter(
-    (newNode) => !oldNodes.some((oldNode) => oldNode.id === newNode.id)
-  )
-
-  return [...updatedNodes, ...addedNodes]
-}
-
-export const flattenFeatureGroupsToNodes = (featureGroups: FeatureGroupMap) => {
-  const featureGroupList = Object.values(featureGroups)
-  const featureNodes: Array<FeatureNode> = []
-  featureGroupList.forEach((group) => {
-    const nodeList = Object.values(group.data)
-    nodeList.map((node) => {
-      featureNodes.push(node)
-    })
-  })
-  return featureNodes
+  }
+  return features
 }
 
 type FeatureListGroup = {
   [K in keyof FeatureGroup]: K extends 'data'
-    ? Array<FeatureNode>
+    ? Array<FeatureType>
     : FeatureGroup[K]
 }
 
-export const convertFeatureGroupsToTree = (featureGroups: FeatureGroupMap) => {
+export const featureGroupsToList = (featureGroups: FeatureGroups) => {
   const newGroupList: Array<FeatureListGroup> = []
   const featureGroupList = Object.values(featureGroups)
   featureGroupList.forEach((group) => {
@@ -74,27 +50,6 @@ export const convertFeatureGroupsToTree = (featureGroups: FeatureGroupMap) => {
   return newGroupList
 }
 
-export const getSelectedNodesFromFeatureTree = (
-  featureTree: Array<FeatureListGroup>
-) => {
-  const selectedNodes: Array<FeatureNode> = []
-  featureTree.forEach((group) => {
-    group.data.forEach((node) => {
-      if (node.selected) {
-        selectedNodes.push(node)
-      }
-    })
-  })
-  return selectedNodes
-}
-
-export const getSelectedNodeIdsFromFeatureTree = (
-  featureTree: Array<FeatureListGroup>
-) => {
-  const selectedNodes = getSelectedNodesFromFeatureTree(featureTree)
-  return selectedNodes.map((node) => node.id)
-}
-
 export function getFeatureTypes(features: Array<FeatureType>) {
   const types = uniq(
     flatMapDeep(features, (obj) => get(obj, 'geometry.type', []))
@@ -102,7 +57,7 @@ export function getFeatureTypes(features: Array<FeatureType>) {
   return types
 }
 
-export function addDefaultStylePropertiesToFeature(feature: FeatureType) {
+export function setStyleProperties(feature: FeatureType) {
   function getValue(properties: GeoJsonProperties, key: string) {
     if (properties) {
       return properties[key]

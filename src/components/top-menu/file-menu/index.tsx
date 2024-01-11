@@ -12,7 +12,7 @@ function FileMenu() {
   return (
     <MenubarMenu>
       <MenubarTrigger className='relative'>File</MenubarTrigger>
-      <MenubarContent>
+      <MenubarContent className='text-[13px]'>
         <ImportMenuItem />
         <MenubarItem>Import From URL</MenubarItem>
         <MenubarSeparator />

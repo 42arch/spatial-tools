@@ -1,9 +1,10 @@
-import '@/styles/globals.css'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import { ReactNode } from 'react'
 import { Inter as FontSans } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/toaster'
-import { ReactNode } from 'react'
+import '@/styles/globals.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 
 export const fontSans = FontSans({
   subsets: ['latin'],

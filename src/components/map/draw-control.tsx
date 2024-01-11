@@ -3,8 +3,7 @@ import MapboxDraw, {
   DrawCreateEvent,
   DrawModeChangeEvent,
   DrawSelectionChangeEvent,
-  DrawUpdateEvent,
-  MapboxDrawOptions
+  DrawUpdateEvent
 } from '@mapbox/mapbox-gl-draw'
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode'
 import {
@@ -13,32 +12,22 @@ import {
   DirectMode,
   SimpleSelectMode
 } from 'mapbox-gl-draw-circle'
-import { FeatureNode, FeatureType } from '@/types'
 import { CUSTOM_STYLES } from './style-spec'
-import { FeatureCollection, GeoJsonProperties, Geometry } from 'geojson'
+import { FeatureCollection } from 'geojson'
 import { useDrawStore, useMapStore } from '@/store'
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import { useFeatures } from '@/hooks/use-features'
 
-interface Porps {
-  features?: FeatureType[]
-  featureNodes?: FeatureNode[]
-  selectedIds?: string[]
-  options?: MapboxDrawOptions
-  onDrawCreate?: (event: DrawCreateEvent) => void
-  onDrawUpdate?: (event: DrawUpdateEvent) => void
-  onModeChange?: (event: DrawModeChangeEvent) => void
-  onDrawSelectionChange?: (event: DrawSelectionChangeEvent) => void
-}
-
-const DrawControl = ({
-  featureNodes,
-  selectedIds,
-  onDrawCreate,
-  onDrawUpdate,
-  onDrawSelectionChange
-}: Porps) => {
+const DrawControl = () => {
   const { mapRef } = useMapStore()
   const { setDrawRef, mode, setMode } = useDrawStore()
+  const {
+    features,
+    addFeatures,
+    updateFeatures,
+    hiddenFeatureIds,
+    selectedFeatureIds,
+    setSelectedFeatureIds
+  } = useFeatures()
   const drawRef = useRef<MapboxDraw | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -69,10 +58,10 @@ const DrawControl = ({
       }
 
       mapRef?.current?.on('draw.create', (e: DrawCreateEvent) => {
-        onDrawCreate?.(e)
+        addFeatures(e.features)
       })
       mapRef?.current?.on('draw.update', (e: DrawUpdateEvent) => {
-        onDrawUpdate?.(e)
+        updateFeatures(e.features)
       })
       mapRef?.current?.on('draw.modechange', (e: DrawModeChangeEvent) =>
         setMode(e.mode)
@@ -81,7 +70,8 @@ const DrawControl = ({
       mapRef?.current?.on(
         'draw.selectionchange',
         (e: DrawSelectionChangeEvent) => {
-          onDrawSelectionChange?.(e)
+          const featureIds = e.features.map((f) => f.id)
+          setSelectedFeatureIds(featureIds)
         }
       )
     }
@@ -101,28 +91,28 @@ const DrawControl = ({
 
   useEffect(() => {
     if (drawRef.current) {
-      const features = featureNodes?.filter((n) => n.visible).map((n) => n.data)
-      const featureCollection: FeatureCollection<Geometry, GeoJsonProperties> =
-        {
-          type: 'FeatureCollection',
-          features: features || []
-        }
-
+      const displayedFeatures = features.filter(
+        (feature) => !hiddenFeatureIds.includes(feature.id)
+      )
+      const featureCollection: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: displayedFeatures
+      }
       drawRef.current.set(featureCollection)
     }
-  }, [featureNodes])
+  }, [features, hiddenFeatureIds])
 
   useEffect(() => {
-    if (selectedIds && selectedIds.length > 0) {
+    if (selectedFeatureIds && selectedFeatureIds.length > 0) {
       if (mode === 'simple_select') {
-        drawRef.current?.changeMode(mode, {
-          featureIds: selectedIds
+        drawRef.current?.changeMode(mode as string, {
+          featureIds: selectedFeatureIds
         })
       }
     } else {
       drawRef.current?.changeMode(mode as string)
     }
-  }, [mode, selectedIds])
+  }, [mode, selectedFeatureIds])
 
   if (!mounted) {
     return null

@@ -15,26 +15,28 @@ export type GeometryType =
   | 'MultiLineString'
   | 'MultiPolygon'
 
-export type AppGeometryType = 'point' | 'line' | 'polygon'
+export type AppShapeType = 'point' | 'line' | 'polygon'
+
+// export type FeatureType = Omit<Feature<Geometry, GeoJsonProperties>, 'id'> & {
+//   id: string
+// }
 
 export type FeatureType = Feature<Geometry, GeoJsonProperties>
 
-export type FeatureGroupMap = Record<string, FeatureGroup>
-
-export type FeatureNodeMap = Record<string, FeatureNode>
-
 export type FeatureGroup = {
   id: string
-  label: string
-  selected?: boolean
-  visible?: boolean
-  data: FeatureNodeMap
+  name: string
+  selected: boolean
+  hidden: boolean
+  data: Record<string, FeatureType>
 }
-export interface FeatureNode {
-  id: string
-  groupId: string
-  visible?: boolean
-  selected?: boolean
-  data: FeatureType
-  // data: FeatureType
-}
+
+export type FeatureGroups = Record<string, FeatureGroup>
+
+// export interface FeatureNode {
+//   id: string
+//   groupId: string
+//   hidden?: boolean
+//   selected?: boolean
+//   data: FeatureType
+// }
