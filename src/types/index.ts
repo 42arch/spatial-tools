@@ -21,6 +21,8 @@ export type AppShapeType = 'point' | 'line' | 'polygon'
 //   id: string
 // }
 
+export type FeatureId = string | number | undefined
+
 export type FeatureType = Feature<Geometry, GeoJsonProperties>
 
 export type FeatureGroup = {

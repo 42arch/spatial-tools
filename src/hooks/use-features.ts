@@ -1,12 +1,12 @@
 import { featureGroupsToList, getAllFeatures } from '@/lib/feature'
 import { useFeatureStore } from '@/store'
-import { FeatureType } from '@/types'
 import { useMemo } from 'react'
 
 export const useFeatures = () => {
   const {
     featureGroups,
     addFeatures,
+    deleteFeatures,
     updateFeatures,
     addNewFeatureGroup,
     activatedGroupId,
@@ -25,8 +25,6 @@ export const useFeatures = () => {
     return getAllFeatures(featureGroups)
   }, [featureGroups])
 
-  // const featureTree = convertFeatureGroupsToTree(featureGroups)
-
   const featureList = useMemo(() => {
     return featureGroupsToList(featureGroups)
   }, [featureGroups])
@@ -42,6 +40,7 @@ export const useFeatures = () => {
     featureList,
     selectedFeatures,
     addFeatures,
+    deleteFeatures,
     updateFeatures,
     addNewFeatureGroup,
     activatedGroupId,

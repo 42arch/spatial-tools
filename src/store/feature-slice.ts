@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
-import { FeatureType, FeatureGroup, FeatureGroups } from '@/types'
+import { FeatureType, FeatureGroup, FeatureGroups, FeatureId } from '@/types'
 import { setStyleProperties } from '@/lib/feature'
 
 const DEFAULT_GROUP: FeatureGroup = {
@@ -25,15 +25,16 @@ export interface FeatureSlice {
   featureGroups: FeatureGroups
   addNewFeatureGroup: (name: string) => void
   addFeatures: (features: Array<FeatureType>, groupId?: string) => void
+  deleteFeatures: (featureIds: Array<FeatureId>) => void
   updateFeatures: (features: Array<FeatureType>) => void
   selectedGroupIds: Array<string>
   setSelectedGroupIds: (ids: Array<string>) => void
   hiddenGroupIds: Array<string>
   toggleGroupVisibility: (id: string) => void
-  selectedFeatureIds: Array<string | number | undefined>
-  setSelectedFeatureIds: (ids: Array<string | number | undefined>) => void
-  hiddenFeatureIds: Array<string | number | undefined>
-  toggleFeatureVisibility: (id: string | number | undefined) => void
+  selectedFeatureIds: Array<FeatureId>
+  setSelectedFeatureIds: (ids: Array<FeatureId>) => void
+  hiddenFeatureIds: Array<FeatureId>
+  toggleFeatureVisibility: (id: FeatureId) => void
 }
 
 export const createFeatureSlice: StateCreator<
@@ -71,6 +72,19 @@ export const createFeatureSlice: StateCreator<
           }
         }
       }),
+    deleteFeatures: (featureIds: Array<FeatureId>) =>
+      set((state) => {
+        for (const groupId in state.featureGroups) {
+          const group = state.featureGroups[groupId]
+          if (group) {
+            for (const featureId in group.data) {
+              if (featureIds.includes(featureId)) {
+                delete group.data[featureId]
+              }
+            }
+          }
+        }
+      }),
     updateFeatures: (features: Array<FeatureType>) =>
       set((state) => {
         for (const groupId in state.featureGroups) {
@@ -91,7 +105,7 @@ export const createFeatureSlice: StateCreator<
       set((state) => {
         state.selectedGroupIds = groupIds
       }),
-    setSelectedFeatureIds: (featureIds: Array<string | number | undefined>) =>
+    setSelectedFeatureIds: (featureIds: Array<FeatureId>) =>
       set((state) => {
         state.selectedFeatureIds = featureIds
       }),
@@ -109,7 +123,7 @@ export const createFeatureSlice: StateCreator<
           }
         }
       }),
-    toggleFeatureVisibility: (featureId: string | number | undefined) =>
+    toggleFeatureVisibility: (featureId: FeatureId) =>
       set((state) => {
         if (state.hiddenFeatureIds.indexOf(featureId) === -1) {
           state.hiddenFeatureIds.push(featureId)
