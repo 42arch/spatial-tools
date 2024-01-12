@@ -9,41 +9,38 @@ import {
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
-import { FeatureType } from '@/types'
+import { LayerNode } from '@/types'
 import { Bbox } from '@/lib/spatial'
 import useMap from '@/hooks/use-map'
-import { useFeatures } from '@/hooks/use-features'
-import { nanoid } from 'nanoid'
+import useLayers from '@/hooks/use-layers'
 
-interface FeatureNodeMenuProps {
-  data: FeatureType
+interface LayerNodeMenuProps {
+  data: LayerNode
   children: ReactNode
 }
 
 const MenuItemClassName = 'text-[13px] focus:bg-primary/10'
 
-function FeatureNodeMenu({ data, children }: FeatureNodeMenuProps) {
+function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
   const { zoomToFit } = useMap()
-  const { addFeatures, deleteFeatures } = useFeatures()
+  const { getFeatures } = useLayers()
 
   const handleZoomToFit = () => {
-    const bbox = Bbox(data)
+    const features = getFeatures(data.id)
+    const bbox = Bbox({
+      type: 'FeatureCollection',
+      features: features
+    })
     zoomToFit(bbox)
   }
 
-  const handleDuplicate = () => {
-    const newFeature = { ...data }
-    newFeature.id = nanoid()
-    addFeatures([newFeature])
-  }
+  const handleDuplicate = () => {}
 
   const handleCopyAsGeojson = () => {}
 
   const handleExportAsGeojson = () => {}
 
-  const handleDelete = () => {
-    deleteFeatures([data.id])
-  }
+  const handleDelete = () => {}
 
   return (
     <ContextMenu>
@@ -101,4 +98,4 @@ function FeatureNodeMenu({ data, children }: FeatureNodeMenuProps) {
   )
 }
 
-export default FeatureNodeMenu
+export default LayerNodeMenu

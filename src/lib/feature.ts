@@ -47,6 +47,7 @@ export const featureGroupsToList = (featureGroups: FeatureGroups) => {
     })
     newGroupList.push(newGroup)
   })
+
   return newGroupList
 }
 

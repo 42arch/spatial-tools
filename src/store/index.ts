@@ -5,10 +5,17 @@ import { FeatureSlice, createFeatureSlice } from './feature-slice'
 import { DrawSlice, createDrawSlice } from './draw-slice'
 import { MapSlice, createMapSlice } from './map-slice'
 import { ViewSlice, createViewSlice } from './view-slice'
+import { LayerSlice, createLayerSlice } from './layer-slice'
 
 export const useFeatureStore = create<FeatureSlice>()(
   immer((...a) => ({
     ...createFeatureSlice(...a)
+  }))
+)
+
+export const useLayerStore = create<LayerSlice>()(
+  immer((...a) => ({
+    ...createLayerSlice(...a)
   }))
 )
 

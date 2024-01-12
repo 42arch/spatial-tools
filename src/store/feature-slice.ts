@@ -59,6 +59,7 @@ export const createFeatureSlice: StateCreator<
           data: {}
         }
         state.featureGroups[newGroup.id] = newGroup
+        state.activatedGroupId = newGroup.id
       }),
     addFeatures: (features: Array<FeatureType>, groupId?: string) =>
       set((state) => {
@@ -66,6 +67,7 @@ export const createFeatureSlice: StateCreator<
         const group = state.featureGroups[currentGroupId]
         if (group) {
           for (const feature of features) {
+            feature.id = feature.id || nanoid()
             if (feature.id) {
               group.data[feature.id] = setStyleProperties(feature)
             }

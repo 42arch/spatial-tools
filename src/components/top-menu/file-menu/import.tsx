@@ -7,10 +7,12 @@ import {
   validateGeoJSON
 } from '@/lib/file'
 import { useFeatures } from '@/hooks/use-features'
+import useLayers from '@/hooks/use-layers'
 
 function ImportMenuItem() {
   const { toast } = useToast()
   const { addFeatures, addNewFeatureGroup } = useFeatures()
+  const { addLayer } = useLayers()
 
   const hanleImportFile = async () => {
     const files = await openFileExplorer()
@@ -21,8 +23,13 @@ function ImportMenuItem() {
         const jsonObject = JSON.parse(content?.toString())
         const { isValid, errors } = validateGeoJSON(jsonObject)
         if (isValid) {
-          addNewFeatureGroup(fileName)
-          addFeatures(jsonObject.features)
+          // addNewFeatureGroup(fileName)
+          // addFeatures(jsonObject.features)
+
+          addLayer(fileName, {
+            type: 'FeatureCollection',
+            features: jsonObject.features
+          })
           toast({
             description: 'Import Data Successful.'
           })

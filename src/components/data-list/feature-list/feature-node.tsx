@@ -43,7 +43,6 @@ function FeatureNode({
   return (
     <FeatureNodeMenu data={data}>
       <div
-        key={data.id}
         className={cn(
           'group flex cursor-pointer select-none items-center justify-between py-1 pl-4 pr-2 text-xs hover:bg-primary/10',
           isSelected ? 'bg-primary/10' : ''

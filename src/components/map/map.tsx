@@ -1,6 +1,7 @@
 'use client'
 
-import { useMapStore } from '@/store'
+import { useLayerStore, useMapStore } from '@/store'
+import { layer } from '@uiw/react-codemirror'
 import mapboxgl from 'mapbox-gl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
@@ -16,6 +17,7 @@ export default function BaseMap({ children }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
   const { setMapRef } = useMapStore()
+  const { layers, addLayer } = useLayerStore()
 
   const onMapLoaded = () => {
     setLoaded(true)
@@ -38,6 +40,10 @@ export default function BaseMap({ children }: Props) {
       setMapRef(null)
     }
   }, [])
+
+  useEffect(() => {
+    console.log(9999, layers)
+  }, [layers])
 
   return (
     <div className='h-full w-full' ref={mapContainerRef}>
