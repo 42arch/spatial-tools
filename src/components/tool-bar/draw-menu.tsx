@@ -74,7 +74,7 @@ function DrawMenu() {
   return (
     <Button
       className={cn(
-        'relative h-10 w-10 p-1 text-foreground ring-0  focus-visible:ring-0',
+        'relative h-10 w-10 border border-border p-1 text-foreground ring-0 focus-visible:ring-0',
         active
           ? 'bg-primary text-primary-foreground'
           : 'bg-background text-foreground hover:bg-secondary'
