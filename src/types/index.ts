@@ -1,10 +1,5 @@
-import {
-  Feature,
-  Geometry,
-  GeoJsonProperties,
-  FeatureCollection
-} from 'geojson'
-import { AnyLayer, AnyLayout, AnyPaint, Layer } from 'mapbox-gl'
+import { Feature, Geometry, GeoJsonProperties } from 'geojson'
+import { AnyLayer } from 'mapbox-gl'
 
 export type DrawMode =
   | 'draw_line_string'

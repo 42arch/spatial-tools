@@ -1,4 +1,4 @@
-import { AppGeometryType, FeatureType } from '@/types'
+import { AppShapeType, FeatureType } from '@/types'
 import { getFeatureTypes } from './feature'
 import { APP_PREFIX } from './constants'
 
@@ -61,7 +61,7 @@ export type StyleKey =
 export type StyleGroupProps = { has: boolean } & Partial<
   Record<StyleKey, StyleValue>
 >
-export type StyleGroup = Record<AppGeometryType, StyleGroupProps>
+export type StyleGroup = Record<AppShapeType, StyleGroupProps>
 
 export const DEFAULT_COLOR = '#af1790'
 export const DEFAULT_SYMBOL = 'dot'

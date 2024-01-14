@@ -52,12 +52,6 @@ function GroupOperate({ onAddNew }: GroupOperateProps) {
             </Button>
           </PopoverContent>
         </Popover>
-
-        {/* <DataImportModal>
-          <Button variant='outline' className='h-8 text-sm'>
-            Import
-          </Button>
-        </DataImportModal> */}
       </div>
     </div>
   )
