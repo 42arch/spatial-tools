@@ -1,18 +1,24 @@
 import { StateCreator } from 'zustand'
 import { LayerNode, Layers } from '@/types'
-import { AnyLayer, Layer } from 'mapbox-gl'
+import { FeatureCollection } from 'geojson'
+import { nanoid } from 'nanoid'
 
-const initialFeatureState = {
+const initialLayerState = {
   layers: {},
-  hiddenGroupIds: [],
-  hiddenFeatureIds: [],
-  selectedFeatureIds: []
+  currentRemoveId: null,
+  hiddenLayerIds: [],
+  selectedLayerIds: []
 }
 
 export interface LayerSlice {
   layers: Layers
-  addLayer: (id: string, name: string, layer: any) => void
+  currentRemoveId: string | null
+  hiddenLayerIds: string[]
+  selectedLayerIds: string[]
+  addLayer: (name: string, data: FeatureCollection) => void
   removeLayer: (id: string) => void
+  clearRemoveId: () => void
+  toggleLayer: (id: string) => void
 }
 
 export const createLayerSlice: StateCreator<
@@ -22,18 +28,33 @@ export const createLayerSlice: StateCreator<
   LayerSlice
 > = (set) => {
   return {
-    ...initialFeatureState,
-    addLayer: (id: string, name: string, layer: AnyLayer) =>
+    ...initialLayerState,
+    addLayer: (name: string, data: FeatureCollection) =>
       set((state) => {
-        // state.layers
         const layerNode: LayerNode = {
-          id: id,
+          id: nanoid(),
           name: name,
-          layer: layer
+          data: data
+          // layer: layer
         }
-        // @ts-expect-error
-        state.layers[id] = layerNode
+        state.layers[layerNode.id] = layerNode
       }),
-    removeLayer: (id: string) => set((state) => {})
+    removeLayer: (id: string) =>
+      set((state) => {
+        state.currentRemoveId = id
+        delete state.layers[id]
+      }),
+    toggleLayer: (id: string) =>
+      set((state) => {
+        if (state.hiddenLayerIds.indexOf(id) === -1) {
+          state.hiddenLayerIds.push(id)
+        } else {
+          state.hiddenLayerIds = state.hiddenLayerIds.filter((i) => i !== id)
+        }
+      }),
+    clearRemoveId: () =>
+      set((state) => {
+        state.currentRemoveId = null
+      })
   }
 }

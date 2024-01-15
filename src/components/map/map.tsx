@@ -1,5 +1,11 @@
 'use client'
 
+import useLayers from '@/hooks/use-layers'
+import {
+  DEFAULT_COLOR,
+  DEFAULT_FILL_OPACITY,
+  DEFAULT_STROKE_WIDTH
+} from '@/lib/style'
 import { useLayerStore, useMapStore } from '@/store'
 import { layer } from '@uiw/react-codemirror'
 import mapboxgl from 'mapbox-gl'
@@ -11,13 +17,15 @@ mapboxgl.accessToken =
 interface Props {
   children: ReactNode
 }
+const types = ['point', 'line', 'fill']
 
 export default function BaseMap({ children }: Props) {
   const mapContainerRef = useRef<any>()
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
   const { setMapRef } = useMapStore()
-  const { layers, addLayer } = useLayerStore()
+  const { layerList, currentRemoveId, clearRemoveId, hiddenLayerIds } =
+    useLayers()
 
   const onMapLoaded = () => {
     setLoaded(true)
@@ -42,8 +50,96 @@ export default function BaseMap({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    console.log(9999, layers)
-  }, [layers])
+    if (mapRef.current) {
+      // remove layer
+      if (currentRemoveId) {
+        types.forEach((type) => {
+          if (mapRef.current?.getLayer(`${currentRemoveId}-${type}`)) {
+            mapRef.current?.removeLayer(`${currentRemoveId}-${type}`)
+            clearRemoveId()
+          }
+        })
+      }
+
+      // render layer
+      layerList.forEach((layer) => {
+        if (!mapRef.current?.getLayer(`${layer.id}-point`)) {
+          mapRef.current?.addLayer({
+            id: `${layer.id}-point`,
+            type: 'circle',
+            source: {
+              type: 'geojson',
+              data: layer.data
+            },
+            filter: ['==', '$type', 'Point'],
+            paint: {
+              'circle-radius': 4,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff',
+              'circle-color': DEFAULT_COLOR
+            }
+          })
+        }
+        if (!mapRef.current?.getLayer(`${layer.id}-line`)) {
+          mapRef.current?.addLayer({
+            id: `${layer.id}-line`,
+            type: 'line',
+            source: {
+              type: 'geojson',
+              data: layer.data
+            },
+            filter: ['==', '$type', 'LineString'],
+            layout: {
+              'line-cap': 'round',
+              'line-join': 'round'
+            },
+            paint: {
+              'line-color': DEFAULT_COLOR,
+              'line-width': DEFAULT_STROKE_WIDTH
+            }
+          })
+        }
+        if (!mapRef.current?.getLayer(`${layer.id}-fill`)) {
+          mapRef.current?.addLayer({
+            id: `${layer.id}-fill`,
+            type: 'fill',
+            source: {
+              type: 'geojson',
+              data: layer.data
+            },
+            filter: ['==', '$type', 'Polygon'],
+            paint: {
+              'fill-color': DEFAULT_COLOR,
+              'fill-opacity': DEFAULT_FILL_OPACITY
+            }
+          })
+        }
+
+        // toggle visibility
+        if (hiddenLayerIds.includes(layer.id)) {
+          types.forEach((type) => {
+            if (mapRef.current?.getLayer(`${layer.id}-${type}`)) {
+              mapRef.current?.setLayoutProperty(
+                `${layer.id}-${type}`,
+                'visibility',
+                'none'
+              )
+            }
+          })
+        } else {
+          types.forEach((type) => {
+            if (mapRef.current?.getLayer(`${layer.id}-${type}`)) {
+              mapRef.current?.setLayoutProperty(
+                `${layer.id}-${type}`,
+                'visibility',
+                'visible'
+              )
+            }
+          })
+        }
+      })
+    }
+  }, [layerList, currentRemoveId, hiddenLayerIds, clearRemoveId])
 
   return (
     <div className='h-full w-full' ref={mapContainerRef}>

@@ -9,40 +9,53 @@ import {
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
-import { LayerNode } from '@/types'
+import { FeatureType } from '@/types'
 import { Bbox } from '@/lib/spatial'
 import useMap from '@/hooks/use-map'
-import useLayers from '@/hooks/use-layers'
 import { useFeatures } from '@/hooks/use-features'
+import { nanoid } from 'nanoid'
+import useLayers from '@/hooks/use-layers'
 
-interface LayerNodeMenuProps {
-  data: LayerNode
+interface GroupNodeMenuProps {
+  id: string
+  data: Array<FeatureType>
   children: ReactNode
 }
 
 const MenuItemClassName = 'text-[13px] focus:bg-primary/10'
 
-function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
+function GroupNodeMenu({ id, data, children }: GroupNodeMenuProps) {
   const { zoomToFit } = useMap()
-  const { remove } = useLayers()
-  const { addNewFeatureGroup, addFeatures } = useFeatures()
+  const { addFeatures, removeGroups } = useFeatures()
+  const { addLayer } = useLayers()
 
   const handleZoomToFit = () => {
-    const bbox = Bbox(data.data)
+    const bbox = Bbox({
+      type: 'FeatureCollection',
+      features: data
+    })
     zoomToFit(bbox)
   }
 
-  const handleDuplicate = () => {}
-
-  const handleConvertToFeatures = () => {
-    addNewFeatureGroup(data.name)
-    addFeatures(data.data.features)
-    remove(data.id)
+  const handleDuplicate = () => {
+    // const newFeature = { ...data }
+    // newFeature.id = nanoid()
+    // addFeatures([newFeature])
   }
+
+  const handleCopyAsGeojson = () => {}
 
   const handleExportAsGeojson = () => {}
 
-  const handleDelete = () => remove(data.id)
+  const handleConvertToLayer = () => {
+    removeGroups([id])
+    addLayer('untitled', {
+      type: 'FeatureCollection',
+      features: data
+    })
+  }
+
+  const handleDelete = () => removeGroups([id])
 
   return (
     <ContextMenu>
@@ -88,14 +101,14 @@ function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
         </ContextMenuSub>
         <ContextMenuSub>
           <ContextMenuSubTrigger className={MenuItemClassName}>
-            Operates
+            Actions
           </ContextMenuSubTrigger>
           <ContextMenuSubContent>
             <ContextMenuItem
               className={MenuItemClassName}
-              onClick={handleConvertToFeatures}
+              onClick={handleConvertToLayer}
             >
-              Convert to features
+              Convert to layer
             </ContextMenuItem>
           </ContextMenuSubContent>
         </ContextMenuSub>
@@ -113,4 +126,4 @@ function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
   )
 }
 
-export default LayerNodeMenu
+export default GroupNodeMenu

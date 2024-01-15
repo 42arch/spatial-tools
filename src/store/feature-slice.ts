@@ -25,7 +25,8 @@ export interface FeatureSlice {
   featureGroups: FeatureGroups
   addNewFeatureGroup: (name: string) => void
   addFeatures: (features: Array<FeatureType>, groupId?: string) => void
-  deleteFeatures: (featureIds: Array<FeatureId>) => void
+  removeFeatures: (featureIds: Array<FeatureId>) => void
+  removeGroups: (groupIds: Array<string>) => void
   updateFeatures: (features: Array<FeatureType>) => void
   selectedGroupIds: Array<string>
   setSelectedGroupIds: (ids: Array<string>) => void
@@ -67,14 +68,17 @@ export const createFeatureSlice: StateCreator<
         const group = state.featureGroups[currentGroupId]
         if (group) {
           for (const feature of features) {
-            feature.id = feature.id || nanoid()
-            if (feature.id) {
-              group.data[feature.id] = setStyleProperties(feature)
+            const newFeature = {
+              id: feature.id || nanoid(),
+              ...feature
+            }
+            if (newFeature.id) {
+              group.data[newFeature.id] = setStyleProperties(newFeature)
             }
           }
         }
       }),
-    deleteFeatures: (featureIds: Array<FeatureId>) =>
+    removeFeatures: (featureIds: Array<FeatureId>) =>
       set((state) => {
         for (const groupId in state.featureGroups) {
           const group = state.featureGroups[groupId]
@@ -86,6 +90,16 @@ export const createFeatureSlice: StateCreator<
             }
           }
         }
+      }),
+    removeGroups: (groupIds: Array<string>) =>
+      set((state) => {
+        groupIds.forEach((groupId) => {
+          const group = state.featureGroups[groupId]
+          if (group) {
+            delete state.featureGroups[groupId]
+          }
+        })
+        state.activatedGroupId = 'default'
       }),
     updateFeatures: (features: Array<FeatureType>) =>
       set((state) => {

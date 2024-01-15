@@ -108,7 +108,9 @@ function FeatureList() {
         {featureList.map((group) => (
           <GroupNode
             key={group.id}
-            label={group.name}
+            id={group.id}
+            data={group.data}
+            name={group.name}
             isEditing={group.id === activatedGroupId}
             onClick={() => {
               setActivatedGroupId(group.id)
@@ -119,10 +121,10 @@ function FeatureList() {
                 <FeatureNode
                   key={feature.id}
                   data={feature}
-                  isSelected={selectedFeatureIds.includes(feature.id as string)}
-                  isHidden={hiddenFeatureIds.includes(feature.id as string)}
+                  isSelected={selectedFeatureIds.includes(feature.id)}
+                  isHidden={hiddenFeatureIds.includes(feature.id)}
                   onIsHiddenChange={() => {
-                    toggleFeatureVisibility(feature.id as string)
+                    toggleFeatureVisibility(feature.id)
                   }}
                   onSelectClick={(e: MouseEvent<HTMLDivElement>) => {
                     handleSelectClick(feature.id, e.shiftKey)
