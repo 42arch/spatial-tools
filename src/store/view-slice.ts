@@ -2,29 +2,46 @@ import { UniqueIdentifier } from '@dnd-kit/core'
 import { StateCreator } from 'zustand'
 
 const initialViewState = {
-  draggableViews: [
-    {
+  draggableViews: {
+    'spatial-toolbox': {
       id: 'spatial-toolbox',
       name: 'Spatial Toolbox',
       hidden: true,
+      size: {
+        width: 220,
+        height: 320
+      },
       position: {
         x: 920,
         y: 80
       }
+    },
+    'data-table': {
+      id: 'data-table',
+      name: 'Data Table',
+      hidden: true,
+      size: {
+        width: 800,
+        height: 400
+      },
+      position: {
+        x: window.innerWidth / 2 - 400,
+        y: window.innerHeight / 2 - 200
+      }
     }
-  ]
+  }
 }
 
 type DraggableView = {
   id: UniqueIdentifier
   name: string
+  size: { width: number; height: number; minWidth?: number; minHeight?: number }
   position: { x: number; y: number }
   hidden: boolean
 }
 
 export interface ViewSlice {
-  draggableViews: Array<DraggableView>
-  setDraggableViews: (draggableViews: Array<DraggableView>) => void
+  draggableViews: Record<string, DraggableView>
   updateDraggableView: (
     id: UniqueIdentifier,
     delta: { x: number; y: number }
@@ -40,20 +57,15 @@ export const createViewSlice: StateCreator<
 > = (set) => {
   return {
     ...initialViewState,
-    setDraggableViews: (draggableViews: Array<DraggableView>) =>
-      set((state) => {
-        state.draggableViews = draggableViews
-      }),
     updateDraggableView: (
       id: UniqueIdentifier,
       delta: { x: number; y: number }
     ) =>
       set((state) => {
-        const index = state.draggableViews.findIndex((view) => view.id === id)
-        if (index !== -1) {
-          const position = state.draggableViews[index].position
-
-          state.draggableViews[index].position = {
+        const view = state.draggableViews[id]
+        if (view) {
+          const position = view.position
+          view.position = {
             x: (position.x += delta.x),
             y: (position.y += delta.y)
           }
@@ -61,10 +73,9 @@ export const createViewSlice: StateCreator<
       }),
     toggleDraggableView: (id: UniqueIdentifier) =>
       set((state) => {
-        const index = state.draggableViews.findIndex((view) => view.id === id)
-        if (index !== -1) {
-          state.draggableViews[index].hidden =
-            !state.draggableViews[index].hidden
+        const view = state.draggableViews[id]
+        if (view) {
+          view.hidden = !view.hidden
         }
       })
   }

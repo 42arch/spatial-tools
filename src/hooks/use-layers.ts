@@ -1,3 +1,4 @@
+import { getFeaturesData } from '@/lib/layer'
 import { useLayerStore, useMapStore } from '@/store'
 import { Feature, FeatureCollection } from 'geojson'
 import { useMemo } from 'react'
@@ -6,6 +7,8 @@ export default function useLayers() {
   const { mapRef } = useMapStore()
   const {
     layers,
+    selectedLayerId,
+    setSelectedLayerId,
     hiddenLayerIds,
     toggleLayer,
     removeLayer,
@@ -20,6 +23,17 @@ export default function useLayers() {
 
   const getLayer = (id: string) => {
     return mapRef?.current?.getLayer(id)
+  }
+
+  const getLayerData = (id: string | null) => {
+    if (!id) return []
+    const layer = layers[id]
+    if (layer) {
+      const data = getFeaturesData(layer)
+      return data
+    } else {
+      return []
+    }
   }
 
   const getSource = (id: string) => {
@@ -41,10 +55,13 @@ export default function useLayers() {
   return {
     layerList,
     hiddenLayerIds,
+    selectedLayerId,
+    setSelectedLayerId,
     addLayer,
     toggleLayer,
     remove: removeLayer,
     getLayer,
+    getLayerData,
     getSource,
     querySourceFeatures,
     getFeatures,

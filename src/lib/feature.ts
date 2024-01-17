@@ -13,7 +13,7 @@ import {
   STYLE_FIELD,
   WIDTH_FIELD
 } from './constants'
-import { GeoJsonProperties } from 'geojson'
+import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson'
 
 export const getAllFeatures = (featureGroups: FeatureGroups) => {
   const features: Array<FeatureType> = []

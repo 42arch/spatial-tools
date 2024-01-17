@@ -9,20 +9,22 @@ import {
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
-import { LayerNode } from '@/types'
+import { LayerType } from '@/types'
 import { Bbox } from '@/lib/spatial'
 import useMap from '@/hooks/use-map'
 import useLayers from '@/hooks/use-layers'
 import { useFeatures } from '@/hooks/use-features'
+import useDraggableView from '@/hooks/use-draggable-view'
 
 interface LayerNodeMenuProps {
-  data: LayerNode
+  data: LayerType
   children: ReactNode
 }
 
 const MenuItemClassName = 'text-[13px] focus:bg-primary/10'
 
 function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
+  const { toggle } = useDraggableView()
   const { zoomToFit } = useMap()
   const { remove } = useLayers()
   const { addNewFeatureGroup, addFeatures } = useFeatures()
@@ -30,6 +32,10 @@ function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
   const handleZoomToFit = () => {
     const bbox = Bbox(data.data)
     zoomToFit(bbox)
+  }
+
+  const handleViewData = () => {
+    toggle('data-table')
   }
 
   const handleDuplicate = () => {}
@@ -53,6 +59,9 @@ function LayerNodeMenu({ data, children }: LayerNodeMenuProps) {
           onClick={handleZoomToFit}
         >
           Zoom to fit
+        </ContextMenuItem>
+        <ContextMenuItem className={MenuItemClassName} onClick={handleViewData}>
+          View data
         </ContextMenuItem>
         <ContextMenuItem
           className={MenuItemClassName}

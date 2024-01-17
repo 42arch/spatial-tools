@@ -4,7 +4,7 @@ import {
   GeoJsonProperties,
   FeatureCollection
 } from 'geojson'
-import { AnyLayer, AnyLayout, AnyPaint } from 'mapbox-gl'
+import { AnyLayout, AnyPaint } from 'mapbox-gl'
 
 export type DrawMode =
   | 'draw_line_string'
@@ -37,7 +37,7 @@ export type FeatureGroup = {
 
 export type FeatureGroups = Record<string, FeatureGroup>
 
-export type LayerNode = {
+export type LayerType = {
   id: string
   name: string
   data: FeatureCollection
@@ -48,4 +48,4 @@ export type LayerNode = {
   // layout: AnyLayout
 }
 
-export type Layers = Record<string, LayerNode>
+export type Layers = Record<string, LayerType>

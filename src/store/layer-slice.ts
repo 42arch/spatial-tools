@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import { LayerNode, Layers } from '@/types'
+import { LayerType, Layers } from '@/types'
 import { FeatureCollection } from 'geojson'
 import { nanoid } from 'nanoid'
 
@@ -7,14 +7,15 @@ const initialLayerState = {
   layers: {},
   currentRemoveId: null,
   hiddenLayerIds: [],
-  selectedLayerIds: []
+  selectedLayerId: null
 }
 
 export interface LayerSlice {
   layers: Layers
   currentRemoveId: string | null
   hiddenLayerIds: string[]
-  selectedLayerIds: string[]
+  selectedLayerId: string | null
+  setSelectedLayerId: (id: string) => void
   addLayer: (name: string, data: FeatureCollection) => void
   removeLayer: (id: string) => void
   clearRemoveId: () => void
@@ -31,7 +32,7 @@ export const createLayerSlice: StateCreator<
     ...initialLayerState,
     addLayer: (name: string, data: FeatureCollection) =>
       set((state) => {
-        const layerNode: LayerNode = {
+        const layerNode: LayerType = {
           id: nanoid(),
           name: name,
           data: data
@@ -43,6 +44,10 @@ export const createLayerSlice: StateCreator<
       set((state) => {
         state.currentRemoveId = id
         delete state.layers[id]
+      }),
+    setSelectedLayerId: (id: string) =>
+      set((state) => {
+        state.selectedLayerId = id
       }),
     toggleLayer: (id: string) =>
       set((state) => {

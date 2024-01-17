@@ -6,7 +6,13 @@ import useLayers from '@/hooks/use-layers'
 import LayerNode from './layer-node'
 
 function LayerList() {
-  const { layerList, hiddenLayerIds, toggleLayer } = useLayers()
+  const {
+    layerList,
+    selectedLayerId,
+    hiddenLayerIds,
+    toggleLayer,
+    setSelectedLayerId
+  } = useLayers()
   const [open, toggleOpen] = useToggle(false)
 
   return (
@@ -30,7 +36,8 @@ function LayerList() {
             name={layer.name}
             isHidden={hiddenLayerIds.includes(layer.id)}
             onIsHiddenChange={() => toggleLayer(layer.id)}
-            isSelected={false}
+            isSelected={selectedLayerId === layer.id}
+            onSelectClick={() => setSelectedLayerId(layer.id)}
           />
         ))}
       </div>

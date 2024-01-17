@@ -5,13 +5,15 @@ export default function useDraggableView() {
   const { draggableViews, updateDraggableView, toggleDraggableView } =
     useViewStore()
 
+  const viewList = Object.values(draggableViews)
+
   const isActive = (id: UniqueIdentifier) => {
-    const view = draggableViews.find((v) => v.id === id)
+    const view = draggableViews[id]
     return !view?.hidden
   }
 
   return {
-    views: draggableViews,
+    viewList: viewList,
     update: updateDraggableView,
     toggle: toggleDraggableView,
     isActive

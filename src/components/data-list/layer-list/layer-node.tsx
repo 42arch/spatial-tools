@@ -4,12 +4,12 @@ import eyeIcon from '@iconify/icons-ph/eye'
 import eyeClosed from '@iconify/icons-ph/eye-closed'
 import { cn } from '@/lib/utils'
 import LayerNodeMenu from './layer-node-menu'
-import { LayerNode } from '@/types'
+import { LayerType } from '@/types'
 
 interface LayerNodeProps {
   id: string
   name: string
-  data: LayerNode
+  data: LayerType
   isSelected: boolean
   isHidden: boolean
   onSelectClick?: () => void
