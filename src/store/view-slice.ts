@@ -21,12 +21,12 @@ const initialViewState = {
       name: 'Data Table',
       hidden: true,
       size: {
-        width: 800,
-        height: 400
+        width: 900,
+        height: 600
       },
       position: {
-        x: window.innerWidth / 2 - 400,
-        y: window.innerHeight / 2 - 200
+        x: window.innerWidth / 2 - 450,
+        y: window.innerHeight / 2 - 300
       }
     }
   }

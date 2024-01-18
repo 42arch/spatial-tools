@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
+  createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable
@@ -20,47 +20,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import useLayers from '@/hooks/use-layers'
-import { ScrollArea } from '../ui/scroll-area'
-
-// const data: Payment[] = [
-//   {
-//     id: 'm5gr84i9',
-//     amount: 316,
-//     status: 'success',
-//     email: 'ken99@yahoo.com'
-//   },
-//   {
-//     id: '3u1reuv4',
-//     amount: 242,
-//     status: 'success',
-//     email: 'Abe45@gmail.com'
-//   },
-//   {
-//     id: 'derv1ws0',
-//     amount: 837,
-//     status: 'processing',
-//     email: 'Monserrat44@gmail.com'
-//   },
-//   {
-//     id: '5kma53ae',
-//     amount: 874,
-//     status: 'success',
-//     email: 'Silas22@gmail.com'
-//   },
-//   {
-//     id: 'bhqecj4p',
-//     amount: 721,
-//     status: 'failed',
-//     email: 'carmella@hotmail.com'
-//   }
-// ]
-
-// export type Payment = {
-//   id: string
-//   amount: number
-//   status: 'pending' | 'processing' | 'success' | 'failed'
-//   email: string
-// }
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import DataPagination from './data-pagination'
 
 type TableData = {
   [key: string]: any
@@ -70,211 +31,116 @@ const generateColumns = (data: TableData[]): ColumnDef<TableData>[] => {
   if (data.length === 0) {
     return []
   }
-  return Object.keys(data[0]).map((key) => ({
-    header: key,
-    accessor: key,
-    cell: ({ row }) => {
-      return <div>{row.original[key]}</div>
-    }
-  }))
+
+  const keys = ['index', ...Object.keys(data[0])]
+  const columnHelper = createColumnHelper<TableData>()
+  return keys.map((key) =>
+    columnHelper.accessor(key, {
+      header: () => (key === 'index' ? '' : key),
+      cell: (info) =>
+        key === 'index' ? (
+          <span className='text-muted-foreground'>{info.row.index}</span>
+        ) : (
+          info.getValue()
+        )
+    })
+  )
 }
-
-// export const columns: ColumnDef<Payment>[] = [
-//   // {
-//   //   id: 'select',
-//   //   header: ({ table }) => (
-//   //     <Checkbox
-//   //       checked={
-//   //         table.getIsAllPageRowsSelected() ||
-//   //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-//   //       }
-//   //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-//   //       aria-label='Select all'
-//   //     />
-//   //   ),
-//   //   cell: ({ row }) => (
-//   //     <Checkbox
-//   //       checked={row.getIsSelected()}
-//   //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-//   //       aria-label='Select row'
-//   //     />
-//   //   ),
-//   //   enableSorting: false,
-//   //   enableHiding: false
-//   // },
-//   {
-//     accessorKey: 'status',
-//     header: 'Status',
-//     cell: ({ row }) => (
-//       <div className='capitalize'>{row.getValue('status')}</div>
-//     )
-//   },
-//   {
-//     accessorKey: 'email',
-//     header: ({ column }) => {
-//       return (
-//         <Button
-//           variant='ghost'
-//           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-//         >
-//           Email
-//           <CaretSortIcon className='ml-2 h-4 w-4' />
-//         </Button>
-//       )
-//     },
-//     cell: ({ row }) => <div className='lowercase'>{row.getValue('email')}</div>
-//   },
-//   {
-//     accessorKey: 'amount',
-//     header: () => <div className='text-right'>Amount</div>,
-//     cell: ({ row }) => {
-//       const amount = parseFloat(row.getValue('amount'))
-
-//       // Format the amount as a dollar amount
-//       const formatted = new Intl.NumberFormat('en-US', {
-//         style: 'currency',
-//         currency: 'USD'
-//       }).format(amount)
-
-//       return <div className='text-right font-medium'>{formatted}</div>
-//     }
-//   }
-//   // {
-//   //   id: 'actions',
-//   //   enableHiding: false,
-//   //   cell: ({ row }) => {
-//   //     const payment = row.original
-
-//   //     return (
-//   //       <DropdownMenu>
-//   //         <DropdownMenuTrigger asChild>
-//   //           <Button variant='ghost' className='h-8 w-8 p-0'>
-//   //             <span className='sr-only'>Open menu</span>
-//   //             <DotsHorizontalIcon className='h-4 w-4' />
-//   //           </Button>
-//   //         </DropdownMenuTrigger>
-//   //         <DropdownMenuContent align='end'>
-//   //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//   //           <DropdownMenuItem
-//   //             onClick={() => navigator.clipboard.writeText(payment.id)}
-//   //           >
-//   //             Copy payment ID
-//   //           </DropdownMenuItem>
-//   //           <DropdownMenuSeparator />
-//   //           <DropdownMenuItem>View customer</DropdownMenuItem>
-//   //           <DropdownMenuItem>View payment details</DropdownMenuItem>
-//   //         </DropdownMenuContent>
-//   //       </DropdownMenu>
-//   //     )
-//   //   }
-//   // }
-// ]
 
 function DataTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  // const [data, setData] = useState<Array<TableData>>([])
+  const [data, setData] = useState<Array<TableData>>([])
+  const [columns, setColumns] = useState<ColumnDef<TableData>[]>([])
   const { selectedLayerId, getLayerData } = useLayers()
 
-  const data = useMemo(() => {
-    return getLayerData(selectedLayerId)
-  }, [getLayerData, selectedLayerId])
-
-  const columns = useMemo(() => {
-    return generateColumns(data)
-  }, [data])
-
-  console.log(88877777, data)
+  useEffect(() => {
+    const tableData = getLayerData(selectedLayerId)
+    setData(tableData)
+    const tableColumns = generateColumns(tableData)
+    setColumns(tableColumns)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLayerId])
 
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 30
+      }
+    },
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
       rowSelection
     }
   })
 
   return (
-    <div className='h-full w-full text-sm'>
-      <Table className='relative h-full border pt-2'>
-        <TableHeader className='top-0 w-full'>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id} className='h-8'>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody className='h-[300px] overflow-y-auto'>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className='h-8'>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+    <div className='relative h-full w-full pt-2 text-sm'>
+      <ScrollArea
+        className='relative h-[calc(100%-36px)] w-full border'
+        type='hover'
+      >
+        <Table className='h-full w-full'>
+          <TableHeader className='sticky top-0 z-10 w-full bg-secondary'>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className=''>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className='h-24 text-center text-muted-foreground'
-              >
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      {/* <div className='flex items-center justify-end space-x-2 py-4'>
-        <div className='flex-1 text-sm text-muted-foreground'></div>
-        <div className='space-x-2'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div> */}
+            ))}
+          </TableHeader>
+          <TableBody className='relative max-h-full'>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center text-muted-foreground'
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <ScrollBar orientation='horizontal' />
+      </ScrollArea>
+      <DataPagination table={table} />
     </div>
   )
 }
