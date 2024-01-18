@@ -36,6 +36,7 @@ function LayerNode({
         <div
           className='flex w-[calc(100%-1.5rem)] items-center'
           onClick={onSelectClick}
+          onContextMenu={onSelectClick}
         >
           <Icon icon={layerStackO} className='text-sm text-muted-foreground' />
           <span className='pl-2 text-accent-foreground'>{name}</span>

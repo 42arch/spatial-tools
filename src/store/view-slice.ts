@@ -1,6 +1,18 @@
 import { UniqueIdentifier } from '@dnd-kit/core'
 import { StateCreator } from 'zustand'
 
+const getPosition = (width: number, height: number) => {
+  return typeof window !== 'undefined'
+    ? {
+        x: window.innerWidth / 2 - width / 2,
+        y: window.innerHeight / 2 - height / 2
+      }
+    : {
+        x: 0,
+        y: 0
+      }
+}
+
 const initialViewState = {
   draggableViews: {
     'spatial-toolbox': {
@@ -11,10 +23,7 @@ const initialViewState = {
         width: 220,
         height: 320
       },
-      position: {
-        x: 920,
-        y: 80
-      }
+      position: getPosition(220, 320)
     },
     'data-table': {
       id: 'data-table',
@@ -24,10 +33,7 @@ const initialViewState = {
         width: 900,
         height: 600
       },
-      position: {
-        x: window.innerWidth / 2 - 450,
-        y: window.innerHeight / 2 - 300
-      }
+      position: getPosition(900, 600)
     }
   }
 }
