@@ -1,5 +1,3 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { Icon } from '@iconify/react'
 import toolboxIcon from '@iconify/icons-ph/toolbox'

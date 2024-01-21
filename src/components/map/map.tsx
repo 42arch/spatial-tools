@@ -6,8 +6,7 @@ import {
   DEFAULT_FILL_OPACITY,
   DEFAULT_STROKE_WIDTH
 } from '@/lib/style'
-import { useLayerStore, useMapStore } from '@/store'
-import { layer } from '@uiw/react-codemirror'
+import { useMapStore } from '@/store'
 import mapboxgl from 'mapbox-gl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
@@ -23,7 +22,7 @@ export default function BaseMap({ children }: Props) {
   const mapContainerRef = useRef<any>()
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
-  const { setMapRef } = useMapStore()
+  const { setMapRef, currentBackgroundLayer, currentZoom } = useMapStore()
   const { layerList, currentRemoveId, clearRemoveId, hiddenLayerIds } =
     useLayers()
 
@@ -34,9 +33,8 @@ export default function BaseMap({ children }: Props) {
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/satellite-v9',
       center: [-91.874, 42.76],
-      zoom: 12
+      zoom: currentZoom
     })
     setMapRef(mapRef)
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
@@ -48,6 +46,14 @@ export default function BaseMap({ children }: Props) {
       setMapRef(null)
     }
   }, [])
+
+  useEffect(() => {
+    if (mapRef.current) {
+      if (currentBackgroundLayer.type === 'mapbox') {
+        mapRef.current.setStyle(currentBackgroundLayer.url)
+      }
+    }
+  }, [currentBackgroundLayer])
 
   useEffect(() => {
     if (mapRef.current) {

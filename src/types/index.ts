@@ -48,4 +48,10 @@ export type LayerType = {
   // layout: AnyLayout
 }
 
+export type BackgroundLayer = {
+  name: string
+  type: string
+  url: string
+}
+
 export type Layers = Record<string, LayerType>

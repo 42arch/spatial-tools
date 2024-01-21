@@ -2,7 +2,7 @@ import { useMapStore } from '@/store'
 import { LngLatBoundsLike } from 'mapbox-gl'
 
 export default function useMap() {
-  const { mapRef } = useMapStore()
+  const { mapRef, currentBackgroundLayer, setBackgroundLayer } = useMapStore()
 
   const zoomToFit = (bbox: LngLatBoundsLike) => {
     mapRef?.current?.fitBounds(bbox, {
@@ -12,6 +12,8 @@ export default function useMap() {
   }
 
   return {
-    zoomToFit
+    zoomToFit,
+    currentBackgroundLayer,
+    setBackgroundLayer
   }
 }

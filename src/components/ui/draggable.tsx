@@ -33,7 +33,7 @@ function Draggable({
   return (
     <div
       ref={setNodeRef}
-      className='border border-border bg-background text-sm'
+      className='z-20 border border-border bg-background text-sm'
       style={{ ...style, width: width, height: height }}
     >
       {/* <Resizable
