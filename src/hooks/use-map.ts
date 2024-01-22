@@ -5,6 +5,7 @@ export default function useMap() {
   const {
     mapRef,
     currentCustomBgLayers,
+    setAccessToken,
     // currentMapboxBgLayer,
     addCustomBgLayer,
     removeCustomBgLayer,
@@ -27,6 +28,7 @@ export default function useMap() {
     zoomToFit,
     currentCustomBgLayers,
     currentMapboxBgLayer,
+    setAccessToken,
     addCustomBgLayer,
     removeCustomBgLayer,
     toggleBgLayerVisibility

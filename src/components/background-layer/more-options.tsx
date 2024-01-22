@@ -2,6 +2,7 @@ import { useToggle } from 'react-use'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import XYZLayer from './xyz-layer'
+import MapboxLayer from './mapbox-layer'
 
 interface MoreOptionsProps {
   onClose: () => void
@@ -24,7 +25,10 @@ function MoreOptions({ onClose, onSelectClose }: MoreOptionsProps) {
           </div>
           <Separator className='my-2' />
           <div className='flex flex-col'>
-            <div className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'>
+            <div
+              className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
+              onClick={() => toggleMapbox(true)}
+            >
               Mapbox Styles
             </div>
             <div
@@ -39,6 +43,12 @@ function MoreOptions({ onClose, onSelectClose }: MoreOptionsProps) {
       {xyzOpen && (
         <XYZLayer
           onClose={() => toggleXyz(false)}
+          onSelectClose={onSelectClose}
+        />
+      )}
+      {mapboxOpen && (
+        <MapboxLayer
+          onClose={() => toggleMapbox(false)}
           onSelectClose={onSelectClose}
         />
       )}

@@ -5,6 +5,8 @@ import { MutableRefObject } from 'react'
 import { StateCreator } from 'zustand'
 
 const initialMapState = {
+  accessToken:
+    'pk.eyJ1IjoiaW5nZW40MiIsImEiOiJjazlsMnliMXoyMWoxM2tudm1hajRmaHZ6In0.rWx_wAz2cAeMIzxQQfPDPA',
   currentRemoveLayer: null,
   // currentMapboxBgLayer: CURRENT_BG_LAYER,
   currentCustomBgLayers: [CURRENT_BG_LAYER],
@@ -13,6 +15,8 @@ const initialMapState = {
 }
 
 export interface MapSlice {
+  accessToken: string
+  setAccessToken: (token: string) => void
   currentRemoveLayer: string | null
   // currentMapboxBgLayer: BackgroundLayer | null
   currentCustomBgLayers: Array<BackgroundLayer>
@@ -33,6 +37,10 @@ export const createMapSlice: StateCreator<
   MapSlice
 > = (set) => ({
   ...initialMapState,
+  setAccessToken: (token: string) =>
+    set({
+      accessToken: token
+    }),
   setMapRef: (ref: MutableRefObject<mapboxgl.Map | null> | null) =>
     set({
       mapRef: ref

@@ -11,9 +11,6 @@ import { useMapStore } from '@/store'
 import mapboxgl from 'mapbox-gl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
-mapboxgl.accessToken =
-  'pk.eyJ1IjoiaW5nZW40MiIsImEiOiJjazlsMnliMXoyMWoxM2tudm1hajRmaHZ6In0.rWx_wAz2cAeMIzxQQfPDPA'
-
 interface Props {
   children: ReactNode
 }
@@ -24,6 +21,7 @@ export default function BaseMap({ children }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
   const {
+    accessToken,
     setMapRef,
     currentRemoveLayer,
     clearRemoveLayer,
@@ -55,6 +53,12 @@ export default function BaseMap({ children }: Props) {
   }
 
   useEffect(() => {
+    mapboxgl.accessToken = accessToken
+  }, [accessToken])
+
+  useEffect(() => {
+    mapboxgl.accessToken = accessToken
+
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: [-91.874, 42.76],
