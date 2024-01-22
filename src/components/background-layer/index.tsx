@@ -8,6 +8,8 @@ import { Button } from '../ui/button'
 import { Icon } from '@iconify/react'
 import plusIcon from '@iconify/icons-ph/plus'
 import trashIcon from '@iconify/icons-ph/trash'
+import eyeIcon from '@iconify/icons-ph/eye'
+import eyeClosed from '@iconify/icons-ph/eye-closed'
 import LayerSelect from './layer-select'
 import useMap from '@/hooks/use-map'
 
@@ -22,13 +24,18 @@ function BackgroundLayer({
   onOpenChange,
   children
 }: BackgroundLayerPorps) {
-  const { currentBackgroundLayer } = useMap()
+  const {
+    currentCustomBgLayers,
+    // currentMapboxBgLayer,
+    removeCustomBgLayer,
+    toggleBgLayerVisibility
+  } = useMap()
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger>{children}</PopoverTrigger>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent align='end' className='p-2'>
-        <div className=''>
+        <div className='select-none'>
           <div className='flex h-8 justify-between border-b border-border'>
             <h4 className='text-base font-semibold'>Background Layers</h4>
             <LayerSelect>
@@ -38,19 +45,58 @@ function BackgroundLayer({
             </LayerSelect>
           </div>
           <div className='pt-2'>
-            <div className='flex flex-col justify-evenly p-2'>
-              <div className='flex items-center justify-between text-base'>
-                <span>{currentBackgroundLayer.name}</span>
-                <Icon
-                  icon={trashIcon}
-                  width={16}
-                  className='cursor-pointer text-muted-foreground hover:text-foreground'
-                />
+            {currentCustomBgLayers.map((layer) => (
+              <div
+                key={layer.name}
+                className='flex flex-col justify-evenly p-2'
+              >
+                <div className='flex items-center justify-between text-base'>
+                  <span>{layer.name}</span>
+                  <div className='flex gap-2'>
+                    <Icon
+                      icon={layer.hidden ? eyeClosed : eyeIcon}
+                      width={16}
+                      onClick={() => toggleBgLayerVisibility(layer.name)}
+                      className='cursor-pointer text-muted-foreground hover:text-foreground'
+                    />
+                    <Icon
+                      icon={trashIcon}
+                      width={16}
+                      onClick={() => removeCustomBgLayer(layer.name)}
+                      className='cursor-pointer text-muted-foreground hover:text-foreground'
+                    />
+                  </div>
+                </div>
+                <div className='text-sm text-muted-foreground opacity-75'>
+                  {layer.type}
+                </div>
               </div>
-              <div className='text-sm opacity-80'>
-                {currentBackgroundLayer.type}
+            ))}
+            {/* {currentMapboxBgLayer && (
+              <div className='flex flex-col justify-evenly p-2'>
+                <div className='flex items-center justify-between text-base'>
+                  <span>{currentMapboxBgLayer.name}</span>
+                  <div className='flex gap-2'>
+                    <Icon
+                      icon={currentMapboxBgLayer.hidden ? eyeClosed : eyeIcon}
+                      width={16}
+                      onClick={() =>
+                        toggleBgLayerVisibility(currentMapboxBgLayer.name)
+                      }
+                      className='cursor-pointer text-muted-foreground hover:text-foreground'
+                    />
+                    <Icon
+                      icon={trashIcon}
+                      width={16}
+                      className='cursor-pointer text-muted-foreground hover:text-foreground'
+                    />
+                  </div>
+                </div>
+                <div className='text-sm text-muted-foreground opacity-75'>
+                  {currentMapboxBgLayer.type}
+                </div>
               </div>
-            </div>
+            )} */}
           </div>
         </div>
       </PopoverContent>

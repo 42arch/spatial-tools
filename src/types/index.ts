@@ -50,8 +50,11 @@ export type LayerType = {
 
 export type BackgroundLayer = {
   name: string
-  type: string
+  type: 'mapbox' | 'xyz'
   url: string
+  opacity?: number
+  hidden?: boolean
+  zindex?: number
 }
 
 export type Layers = Record<string, LayerType>

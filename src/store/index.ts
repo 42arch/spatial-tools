@@ -23,9 +23,11 @@ export const useDrawStore = create<DrawSlice>()((...a) => ({
   ...createDrawSlice(...a)
 }))
 
-export const useMapStore = create<MapSlice>()((...a) => ({
-  ...createMapSlice(...a)
-}))
+export const useMapStore = create<MapSlice>()(
+  immer((...a) => ({
+    ...createMapSlice(...a)
+  }))
+)
 
 export const useViewStore = create<ViewSlice>()(
   immer((...a) => ({

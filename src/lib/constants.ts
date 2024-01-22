@@ -39,14 +39,14 @@ export type StyleProperty = {
 export const STROKE_STYLES: Array<string> = ['Solid', 'Dashed', 'Dotted']
 
 export const CURRENT_BG_LAYER: BackgroundLayer = {
-  name: 'Street',
+  name: 'Streets',
   type: 'mapbox',
   url: 'mapbox://styles/mapbox/streets-v12'
 }
 
 export const DEFAULT_BG_LAYERS: Array<BackgroundLayer> = [
   {
-    name: 'Street',
+    name: 'Streets',
     type: 'mapbox',
     url: 'mapbox://styles/mapbox/streets-v12'
   },

@@ -1,6 +1,7 @@
 'use client'
 
 import useLayers from '@/hooks/use-layers'
+import useMap from '@/hooks/use-map'
 import {
   DEFAULT_COLOR,
   DEFAULT_FILL_OPACITY,
@@ -22,19 +23,45 @@ export default function BaseMap({ children }: Props) {
   const mapContainerRef = useRef<any>()
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [loaded, setLoaded] = useState(false)
-  const { setMapRef, currentBackgroundLayer, currentZoom } = useMapStore()
+  const {
+    setMapRef,
+    currentRemoveLayer,
+    clearRemoveLayer,
+    // currentMapboxBgLayer,
+    currentCustomBgLayers,
+    currentZoom
+  } = useMapStore()
+
+  const { currentMapboxBgLayer } = useMap()
   const { layerList, currentRemoveId, clearRemoveId, hiddenLayerIds } =
     useLayers()
 
   const onMapLoaded = () => {
     setLoaded(true)
+
+    // mapRef.current?.addSource('osm-tiles', {
+    //   type: 'raster',
+    //   tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+    //   tileSize: 256
+    // })
+
+    // mapRef.current?.addLayer({
+    //   id: 'osm-layer',
+    //   type: 'raster',
+    //   source: 'osm-tiles',
+    //   minzoom: 0,
+    //   maxzoom: 22
+    // })
   }
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: [-91.874, 42.76],
-      zoom: currentZoom
+      zoom: currentZoom,
+      projection: {
+        name: 'mercator'
+      }
     })
     setMapRef(mapRef)
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
@@ -48,12 +75,48 @@ export default function BaseMap({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    if (mapRef.current) {
-      if (currentBackgroundLayer.type === 'mapbox') {
-        mapRef.current.setStyle(currentBackgroundLayer.url)
+    console.log('mapbox layer change')
+    if (currentMapboxBgLayer) {
+      mapRef.current?.setStyle(currentMapboxBgLayer.url)
+    }
+  }, [currentMapboxBgLayer])
+
+  useEffect(() => {
+    if (currentRemoveLayer) {
+      if (mapRef.current?.getLayer(currentRemoveLayer)) {
+        mapRef.current?.removeLayer(currentRemoveLayer)
+        clearRemoveLayer()
+        console.log(9999, mapRef.current?.getStyle())
       }
     }
-  }, [currentBackgroundLayer])
+
+    if (currentCustomBgLayers.length) {
+      // mapRef.current?.setStyle(currentMapboxBgLayer.url)
+      currentCustomBgLayers.forEach((layer) => {
+        if (layer.type === 'xyz') {
+          if (!mapRef.current?.getLayer(layer.name)) {
+            mapRef.current?.addLayer({
+              id: layer.name,
+              type: 'raster',
+              source: {
+                type: 'raster',
+                tiles: [layer.url],
+                tileSize: 256
+              },
+              minzoom: 0,
+              maxzoom: 22
+            })
+          } else {
+            mapRef.current?.setLayoutProperty(
+              layer.name,
+              'visibility',
+              layer.hidden ? 'none' : 'visible'
+            )
+          }
+        }
+      })
+    }
+  }, [clearRemoveLayer, currentCustomBgLayers, currentRemoveLayer])
 
   useEffect(() => {
     if (mapRef.current) {
