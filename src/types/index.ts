@@ -43,15 +43,14 @@ export type LayerType = {
   data: FeatureCollection
   paint?: AnyPaint
   layout?: AnyLayout
-  // paint: AnyPaint
-  // layer: AnyLayer
-  // layout: AnyLayout
 }
 
 export type BackgroundLayer = {
+  id: string
   name: string
   type: 'mapbox' | 'xyz'
   url: string
+  token?: string
   opacity?: number
   hidden?: boolean
   zindex?: number

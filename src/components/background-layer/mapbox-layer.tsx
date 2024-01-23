@@ -14,6 +14,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { BackgroundLayer } from '@/types'
 import useMap from '@/hooks/use-map'
+import { nanoid } from 'nanoid'
+import mapboxgl from 'mapbox-gl'
 
 const formSchema = z.object({
   name: z.string().refine((data) => data.trim() !== '', {
@@ -33,11 +35,12 @@ interface MapboxLayerProps {
 }
 
 function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
-  const { addCustomBgLayer, setAccessToken } = useMap()
+  const { addCustomBgLayer } = useMap()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      token: undefined,
       name: '',
       url: ''
     }
@@ -45,11 +48,13 @@ function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const mapboxLayer: BackgroundLayer = {
+      id: nanoid(),
       name: values.name,
       type: 'mapbox',
       url: values.url
     }
-    setAccessToken(values.token)
+    mapboxgl.accessToken = values.token
+    // setAccessToken(values.token)
     addCustomBgLayer(mapboxLayer)
     onSelectClose()
   }

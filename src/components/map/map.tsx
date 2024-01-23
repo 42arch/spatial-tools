@@ -1,7 +1,8 @@
 'use client'
 
 import useLayers from '@/hooks/use-layers'
-import useMap from '@/hooks/use-map'
+import env from '@/lib/env'
+import { loadAndComposeStyle } from '@/lib/background-layer'
 import {
   DEFAULT_COLOR,
   DEFAULT_FILL_OPACITY,
@@ -11,6 +12,7 @@ import { useMapStore } from '@/store'
 import mapboxgl from 'mapbox-gl'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 
+mapboxgl.accessToken = env.NEXT_PUBLIC_MAPBOX_TOKEN
 interface Props {
   children: ReactNode
 }
@@ -19,46 +21,18 @@ const types = ['point', 'line', 'fill']
 export default function BaseMap({ children }: Props) {
   const mapContainerRef = useRef<any>()
   const mapRef = useRef<mapboxgl.Map | null>(null)
+  const map = mapRef.current
   const [loaded, setLoaded] = useState(false)
-  const {
-    accessToken,
-    setMapRef,
-    currentRemoveLayer,
-    clearRemoveLayer,
-    // currentMapboxBgLayer,
-    currentCustomBgLayers,
-    currentZoom
-  } = useMapStore()
+  const { setMapRef, bgLayers, currentZoom } = useMapStore()
 
-  const { currentMapboxBgLayer } = useMap()
   const { layerList, currentRemoveId, clearRemoveId, hiddenLayerIds } =
     useLayers()
 
   const onMapLoaded = () => {
     setLoaded(true)
-
-    // mapRef.current?.addSource('osm-tiles', {
-    //   type: 'raster',
-    //   tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-    //   tileSize: 256
-    // })
-
-    // mapRef.current?.addLayer({
-    //   id: 'osm-layer',
-    //   type: 'raster',
-    //   source: 'osm-tiles',
-    //   minzoom: 0,
-    //   maxzoom: 22
-    // })
   }
 
   useEffect(() => {
-    mapboxgl.accessToken = accessToken
-  }, [accessToken])
-
-  useEffect(() => {
-    mapboxgl.accessToken = accessToken
-
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: [-91.874, 42.76],
@@ -79,48 +53,12 @@ export default function BaseMap({ children }: Props) {
   }, [])
 
   useEffect(() => {
-    console.log('mapbox layer change')
-    if (currentMapboxBgLayer) {
-      mapRef.current?.setStyle(currentMapboxBgLayer.url)
+    async function setStyle() {
+      const style = await loadAndComposeStyle(bgLayers)
+      map?.setStyle(style)
     }
-  }, [currentMapboxBgLayer])
-
-  useEffect(() => {
-    if (currentRemoveLayer) {
-      if (mapRef.current?.getLayer(currentRemoveLayer)) {
-        mapRef.current?.removeLayer(currentRemoveLayer)
-        clearRemoveLayer()
-        console.log(9999, mapRef.current?.getStyle())
-      }
-    }
-
-    if (currentCustomBgLayers.length) {
-      // mapRef.current?.setStyle(currentMapboxBgLayer.url)
-      currentCustomBgLayers.forEach((layer) => {
-        if (layer.type === 'xyz') {
-          if (!mapRef.current?.getLayer(layer.name)) {
-            mapRef.current?.addLayer({
-              id: layer.name,
-              type: 'raster',
-              source: {
-                type: 'raster',
-                tiles: [layer.url],
-                tileSize: 256
-              },
-              minzoom: 0,
-              maxzoom: 22
-            })
-          } else {
-            mapRef.current?.setLayoutProperty(
-              layer.name,
-              'visibility',
-              layer.hidden ? 'none' : 'visible'
-            )
-          }
-        }
-      })
-    }
-  }, [clearRemoveLayer, currentCustomBgLayers, currentRemoveLayer])
+    setStyle()
+  }, [bgLayers, map])
 
   useEffect(() => {
     if (mapRef.current) {

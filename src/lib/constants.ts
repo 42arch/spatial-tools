@@ -1,5 +1,6 @@
 import { BackgroundLayer } from '@/types'
 import { DrawMode } from '@mapbox/mapbox-gl-draw'
+import env from './env'
 
 export const APP_PREFIX = 'st:'
 
@@ -39,30 +40,40 @@ export type StyleProperty = {
 export const STROKE_STYLES: Array<string> = ['Solid', 'Dashed', 'Dotted']
 
 export const CURRENT_BG_LAYER: BackgroundLayer = {
+  id: 'streets',
   name: 'Streets',
   type: 'mapbox',
+  token: env.NEXT_PUBLIC_MAPBOX_TOKEN,
   url: 'mapbox://styles/mapbox/streets-v12'
 }
 
 export const DEFAULT_BG_LAYERS: Array<BackgroundLayer> = [
   {
+    id: 'streets',
     name: 'Streets',
     type: 'mapbox',
+    token: env.NEXT_PUBLIC_MAPBOX_TOKEN,
     url: 'mapbox://styles/mapbox/streets-v12'
   },
   {
+    id: 'light',
     name: 'Light',
     type: 'mapbox',
+    token: env.NEXT_PUBLIC_MAPBOX_TOKEN,
     url: 'mapbox://styles/mapbox/light-v11'
   },
   {
+    id: 'dark',
     name: 'Dark',
     type: 'mapbox',
+    token: env.NEXT_PUBLIC_MAPBOX_TOKEN,
     url: 'mapbox://styles/mapbox/dark-v11'
   },
   {
+    id: 'satellite',
     name: 'Satellite',
     type: 'mapbox',
+    token: env.NEXT_PUBLIC_MAPBOX_TOKEN,
     url: 'mapbox://styles/mapbox/satellite-v9'
   }
 ]

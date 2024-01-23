@@ -9,25 +9,26 @@ const initialMapState = {
     'pk.eyJ1IjoiaW5nZW40MiIsImEiOiJjazlsMnliMXoyMWoxM2tudm1hajRmaHZ6In0.rWx_wAz2cAeMIzxQQfPDPA',
   currentRemoveLayer: null,
   // currentMapboxBgLayer: CURRENT_BG_LAYER,
-  currentCustomBgLayers: [CURRENT_BG_LAYER],
+  bgLayers: [CURRENT_BG_LAYER],
   currentZoom: 12,
   mapRef: null
 }
 
 export interface MapSlice {
-  accessToken: string
-  setAccessToken: (token: string) => void
-  currentRemoveLayer: string | null
+  // accessToken: string
+  // setAccessToken: (token: string) => void
+  // currentRemoveLayer: string | null
   // currentMapboxBgLayer: BackgroundLayer | null
-  currentCustomBgLayers: Array<BackgroundLayer>
+  bgLayers: Array<BackgroundLayer>
+  setBgLayers: (layers: Array<BackgroundLayer>) => void
   // setMapboxBgLayer: (backgroundLayer: BackgroundLayer) => void
   addCustomBgLayer: (backgroundLayer: BackgroundLayer) => void
-  toggleBgLayerVisibility: (name: string) => void
-  removeCustomBgLayer: (name: string) => void
+  toggleBgLayerVisibility: (id: string) => void
+  removeBgLayer: (id: string) => void
   currentZoom: number
   mapRef: MutableRefObject<mapboxgl.Map | null> | null
   setMapRef: (ref: MutableRefObject<mapboxgl.Map | null> | null) => void
-  clearRemoveLayer: () => void
+  // clearRemoveLayer: () => void
 }
 
 export const createMapSlice: StateCreator<
@@ -37,22 +38,21 @@ export const createMapSlice: StateCreator<
   MapSlice
 > = (set) => ({
   ...initialMapState,
-  setAccessToken: (token: string) =>
-    set({
-      accessToken: token
-    }),
+  // setAccessToken: (token: string) =>
+  //   set({
+  //     accessToken: token
+  //   }),
   setMapRef: (ref: MutableRefObject<mapboxgl.Map | null> | null) =>
     set({
       mapRef: ref
     }),
-
-  // setMapboxBgLayer: (backgroundLayer: BackgroundLayer) =>
-  //   set({
-  //     currentMapboxBgLayer: backgroundLayer
-  //   }),
-  toggleBgLayerVisibility: (name: string) =>
+  setBgLayers: (layers: Array<BackgroundLayer>) =>
+    set({
+      bgLayers: layers
+    }),
+  toggleBgLayerVisibility: (id: string) =>
     set((state) => {
-      const layer = state.currentCustomBgLayers.find((l) => l.name === name)
+      const layer = state.bgLayers.find((l) => l.id === id)
       if (layer) {
         layer.hidden = !layer.hidden
       }
@@ -61,31 +61,27 @@ export const createMapSlice: StateCreator<
     set((state) => {
       if (backgroundLayer.type === 'mapbox') {
         // Only keep one mapbox layer
-        const existMapboxLayer = state.currentCustomBgLayers.find(
-          (l) => l.type === 'mapbox'
-        )
+        const existMapboxLayer = state.bgLayers.find((l) => l.type === 'mapbox')
         if (existMapboxLayer) {
           existMapboxLayer.url = backgroundLayer.url
           existMapboxLayer.name = backgroundLayer.name
         } else {
-          state.currentCustomBgLayers.push(backgroundLayer)
+          state.bgLayers.push(backgroundLayer)
         }
       } else {
-        state.currentCustomBgLayers.unshift(backgroundLayer)
+        state.bgLayers.unshift(backgroundLayer)
       }
     }),
-  removeCustomBgLayer: (name: string) =>
+  removeBgLayer: (id: string) =>
     set((state) => {
-      const index = state.currentCustomBgLayers.findIndex(
-        (l) => l.name === name
-      )
+      const index = state.bgLayers.findIndex((l) => l.id === id)
       if (index !== -1) {
-        state.currentRemoveLayer = name
-        state.currentCustomBgLayers.splice(index, 1)
+        // state.currentRemoveLayer = name
+        state.bgLayers.splice(index, 1)
       }
-    }),
-  clearRemoveLayer: () =>
-    set((state) => {
-      state.currentRemoveLayer = null
     })
+  // clearRemoveLayer: () =>
+  //   set((state) => {
+  //     state.currentRemoveLayer = null
+  //   })
 })

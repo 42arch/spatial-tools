@@ -4,11 +4,12 @@ import { LngLatBoundsLike } from 'mapbox-gl'
 export default function useMap() {
   const {
     mapRef,
-    currentCustomBgLayers,
-    setAccessToken,
+    bgLayers,
+    setBgLayers,
+    // setAccessToken,
     // currentMapboxBgLayer,
     addCustomBgLayer,
-    removeCustomBgLayer,
+    removeBgLayer,
     toggleBgLayerVisibility
     // setMapboxBgLayer
   } = useMapStore()
@@ -20,18 +21,18 @@ export default function useMap() {
     })
   }
 
-  const currentMapboxBgLayer = currentCustomBgLayers.find(
-    (l) => l.type === 'mapbox'
-  )
+  // const currentMapboxBgLayer = currentCustomBgLayers.find(
+  //   (l) => l.type === 'mapbox'
+  // )
 
   return {
     zoomToFit,
-    currentCustomBgLayers,
-    currentMapboxBgLayer,
-    setAccessToken,
+    bgLayers,
+    // currentMapboxBgLayer,
+    setBgLayers,
+    // setAccessToken,
     addCustomBgLayer,
-    removeCustomBgLayer,
+    removeBgLayer,
     toggleBgLayerVisibility
-    // setMapboxBgLayer
   }
 }

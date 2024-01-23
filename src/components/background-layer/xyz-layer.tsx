@@ -15,6 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { BackgroundLayer } from '@/types'
 import useMap from '@/hooks/use-map'
+import { nanoid } from 'nanoid'
 
 const formSchema = z.object({
   name: z.string().refine((data) => data.trim() !== '', {
@@ -43,6 +44,7 @@ function XYZLayer({ onClose, onSelectClose }: XYZLayerProps) {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const xyzLayer: BackgroundLayer = {
+      id: nanoid(),
       name: values.name,
       type: 'xyz',
       url: values.url
