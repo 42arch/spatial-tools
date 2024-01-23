@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, createContext, useEffect } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { DEFAULT_BG_LAYERS } from '@/lib/constants'
 import useMap from '@/hooks/use-map'
@@ -12,6 +12,13 @@ import {
 import { useToggle } from 'react-use'
 import MoreOptions from './more-options'
 
+interface LayerSelectContextState {
+  toggleOpen: () => void
+  toggleMoreOptions: () => void
+}
+
+export const LayerSelectContext = createContext({} as LayerSelectContextState)
+
 interface LayerSelectProps {
   children: ReactNode
 }
@@ -19,83 +26,61 @@ interface LayerSelectProps {
 function LayerSelect({ children }: LayerSelectProps) {
   const [open, toggleOpen] = useToggle(false)
   const [moreOptionsShow, toggleMoreOptions] = useToggle(false)
-  const { addCustomBgLayer } = useMap()
+  const { addBgLayer } = useMap()
 
   const handleSelect = (layer: BackgroundLayer) => {
-    // setMapboxBgLayer(layer)
-    addCustomBgLayer(layer)
+    addBgLayer(layer)
     toggleOpen(false)
   }
 
+  useEffect(() => {
+    if (!open) {
+      toggleMoreOptions(false)
+    }
+  }, [open, toggleMoreOptions])
+
   return (
-    <Popover open={open} onOpenChange={toggleOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className='relative p-2'>
-        {!moreOptionsShow ? (
-          <>
-            <div className='flex flex-col'>
-              <div className='flex select-none flex-col'>
-                {DEFAULT_BG_LAYERS.map((layer) => (
-                  <div
-                    key={layer.name}
-                    className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
-                    onClick={() => handleSelect(layer)}
-                  >
-                    <span className=''>{layer.name}</span>
-                  </div>
-                ))}
+    <LayerSelectContext.Provider
+      value={{
+        toggleOpen,
+        toggleMoreOptions
+      }}
+    >
+      <Popover open={open} onOpenChange={toggleOpen}>
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
+        <PopoverContent className='relative p-2'>
+          {!moreOptionsShow ? (
+            <>
+              <div className='flex flex-col'>
+                <div className='flex select-none flex-col'>
+                  {DEFAULT_BG_LAYERS.map((layer) => (
+                    <div
+                      key={layer.name}
+                      className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
+                      onClick={() => handleSelect(layer)}
+                    >
+                      <span className=''>{layer.name}</span>
+                    </div>
+                  ))}
+                </div>
+                <Separator className='my-1' />
+                <div
+                  className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
+                  onClick={() => toggleMoreOptions(true)}
+                >
+                  <span>More</span>
+                </div>
               </div>
-              <Separator className='my-1' />
-              <div
-                className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
-                onClick={() => toggleMoreOptions(true)}
-              >
-                <span>More</span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <MoreOptions
-            onClose={() => toggleMoreOptions(false)}
-            onSelectClose={() => toggleOpen(false)}
-          />
-        )}
-      </PopoverContent>
-    </Popover>
-
-    // <DropdownMenu>
-    //   <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-    //   <DropdownMenuContent>
-    //     {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-    //     <DropdownMenuSeparator /> */}
-    //     {DEFAULT_BG_LAYERS.map((layer) => (
-    //       <DropdownMenuItem
-    //         key={layer.name}
-    //         onClick={() => handleSelect(layer)}
-    //       >
-    //         {layer.name}
-    //       </DropdownMenuItem>
-    //     ))}
-
-    //     <DropdownMenuSeparator />
-    //     <DropdownMenuSub>
-    //       <DropdownMenuSubTrigger>Custom</DropdownMenuSubTrigger>
-    //       <DropdownMenuPortal>
-    //         <DropdownMenuSubContent>
-    //           <Popover>
-    //             <PopoverTrigger asChild>
-    //               <DropdownMenuItem>Mapbox</DropdownMenuItem>
-    //             </PopoverTrigger>
-    //             <PopoverContent>
-    //               Place content for the popover here.
-    //             </PopoverContent>
-    //           </Popover>
-    //           <DropdownMenuItem>XYZ</DropdownMenuItem>
-    //         </DropdownMenuSubContent>
-    //       </DropdownMenuPortal>
-    //     </DropdownMenuSub>
-    //   </DropdownMenuContent>
-    // </DropdownMenu>
+            </>
+          ) : (
+            <MoreOptions
+              onClose={() => toggleMoreOptions(false)}
+              onSelectClose={() => toggleOpen(false)}
+            />
+          )}
+        </PopoverContent>
+      </Popover>
+    </LayerSelectContext.Provider>
   )
 }
 

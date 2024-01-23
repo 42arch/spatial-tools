@@ -1,6 +1,7 @@
 import { BackgroundLayer } from '@/types'
 import mapboxgl from 'mapbox-gl'
 import env from './env'
+import { APP_PREFIX } from './constants'
 
 export function getMapboxLayerURL(layer: BackgroundLayer) {
   return (
@@ -21,17 +22,24 @@ export function getEmptyStyle() {
   return style
 }
 
-export function addXYZLayer(style: mapboxgl.Style, layer: BackgroundLayer) {
-  style.sources[layer.name] = {
+export function addXYZLayer(
+  style: mapboxgl.Style,
+  layer: BackgroundLayer,
+  id: number
+) {
+  const sourceId = `${APP_PREFIX}Source${id}`
+  const layerId = `${APP_PREFIX}Layer${id}`
+
+  style.sources[sourceId] = {
     type: 'raster',
     tiles: [layer.url],
     scheme: 'xyz',
     tileSize: 256
   }
   const newLayer = {
-    id: layer.name,
+    id: layerId,
     type: 'raster',
-    source: layer.name,
+    source: sourceId,
     paint: {
       'raster-opacity': layer.opacity || 1
     },
@@ -72,14 +80,16 @@ export async function addMapboxLayer(
 export async function loadAndComposeStyle(layers: Array<BackgroundLayer>) {
   let style = getEmptyStyle()
   const allLayers = [...layers].reverse()
+  let id = 0
 
   for (const layer of allLayers) {
+    id++
     switch (layer.type) {
       case 'mapbox':
         style = await addMapboxLayer(style, layer)
         break
       case 'xyz':
-        style = addXYZLayer(style, layer)
+        style = addXYZLayer(style, layer, id)
         break
     }
   }

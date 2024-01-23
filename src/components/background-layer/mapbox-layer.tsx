@@ -1,21 +1,22 @@
 import { useForm } from 'react-hook-form'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormMessage
-} from '../ui/form'
-import { Input } from '../ui/input'
-import { Separator } from '../ui/separator'
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { BackgroundLayer } from '@/types'
 import useMap from '@/hooks/use-map'
+import * as z from 'zod'
 import { nanoid } from 'nanoid'
 import mapboxgl from 'mapbox-gl'
+import { useContext } from 'react'
+import { LayerSelectContext } from './layer-select'
 
 const formSchema = z.object({
   name: z.string().refine((data) => data.trim() !== '', {
@@ -31,11 +32,11 @@ const formSchema = z.object({
 
 interface MapboxLayerProps {
   onClose: () => void
-  onSelectClose: () => void
 }
 
-function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
-  const { addCustomBgLayer } = useMap()
+function MapboxLayer({ onClose }: MapboxLayerProps) {
+  const { toggleOpen } = useContext(LayerSelectContext)
+  const { addBgLayer } = useMap()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,9 +55,8 @@ function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
       url: values.url
     }
     mapboxgl.accessToken = values.token
-    // setAccessToken(values.token)
-    addCustomBgLayer(mapboxLayer)
-    onSelectClose()
+    addBgLayer(mapboxLayer)
+    toggleOpen()
   }
 
   return (
@@ -88,7 +88,6 @@ function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
             name='token'
             render={({ field }) => (
               <FormItem>
-                {/* <FormLabel>Username</FormLabel> */}
                 <FormControl>
                   <Input
                     placeholder='Access Token'
@@ -96,7 +95,7 @@ function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
                     className='h-8'
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -111,7 +110,7 @@ function MapboxLayer({ onClose, onSelectClose }: MapboxLayerProps) {
                 {/* <FormDescription className='text-xs'>
                   {`For example: https://a.tile.openstreetmap.org/{z}/{x}/{y}.png`}
                 </FormDescription> */}
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />

@@ -22,7 +22,7 @@ export interface MapSlice {
   bgLayers: Array<BackgroundLayer>
   setBgLayers: (layers: Array<BackgroundLayer>) => void
   // setMapboxBgLayer: (backgroundLayer: BackgroundLayer) => void
-  addCustomBgLayer: (backgroundLayer: BackgroundLayer) => void
+  addBgLayer: (layer: BackgroundLayer) => void
   toggleBgLayerVisibility: (id: string) => void
   removeBgLayer: (id: string) => void
   currentZoom: number
@@ -57,19 +57,20 @@ export const createMapSlice: StateCreator<
         layer.hidden = !layer.hidden
       }
     }),
-  addCustomBgLayer: (backgroundLayer: BackgroundLayer) =>
+  addBgLayer: (layer: BackgroundLayer) =>
     set((state) => {
-      if (backgroundLayer.type === 'mapbox') {
+      if (layer.type === 'mapbox') {
         // Only keep one mapbox layer
         const existMapboxLayer = state.bgLayers.find((l) => l.type === 'mapbox')
         if (existMapboxLayer) {
-          existMapboxLayer.url = backgroundLayer.url
-          existMapboxLayer.name = backgroundLayer.name
+          existMapboxLayer.id = layer.id
+          existMapboxLayer.url = layer.url
+          existMapboxLayer.name = layer.name
         } else {
-          state.bgLayers.push(backgroundLayer)
+          state.bgLayers.push(layer)
         }
       } else {
-        state.bgLayers.unshift(backgroundLayer)
+        state.bgLayers.unshift(layer)
       }
     }),
   removeBgLayer: (id: string) =>

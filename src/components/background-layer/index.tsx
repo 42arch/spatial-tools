@@ -153,7 +153,7 @@ function BackgroundLayer({
             onDragStart={() => {}}
             onDragEnd={handleDragEnd}
           >
-            <div className='pt-2'>
+            <div className='min-h-[48px] pt-2'>
               <SortableContext
                 items={bgLayers}
                 strategy={verticalListSortingStrategy}

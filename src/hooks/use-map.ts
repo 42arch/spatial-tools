@@ -6,12 +6,9 @@ export default function useMap() {
     mapRef,
     bgLayers,
     setBgLayers,
-    // setAccessToken,
-    // currentMapboxBgLayer,
-    addCustomBgLayer,
+    addBgLayer,
     removeBgLayer,
     toggleBgLayerVisibility
-    // setMapboxBgLayer
   } = useMapStore()
 
   const zoomToFit = (bbox: LngLatBoundsLike) => {
@@ -21,17 +18,11 @@ export default function useMap() {
     })
   }
 
-  // const currentMapboxBgLayer = currentCustomBgLayers.find(
-  //   (l) => l.type === 'mapbox'
-  // )
-
   return {
     zoomToFit,
     bgLayers,
-    // currentMapboxBgLayer,
     setBgLayers,
-    // setAccessToken,
-    addCustomBgLayer,
+    addBgLayer,
     removeBgLayer,
     toggleBgLayerVisibility
   }

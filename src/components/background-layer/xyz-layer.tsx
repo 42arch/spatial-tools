@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -8,31 +8,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '../ui/form'
-import { Input } from '../ui/input'
-import { Separator } from '../ui/separator'
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { BackgroundLayer } from '@/types'
 import useMap from '@/hooks/use-map'
 import { nanoid } from 'nanoid'
+import { useContext } from 'react'
+import { LayerSelectContext } from './layer-select'
 
 const formSchema = z.object({
   name: z.string().refine((data) => data.trim() !== '', {
     message: 'Name cannot be empty'
   }),
-  url: z.string().refine((data) => data.trim() !== '', {
-    message: 'Url cannot be empty'
-  })
+  url: z
+    .string()
+    .refine((data) => data.trim() !== '', {
+      message: 'Url cannot be empty'
+    })
+    .refine(
+      (data) =>
+        data.includes('{x}') && data.includes('{y}') && data.includes('{z}'),
+      {
+        message: 'Tile URL must contain {x}, {y}, {z} templates.'
+      }
+    )
 })
 
 interface XYZLayerProps {
   onClose: () => void
-  onSelectClose: () => void
 }
 
-function XYZLayer({ onClose, onSelectClose }: XYZLayerProps) {
-  const { addCustomBgLayer } = useMap()
+function XYZLayer({ onClose }: XYZLayerProps) {
+  const { addBgLayer } = useMap()
+  const { toggleOpen } = useContext(LayerSelectContext)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,8 +60,8 @@ function XYZLayer({ onClose, onSelectClose }: XYZLayerProps) {
       type: 'xyz',
       url: values.url
     }
-    addCustomBgLayer(xyzLayer)
-    onSelectClose()
+    addBgLayer(xyzLayer)
+    toggleOpen()
   }
 
   return (
@@ -73,7 +84,7 @@ function XYZLayer({ onClose, onSelectClose }: XYZLayerProps) {
                 <FormControl>
                   <Input placeholder='Name' {...field} className='h-8' />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className='text-xs' />
               </FormItem>
             )}
           />
@@ -86,10 +97,10 @@ function XYZLayer({ onClose, onSelectClose }: XYZLayerProps) {
                 <FormControl>
                   <Input placeholder='Tile Url' {...field} className='h-8' />
                 </FormControl>
+                <FormMessage className='text-xs' />
                 <FormDescription className='text-xs'>
                   {`For example: https://a.tile.openstreetmap.org/{z}/{x}/{y}.png`}
                 </FormDescription>
-                <FormMessage />
               </FormItem>
             )}
           />

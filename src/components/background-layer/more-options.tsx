@@ -35,23 +35,13 @@ function MoreOptions({ onClose, onSelectClose }: MoreOptionsProps) {
               className='cursor-pointer px-2 py-1.5 text-sm hover:bg-accent'
               onClick={() => toggleXyz(true)}
             >
-              XYZ
+              XYZ Tiles
             </div>
           </div>
         </div>
       )}
-      {xyzOpen && (
-        <XYZLayer
-          onClose={() => toggleXyz(false)}
-          onSelectClose={onSelectClose}
-        />
-      )}
-      {mapboxOpen && (
-        <MapboxLayer
-          onClose={() => toggleMapbox(false)}
-          onSelectClose={onSelectClose}
-        />
-      )}
+      {xyzOpen && <XYZLayer onClose={() => toggleXyz(false)} />}
+      {mapboxOpen && <MapboxLayer onClose={() => toggleMapbox(false)} />}
     </>
   )
 }
